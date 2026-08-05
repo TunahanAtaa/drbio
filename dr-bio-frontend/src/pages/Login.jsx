@@ -235,8 +235,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-theme-bg flex items-center justify-center p-4 py-8">
-      <div className={`w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-theme-card rounded-[2rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
+    <div 
+      className="min-h-screen w-full flex items-center justify-center p-4 py-8 bg-cover bg-center relative overflow-hidden" 
+      style={{ backgroundImage: `url('/login-bg.jpg')` }}
+    >
+      {/* Soft & Balanced Medikal Overlay & Glassmorphism Blur */}
+      <div className="absolute inset-0 bg-white/20 dark:bg-stone-950/75 backdrop-blur-[2px]"></div>
+
+      <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-theme-card/95 backdrop-blur-md rounded-[2.5rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 bg-red-600 rounded-2xl shadow-clay-btn flex items-center justify-center text-white font-black text-3xl">
             <Activity className="w-8 h-8" />
