@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: drbio-postgres
+    environment:
+      POSTGRES_DB: drbio_db
+      POSTGRES_USER: drbio_user
+      POSTGRES_PASSWORD: drbio_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db-data:

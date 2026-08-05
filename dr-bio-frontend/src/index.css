@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .bg-theme-bg {
+    @apply bg-[#fcfbfa] dark:bg-[#181514];
+  }
+  .bg-theme-card {
+    @apply bg-[#fcfbfa] dark:bg-[#221c1a];
+  }
+  .text-theme-main {
+    @apply text-stone-800 dark:text-stone-200;
+  }
+  .border-theme-border {
+    @apply border-white/80 dark:border-white/5;
+  }
+}
+
+body {
+  @apply bg-theme-bg text-theme-main;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
