@@ -72,13 +72,27 @@ const PatientDashboard = () => {
     }
   }, [tab]);
 
-  // Geçmiş Tahliller Verisi State'i (LocalStorage Senkronizasyonu)
+  // Aktif kullanıcı adı ve e-postası
+  const activeUser = (() => {
+    const saved = localStorage.getItem('user');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return { name: 'Zeynep Ersal', email: 'hasta@drbio.com' };
+  })();
+
+  const userEmail = (activeUser.email || '').trim().toLowerCase();
+  const isTestAccount = userEmail === 'hasta@drbio.com' || userEmail === 'admin@drbio.com';
+  const historyStorageKey = `userTestHistory_${userEmail}`;
+
+  // Geçmiş Tahliller Verisi State'i (Kullanıcı bazlı saklama)
   const [historyList, setHistoryList] = useState(() => {
-    const saved = localStorage.getItem('userTestHistory');
+    const saved = localStorage.getItem(historyStorageKey);
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
     }
-    return sampleHistory;
+    // SADECE varsayılan test hesaplarında örnek tahlilleri göster. Diğer kullanıcılarda BOŞ DİZİ [] ver!
+    return isTestAccount ? sampleHistory : [];
   });
 
   // Tahlil Yükleme ve Analiz State'leri
@@ -116,7 +130,7 @@ const PatientDashboard = () => {
 
       const mockResult = {
         id: Date.now(),
-        title: file.name.replace('.pdf', '') || 'Yeni Yüklenen Tahlil',
+        title: file.name.replace('.pdf', '').replace('.png', '').replace('.jpg', '') || 'Yeni Yüklenen Tahlil',
         date: new Date().toISOString().split('T')[0],
         fileName: file.name,
         status: 'WARNING',
@@ -139,7 +153,7 @@ const PatientDashboard = () => {
     if (!results) return;
     const updated = [results, ...historyList];
     setHistoryList(updated);
-    localStorage.setItem('userTestHistory', JSON.stringify(updated));
+    localStorage.setItem(historyStorageKey, JSON.stringify(updated));
     setSaveToast('Tahlil analiziniz geçmiş tahlillerinize başarıyla kaydedildi!');
     setTimeout(() => setSaveToast(''), 3000);
   };
@@ -150,15 +164,6 @@ const PatientDashboard = () => {
     }, 400);
     return () => clearTimeout(timer);
   }, []);
-
-  // Aktif kullanıcı adı ve e-postası
-  const activeUser = (() => {
-    const saved = localStorage.getItem('user');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return { name: 'Zeynep Ersal', email: 'zeynep@ornek.com' };
-  })();
 
   if (isPageLoading) {
     return (
@@ -236,7 +241,9 @@ const PatientDashboard = () => {
               </div>
               <div>
                 <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Son Tahlil</span>
-                <span className="text-lg font-black text-stone-800 dark:text-stone-200">1 Ağustos 2026</span>
+                <span className="text-base font-black text-stone-800 dark:text-stone-200">
+                  {historyList.length > 0 ? historyList[0].date : 'Henüz Yüklenmedi'}
+                </span>
               </div>
             </div>
 
@@ -246,7 +253,11 @@ const PatientDashboard = () => {
               </div>
               <div>
                 <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Anormal Değerler</span>
-                <span className="text-lg font-black text-amber-600 dark:text-amber-400">2 Parametre</span>
+                <span className="text-base font-black text-amber-600 dark:text-amber-400">
+                  {historyList.length > 0 
+                    ? `${historyList[0].params.filter(p => p.status !== 'NORMAL').length} Parametre` 
+                    : '0 Parametre'}
+                </span>
               </div>
             </div>
 
@@ -256,7 +267,9 @@ const PatientDashboard = () => {
               </div>
               <div>
                 <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Günlük Takviye</span>
-                <span className="text-lg font-black text-stone-800 dark:text-stone-200">Demir & D3</span>
+                <span className="text-base font-black text-stone-800 dark:text-stone-200">
+                  {historyList.length > 0 ? 'Demir & D3' : 'Belirtilmedi'}
+                </span>
               </div>
             </div>
 
@@ -266,7 +279,9 @@ const PatientDashboard = () => {
               </div>
               <div>
                 <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Genel Takip</span>
-                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">%85 Stabil</span>
+                <span className="text-base font-black text-emerald-600 dark:text-emerald-400">
+                  {historyList.length > 0 ? '%85 Stabil' : 'Veri Bekleniyor'}
+                </span>
               </div>
             </div>
           </div>
@@ -280,13 +295,15 @@ const PatientDashboard = () => {
                   <Activity className="w-5 h-5 text-red-600" />
                   <span>Son Yüklenen Tahlil Özeti</span>
                 </h2>
-                <button 
-                  onClick={() => navigate('/patient/history')}
-                  className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center space-x-1"
-                >
-                  <span>Tümünü Gör</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                {historyList.length > 0 && (
+                  <button 
+                    onClick={() => navigate('/patient/history')}
+                    className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center space-x-1"
+                  >
+                    <span>Tümünü Gör</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                )}
               </div>
 
               {historyList.length > 0 ? (
@@ -325,8 +342,24 @@ const PatientDashboard = () => {
                   </div>
                 </div>
               ) : (
-                <div className="bg-theme-card rounded-[2rem] p-8 text-center text-stone-400 font-bold border-theme-border shadow-clay-card dark:shadow-clay-card-dark">
-                  Henüz tahlil yüklenmedi.
+                /* KULLANICI HENÜZ TAHLİL YÜKLEMEDİYSE BOŞ STATE */
+                <div className="bg-theme-card rounded-[2rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center space-y-4 min-h-[220px]">
+                  <div className="w-16 h-16 bg-theme-bg rounded-2xl flex items-center justify-center text-stone-400 dark:text-stone-500 border border-stone-200 dark:border-stone-800">
+                    <FileText className="w-8 h-8 text-stone-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-lg text-stone-800 dark:text-stone-200">Henüz Tahlil Bilgisi Yüklenmedi</h3>
+                    <p className="text-xs font-bold text-stone-400 mt-1 max-w-sm">
+                      Sisteme tahlil yüklediğinizde akıllı analiz sonuçlarınız ve doktor değerlendirmeleriniz burada görüntülenecektir.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => navigate('/patient/upload')}
+                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2"
+                  >
+                    <UploadCloud className="w-4 h-4" />
+                    <span>İlk Tahlilinizi Yükleyin</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -589,8 +622,27 @@ const PatientDashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-theme-card rounded-3xl p-12 text-center text-stone-400 font-bold border-theme-border shadow-clay-card dark:shadow-clay-card-dark">
-              Aramanızla eşleşen tahlil kaydı bulunamadı.
+            <div className="bg-theme-card rounded-[2.5rem] p-12 text-center border-theme-border shadow-clay-card dark:shadow-clay-card-dark space-y-4">
+              <div className="w-20 h-20 bg-theme-bg rounded-3xl mx-auto flex items-center justify-center text-stone-400 border border-stone-200 dark:border-stone-800">
+                <FileText className="w-10 h-10" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">
+                  {searchQuery ? 'Aramanızla Eşleşen Tahlil Bulunamadı' : 'Henüz Tahlil Kaydınız Yok'}
+                </h3>
+                <p className="text-xs font-bold text-stone-400 mt-1 max-w-sm mx-auto">
+                  {searchQuery ? 'Farklı bir arama terimi deneyebilir veya filtreyi değiştirebilirsiniz.' : 'Tahlil sonuçlarınızı yükleyip geçmişe kaydettikçe raporlarınız burada listelenecektir.'}
+                </p>
+              </div>
+              {!searchQuery && (
+                <button
+                  onClick={() => navigate('/patient/upload')}
+                  className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-clay-btn text-xs inline-flex items-center space-x-2 transition"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Hemen Tahlil Yükleyin</span>
+                </button>
+              )}
             </div>
           )}
 
