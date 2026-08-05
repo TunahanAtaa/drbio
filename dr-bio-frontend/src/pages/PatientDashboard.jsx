@@ -5,7 +5,7 @@ import {
   UploadCloud, AlertTriangle, CheckCircle, ArrowDownCircle, ArrowUpCircle, 
   Stethoscope, Sparkles, Loader2, FileText, Activity, Calendar, Clock, 
   Search, Filter, Eye, Download, Plus, HeartPulse, ChevronRight, ShieldCheck, 
-  TrendingUp, Pill, Trash2
+  TrendingUp, Pill, Trash2, Star, MessageSquare
 } from 'lucide-react';
 import Profile from './Profile';
 
@@ -86,6 +86,47 @@ const PatientDashboard = () => {
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [saveToast, setSaveToast] = useState('');
+
+  // Geri Bildirim Modal & Form State'leri
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackRating, setFeedbackRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [feedbackComment, setFeedbackComment] = useState('');
+  const [feedbackSuccess, setFeedbackSuccess] = useState('');
+
+  const handleFeedbackSubmit = (e) => {
+    e.preventDefault();
+    if (!feedbackComment.trim() && feedbackRating === 0) return;
+
+    const newFeedback = {
+      id: Date.now(),
+      userName: activeUser.name || 'Zeynep Ersal',
+      userEmail: activeUser.email || 'hasta@drbio.com',
+      rating: feedbackRating || 5,
+      comment: feedbackComment.trim() || 'Hizmet ve tahlil değerlendirmesinden çok memnun kaldım.',
+      date: new Date().toISOString().split('T')[0],
+      status: 'UNREAD',
+      category: feedbackRating <= 3 ? 'ŞİKAYET / ÖNERİ' : 'MEMNUNİYET'
+    };
+
+    const saved = localStorage.getItem('drbio_feedbacks');
+    let list = [];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) list = parsed;
+      } catch (e) {}
+    }
+    list = [newFeedback, ...list];
+    localStorage.setItem('drbio_feedbacks', JSON.stringify(list));
+
+    setFeedbackSuccess('Geri bildiriminiz ve puanınız yönetime başarıyla iletildi. Değerli görüşleriniz için teşekkür ederiz!');
+    setFeedbackComment('');
+    setFeedbackRating(5);
+    setFeedbackModalOpen(false);
+
+    setTimeout(() => setFeedbackSuccess(''), 4000);
+  };
 
   // Geçmiş Tahliller Arama & Filtreleme
   const [searchQuery, setSearchQuery] = useState('');
@@ -214,9 +255,23 @@ const PatientDashboard = () => {
                   <FileText className="w-5 h-5" />
                   <span>Geçmiş Tahlillerim ({historyList.length})</span>
                 </button>
+                <button
+                  onClick={() => setFeedbackModalOpen(true)}
+                  className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-stone-900 font-black rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
+                >
+                  <Star className="w-5 h-5 fill-stone-900" />
+                  <span>Geri Bildirim & Yıldız Ver</span>
+                </button>
               </div>
             </div>
           </div>
+
+          {feedbackSuccess && (
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-3xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
+              <CheckCircle className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+              <span>{feedbackSuccess}</span>
+            </div>
+          )}
 
           {/* İstatistik & Metrik Kartları */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -496,6 +551,26 @@ const PatientDashboard = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Değerlendirme & Geri Bildirim Kartı */}
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 p-6 rounded-[2rem] border border-amber-200 dark:border-amber-900/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center space-x-3 text-center sm:text-left">
+                      <div className="w-12 h-12 bg-amber-400/20 text-amber-600 rounded-2xl flex items-center justify-center shrink-0">
+                        <Star className="w-6 h-6 fill-amber-500 text-amber-500" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-stone-800 dark:text-stone-200 text-sm">Analiz Hizmetimizi Nasıl Buldunuz?</h4>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 font-bold mt-0.5">5 üzerinden yıldız vererek görüş veya şikayetinizi yönetime iletebilirsiniz.</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setFeedbackModalOpen(true)}
+                      className="px-5 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-black text-xs rounded-2xl shadow-sm transition shrink-0 flex items-center space-x-1.5"
+                    >
+                      <Star className="w-4 h-4 fill-stone-950" />
+                      <span>Yıldız Ver & Yorum Yaz</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="bg-theme-card rounded-[2rem] p-12 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center text-stone-400 h-full min-h-[380px]">
@@ -693,6 +768,99 @@ const PatientDashboard = () => {
             </div>
           )}
 
+        </div>
+      )}
+
+      {/* GERİ BİLDİRİM & YILDIZ VERME MODAL */}
+      {feedbackModalOpen && (
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-theme-card w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-6">
+            <div className="flex justify-between items-center border-b border-stone-200 dark:border-stone-800 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-amber-100 dark:bg-amber-950/60 text-amber-600 rounded-xl flex items-center justify-center font-black">
+                  <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Geri Bildirim Yapın</h3>
+                  <p className="text-xs font-bold text-stone-400">Deneyiminizi 5 üzerinden yıldızla değerlendirin</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setFeedbackModalOpen(false)}
+                className="p-2 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 rounded-full font-black text-stone-500"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleFeedbackSubmit} className="space-y-6">
+              {/* Yıldız Seçimi */}
+              <div className="text-center space-y-2">
+                <label className="block text-xs font-black text-stone-400 uppercase tracking-wider">
+                  Hizmet Kalitesi & Değerlendirme
+                </label>
+                <div className="flex justify-center items-center space-x-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFeedbackRating(star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      className="p-1 transition-transform hover:scale-125 active:scale-95 focus:outline-none"
+                    >
+                      <Star
+                        className={`w-8 h-8 ${
+                          star <= (hoverRating || feedbackRating)
+                            ? 'text-amber-400 fill-amber-400'
+                            : 'text-stone-300 dark:text-stone-700'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                  {feedbackRating === 5 && '🌟 Harika! (5 / 5)'}
+                  {feedbackRating === 4 && '👍 Çok İyi (4 / 5)'}
+                  {feedbackRating === 3 && '😐 Orta (3 / 5)'}
+                  {feedbackRating === 2 && '👎 Geliştirilmeli (2 / 5)'}
+                  {feedbackRating === 1 && '⚠️ Memnun Kalmadım (1 / 5)'}
+                </p>
+              </div>
+
+              {/* Yorum / Şikayet Metin Alanı */}
+              <div className="space-y-2">
+                <label className="block text-xs font-black text-stone-600 dark:text-stone-300">
+                  Görüş, Öneri veya Şikayetiniz:
+                </label>
+                <textarea
+                  rows="4"
+                  required
+                  placeholder="Tahlil analiziniz, sistem deneyiminiz veya iletmek istediğiniz bir şikayet/öneri var mı? Buraya yazabilirsiniz..."
+                  value={feedbackComment}
+                  onChange={(e) => setFeedbackComment(e.target.value)}
+                  className="w-full p-4 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                ></textarea>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setFeedbackModalOpen(false)}
+                  className="px-5 py-3 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 font-bold rounded-2xl text-xs"
+                >
+                  Vazgeç
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-black rounded-2xl text-xs shadow-clay-btn transition flex items-center space-x-2"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Geri Bildirimi Gönder</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

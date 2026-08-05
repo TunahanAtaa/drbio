@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Users, Database, Upload, FileText, User } from 'lucide-react';
+import { Home, Users, Database, Upload, FileText, User, MessageSquare } from 'lucide-react';
 
-const Sidebar = ({ role }) => {
+const Sidebar = ({ role = 'PATIENT' }) => {
   const location = useLocation();
 
   const getLinks = () => {
@@ -12,6 +12,7 @@ const Sidebar = ({ role }) => {
           { name: 'Ana Sayfa', path: '/admin', icon: Home },
           { name: 'Kullanıcılar', path: '/admin/users', icon: Users },
           { name: 'Referans Kütüphanesi', path: '/admin/references', icon: Database },
+          { name: 'Geri Bildirimler', path: '/admin/feedbacks', icon: MessageSquare },
         ];
       case 'PATIENT':
         return [
@@ -25,6 +26,7 @@ const Sidebar = ({ role }) => {
   };
 
   const links = getLinks();
+  const safeRoleLower = (role || 'patient').toLowerCase();
 
   return (
     <aside className="w-64 min-h-[calc(100vh-2rem)] bg-theme-card rounded-3xl m-4 p-6 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex-col hidden lg:flex">
@@ -38,7 +40,7 @@ const Sidebar = ({ role }) => {
       <nav className="flex-1 space-y-3">
         {links.map((link) => {
           const Icon = link.icon;
-          const isActive = location.pathname === link.path || (link.path !== `/${role.toLowerCase()}` && location.pathname.startsWith(link.path));
+          const isActive = location.pathname === link.path || (link.path !== `/${safeRoleLower}` && location.pathname.startsWith(link.path));
 
           return (
             <NavLink

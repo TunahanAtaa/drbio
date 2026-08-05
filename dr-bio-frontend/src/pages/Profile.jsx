@@ -69,7 +69,8 @@ export default function UserProfile({ initialUserData }) {
 
         // LocalStorage senkronizasyonu
         const savedUser = localStorage.getItem('user');
-        let currentObj = savedUser ? JSON.parse(savedUser) : {};
+        let currentObj = {};
+        if (savedUser) { try { currentObj = JSON.parse(savedUser) || {}; } catch(e) {} }
         currentObj = {
             ...currentObj,
             name: formData.name,

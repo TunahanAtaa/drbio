@@ -69,7 +69,8 @@ const UserProfile = () => {
 
     // LocalStorage güncellemesi
     const savedUser = localStorage.getItem('user');
-    let currentUserObj = savedUser ? JSON.parse(savedUser) : {};
+    let currentUserObj = {};
+    if (savedUser) { try { currentUserObj = JSON.parse(savedUser) || {}; } catch(e) {} }
     
     currentUserObj = {
       ...currentUserObj,

@@ -4,7 +4,13 @@ import Navbar from './Navbar';
 import { Navigate } from 'react-router-dom';
 
 const Layout = ({ children, title, role }) => {
-  const user = JSON.parse(localStorage.getItem('user'));
+  let user = null;
+  try {
+    const raw = localStorage.getItem('user');
+    if (raw) user = JSON.parse(raw);
+  } catch (e) {
+    localStorage.removeItem('user');
+  }
 
   if (!user || user.role !== role) {
     return <Navigate to="/" replace />;
