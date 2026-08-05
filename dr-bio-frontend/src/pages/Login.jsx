@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Shield, User, Loader2, UserPlus, CheckCircle2, ArrowRight, ArrowLeft, HeartPulse, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
+import AuthBackground from '../components/AuthBackground';
+import ThemeToggle from '../components/ThemeToggle';
 
 const defaultUsers = [
   { name: 'Sistem Yöneticisi', email: 'admin@drbio.com', password: '123', role: 'ADMIN' },
@@ -256,11 +258,17 @@ const Login = () => {
 
   return (
     <div 
-      className="min-h-screen w-full flex items-center justify-center p-4 py-8 bg-cover bg-center relative overflow-hidden" 
-      style={{ backgroundImage: `url('/login-bg.jpg')` }}
+      className="min-h-screen w-full flex items-center justify-center p-4 py-8 relative overflow-hidden"
     >
       {/* Soft & Balanced Medikal Overlay & Glassmorphism Blur */}
       <div className="absolute inset-0 bg-white/20 dark:bg-stone-950/75 backdrop-blur-[2px]"></div>
+
+      {/* Theme Toggle Top Right */}
+      <div className="absolute top-6 right-6 z-20">
+        <ThemeToggle className="bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border border-white/50 dark:border-white/10" />
+      </div>
+
+      <AuthBackground />
 
       <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-theme-card/95 backdrop-blur-md rounded-[2.5rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
         <div className="flex justify-center mb-6">

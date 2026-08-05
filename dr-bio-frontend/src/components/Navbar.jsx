@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Sun, Moon, Bell, User, CheckCircle2, Sparkles, AlertCircle, X, Trash2 } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 const initialNotifications = [
   {
@@ -23,7 +24,6 @@ const initialNotifications = [
 
 const Navbar = ({ title, user }) => {
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState(() => {
     const userEmail = (user?.email || '').toLowerCase();
@@ -58,19 +58,6 @@ const Navbar = ({ title, user }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const toggleTheme = () => {
-    const root = document.documentElement;
-    if (root.classList.contains('dark')) {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      setIsDark(false);
-    } else {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      setIsDark(true);
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/');
@@ -101,13 +88,7 @@ const Navbar = ({ title, user }) => {
 
       <div className="flex items-center space-x-3 md:space-x-4">
         {/* Tema Değiştirici */}
-        <button 
-          onClick={toggleTheme}
-          aria-label="Tema Değiştir"
-          className="p-3 bg-theme-bg rounded-2xl shadow-clay-card dark:shadow-clay-card-dark hover:scale-105 active:scale-95 transition-transform text-stone-600 dark:text-stone-300"
-        >
-          {isDark ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-stone-500" />}
-        </button>
+        <ThemeToggle />
 
         {/* Bildirim Zili ve Dropdown Menüsü */}
         <div className="relative" ref={dropdownRef}>
