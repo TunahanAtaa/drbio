@@ -307,47 +307,113 @@ const AdminDashboard = () => {
   };
 
   const toggleFeedbackStatus = (id) => {
-    const newList = safeFeedbacks.map(f => f.id === id ? { ...f, status: f.status === 'UNREAD' ? 'REVIEWED' : 'UNREAD' } : f);
+    const target = safeFeedbacks.find(f => f.id === id);
+    const newStatus = (target?.status === 'UNREAD') ? 'REVIEWED' : 'UNREAD';
+    const newList = safeFeedbacks.map(f => f.id === id ? { ...f, status: newStatus } : f);
     setFeedbacks(newList);
     localStorage.setItem('drbio_feedbacks', JSON.stringify(newList));
+
+    if (newStatus === 'REVIEWED' && target) {
+      // Hastaya otomatik bilgilendirme bildirimi gönder
+      const userEmail = (target.userEmail || '').toLowerCase();
+      const notifKey = `drbio_notif_${userEmail}`;
+      let patientNotifs = [];
+      const pSaved = localStorage.getItem(notifKey);
+      if (pSaved) { try { const p = JSON.parse(pSaved); if (Array.isArray(p)) patientNotifs = p; } catch(e) {} }
+      const patientNotif = {
+        id: Date.now(),
+        title: 'Geri Bildiriminiz İncelendi ✅',
+        text: 'Yönetim ekibimiz geri bildiriminizi inceledi. Değerli görüşleriniz için teşekkür ederiz.',
+        time: 'Az önce',
+        unread: true,
+        type: 'SYSTEM'
+      };
+      localStorage.setItem(notifKey, JSON.stringify([patientNotif, ...patientNotifs]));
+      // Genel bildirim key'ini de güncelle
+      let generalNotifs = [];
+      const gSaved = localStorage.getItem('userNotifications');
+      if (gSaved) { try { const p = JSON.parse(gSaved); if (Array.isArray(p)) generalNotifs = p; } catch(e) {} }
+      localStorage.setItem('userNotifications', JSON.stringify([patientNotif, ...generalNotifs]));
+
+      // Admin bell'ine de onay bildirimi ekle
+      const adminNotifKey = 'admin_notifications';
+      let adminNotifs = [];
+      const aSaved = localStorage.getItem(adminNotifKey);
+      if (aSaved) { try { const p = JSON.parse(aSaved); if (Array.isArray(p)) adminNotifs = p; } catch(e) {} }
+      const adminConfirmNotif = {
+        id: Date.now() + 2,
+        title: 'Geri Bildirim İncelendi 🗂',
+        text: `${target.userName} adlı hastanın ${target.rating}/5 yıldızlı geri bildirimi incelendi olarak işaretlendi. Hasta bilgilendirmesi gönderildi.`,
+        time: 'Az önce',
+        unread: false,
+        type: 'SYSTEM'
+      };
+      localStorage.setItem(adminNotifKey, JSON.stringify([adminConfirmNotif, ...adminNotifs]));
+
+      // acknowledgedIds güncelle
+      setAcknowledgedIds(prev => {
+        const updated = [...prev, id];
+        localStorage.setItem('drbio_acknowledged_ids', JSON.stringify(updated));
+        return updated;
+      });
+
+      setAckToast(`"${target.userName}" incelendi olarak işaretlendi ve hastaya bildirim gönderildi.`);
+      setTimeout(() => setAckToast(''), 4000);
+    }
   };
 
-  const handleSendAcknowledgement = (item) => {
-    // Bildirimi hasta'nın notification key'ine yaz
+
+  // Mesaj şablon listesi
+  const MESSAGE_TEMPLATES = [
+    { id: 'received',      emoji: '📬', label: 'Alındı Onayı',            title: 'Geri Bildiriminiz Alındı',          text: '📬 Geri bildiriminiz ekibimize ulaştı. Kısa süre içinde konuyla ilgili tarafınıza bilgi verilecektir. Değerli görüşleriniz için teşekkür ederiz.' },
+    { id: 'investigating', emoji: '🔍', label: 'İnceleniyor',             title: 'Şikayetiniz İnceleniyor',           text: '🔍 Şikayetinizi aldık ve ekibimiz konuyu aktif olarak inceliyor. En kısa sürede size dönüş yapılacaktır. Sabrınız için teşekkür ederiz.' },
+    { id: 'resolved',      emoji: '✅', label: 'Çözüme Kavuştu',          title: 'Sorununuz Çözüldü',                 text: '✅ Bildirdiğiniz konu incelendi ve gerekli düzenlemeler yapıldı. Hizmetimizi daha iyi hale getirmemize katkı sağladığınız için teşekkür ederiz.' },
+    { id: 'will_contact',  emoji: '📞', label: 'İletişime Geçilecek',     title: 'Yakında Sizi Arayacağız',           text: '📞 Geri bildiriminizi değerlendirdik. Ekibimiz en kısa sürede sizinle iletişime geçecektir. Anlayışınız için teşekkür ederiz.' },
+    { id: 'thankyou',      emoji: '🙏', label: 'Teşekkür',                title: 'Görüşleriniz İçin Teşekkürler',     text: '🙏 Değerli geri bildiriminiz için teşekkür ederiz. Görüşleriniz hizmet kalitemizi artırmamıza büyük katkı sağlamaktadır.' },
+    { id: 'apology',       emoji: '🤝', label: 'Özür & Anlayış',          title: 'Yaşattığımız Sorunu Özür Dileriz',  text: '🤝 Yaşadığınız olumsuz deneyim için özür dileriz. Sorununuzu en kısa sürede çözmek için çalışıyoruz. Anlayışınız için teşekkür ederiz.' },
+  ];
+
+  const [ackModalTarget, setAckModalTarget] = useState(null);
+  const [ackSelectedTemplate, setAckSelectedTemplate] = useState(null);
+  const [ackCustomNote, setAckCustomNote] = useState('');
+
+  const openAckModal = (item) => {
+    setAckModalTarget(item);
+    setAckSelectedTemplate(null);
+    setAckCustomNote('');
+  };
+
+  const handleSendAcknowledgement = (item, templateId, customNote) => {
+    const template = MESSAGE_TEMPLATES.find(t => t.id === templateId);
+    if (!template) return;
+    const finalText = customNote.trim()
+      ? `${template.text}\n\n💬 Ek Not: ${customNote.trim()}`
+      : template.text;
+
     const userEmail = (item.userEmail || '').toLowerCase();
     const notifKey = `drbio_notif_${userEmail}`;
     let notifs = [];
     const saved = localStorage.getItem(notifKey);
     if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) notifs = p; } catch(e) {} }
-    const newNotif = {
-      id: Date.now(),
-      title: 'Geri Bildiriminiz Alındı ✅',
-      text: 'Şikayetiniz / geri bildiriminiz ekibimize iletildi. En kısa sürede konuyla ilgili tarafınıza bilgi verilecektir. İlginiz için teşekkür ederiz.',
-      time: 'Az önce',
-      unread: true,
-      type: 'SYSTEM'
-    };
+    const newNotif = { id: Date.now(), title: `${template.emoji} ${template.title}`, text: finalText, time: 'Az önce', unread: true, type: 'SYSTEM' };
     localStorage.setItem(notifKey, JSON.stringify([newNotif, ...notifs]));
 
-    // ayrıca genel 'userNotifications' key'ini de güncelle (hasta kendi hesabındaysa görsün)
     const generalKey = 'userNotifications';
     let generalNotifs = [];
     const generalSaved = localStorage.getItem(generalKey);
     if (generalSaved) { try { const p = JSON.parse(generalSaved); if (Array.isArray(p)) generalNotifs = p; } catch(e) {} }
     localStorage.setItem(generalKey, JSON.stringify([newNotif, ...generalNotifs]));
 
-    // Feedback'i REVIEWED yap
     const newList = safeFeedbacks.map(f => f.id === item.id ? { ...f, status: 'REVIEWED' } : f);
     setFeedbacks(newList);
     localStorage.setItem('drbio_feedbacks', JSON.stringify(newList));
 
-    // acknowledgedIds güncelle
     const newAcked = [...acknowledgedIds, item.id];
     setAcknowledgedIds(newAcked);
     localStorage.setItem('drbio_acknowledged_ids', JSON.stringify(newAcked));
 
-    // Toast göster
-    setAckToast(`"${item.userName}" adlı hastaya bildirim başarıyla gönderildi!`);
+    setAckModalTarget(null);
+    setAckToast(`"${item.userName}" adlı hastaya "${template.label}" mesajı gönderildi!`);
     setTimeout(() => setAckToast(''), 4000);
   };
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Sun, Moon, Bell, User, CheckCircle2, Sparkles, AlertCircle, X, Trash2 } from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
 
 const initialNotifications = [
   {
@@ -27,21 +26,30 @@ const Navbar = ({ title, user }) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState(() => {
     const userEmail = (user?.email || '').toLowerCase();
-    // Kullanıcıya özel admin bildirimleri (drbio_notif_<email>)
+    const isAdmin = (user?.role || '').toUpperCase() === 'ADMIN';
+
+    // Admin ise admin_notifications key'ini oku
+    let adminSpecificNotifs = [];
+    if (isAdmin) {
+      const aSaved = localStorage.getItem('admin_notifications');
+      if (aSaved) { try { const p = JSON.parse(aSaved); if (Array.isArray(p)) adminSpecificNotifs = p; } catch (e) { } }
+    }
+
+    // Kullanıcıya özel bildirimler (hasta için drbio_notif_<email>)
     const specificKey = `drbio_notif_${userEmail}`;
     const specificSaved = localStorage.getItem(specificKey);
     let specificNotifs = [];
-    if (specificSaved) { try { const p = JSON.parse(specificSaved); if (Array.isArray(p)) specificNotifs = p; } catch(e) {} }
+    if (specificSaved) { try { const p = JSON.parse(specificSaved); if (Array.isArray(p)) specificNotifs = p; } catch (e) { } }
 
     // Genel bildirimler
     const saved = localStorage.getItem('userNotifications');
-    let generalNotifs = initialNotifications;
-    if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) generalNotifs = p; } catch(e) {} }
+    let generalNotifs = isAdmin ? [] : initialNotifications;
+    if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) generalNotifs = p; } catch (e) { } }
 
-    // İkisini birleştir, tekrarları id'ye göre temizle
-    const merged = [...specificNotifs, ...generalNotifs];
+    // Hepsini birleştir, tekrarları id'ye göre temizle
+    const merged = [...adminSpecificNotifs, ...specificNotifs, ...generalNotifs];
     const seen = new Set();
-    return merged.filter(n => { if (seen.has(n.id)) return false; seen.add(n.id); return true; });
+    return merged.filter(n => { if (!n || seen.has(n.id)) return false; seen.add(n.id); return true; });
   });
 
 
@@ -92,7 +100,7 @@ const Navbar = ({ title, user }) => {
 
         {/* Bildirim Zili ve Dropdown Menüsü */}
         <div className="relative" ref={dropdownRef}>
-          <button 
+          <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
             className="p-3 bg-theme-bg rounded-2xl shadow-clay-card dark:shadow-clay-card-dark hover:scale-105 active:scale-95 transition-transform relative text-stone-600 dark:text-stone-300"
             aria-label="Bildirimler"
@@ -116,7 +124,7 @@ const Navbar = ({ title, user }) => {
                   )}
                 </div>
                 {unreadCount > 0 && (
-                  <button 
+                  <button
                     onClick={markAllAsRead}
                     className="text-xs text-red-600 dark:text-red-400 hover:underline font-bold"
                   >
@@ -129,23 +137,24 @@ const Navbar = ({ title, user }) => {
               {notifications.length > 0 ? (
                 <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                   {notifications.map((notif) => (
-                    <div 
-                      key={notif.id} 
-                      className={`p-3.5 rounded-2xl text-xs relative group transition-all border ${
-                        notif.unread 
-                          ? 'bg-red-50/60 dark:bg-red-950/30 border-red-200 dark:border-red-900/50' 
-                          : 'bg-theme-bg border-stone-100 dark:border-stone-800/60 opacity-80'
-                      }`}
+                    <div
+                      key={notif.id}
+                      className={`p-3.5 rounded-2xl text-xs relative group transition-all border ${notif.unread
+                        ? 'bg-red-50/60 dark:bg-red-950/30 border-red-200 dark:border-red-900/50'
+                        : 'bg-theme-bg border-stone-100 dark:border-stone-800/60 opacity-80'
+                        }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-2 mb-1">
                           {notif.type === 'ANALYSIS' && <Sparkles className="w-4 h-4 text-red-600 shrink-0" />}
                           {notif.type === 'HEALTH' && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
                           {notif.type === 'SYSTEM' && <AlertCircle className="w-4 h-4 text-blue-500 shrink-0" />}
+                          {notif.type === 'COMPLAINT' && <MessageSquare className="w-4 h-4 text-red-600 shrink-0 animate-pulse" />}
+                          {notif.type === 'REVIEW' && <Star className="w-4 h-4 text-amber-500 shrink-0" />}
                           <h5 className="font-black text-stone-800 dark:text-stone-200 text-xs">{notif.title}</h5>
                         </div>
 
-                        <button 
+                        <button
                           onClick={() => removeNotification(notif.id)}
                           className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-red-600 transition"
                           title="Sil"
@@ -173,7 +182,7 @@ const Navbar = ({ title, user }) => {
         </div>
 
         {/* Çıkış Yap */}
-        <button 
+        <button
           onClick={handleLogout}
           className="flex items-center space-x-2 px-4 md:px-5 py-3 rounded-2xl font-black text-white bg-red-600 shadow-clay-btn hover:brightness-110 active:shadow-none active:scale-95 transition-all text-xs sm:text-sm"
         >

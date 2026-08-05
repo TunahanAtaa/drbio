@@ -96,7 +96,10 @@ const PatientDashboard = () => {
 
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
-    if (!feedbackComment.trim() && feedbackRating === 0) return;
+    // 3 yıldız ve altında yorum zorunlu
+    if (feedbackRating <= 3 && !feedbackComment.trim()) return;
+    // En az bir yıldız verilmiş olmalı
+    if (feedbackRating === 0) return;
 
     const newFeedback = {
       id: Date.now(),
@@ -119,6 +122,22 @@ const PatientDashboard = () => {
     }
     list = [newFeedback, ...list];
     localStorage.setItem('drbio_feedbacks', JSON.stringify(list));
+
+    // Admin bildirim bell'ine yeni geri bildirim bildirimi ekle
+    const adminNotifKey = 'admin_notifications';
+    let adminNotifs = [];
+    const savedAdmin = localStorage.getItem(adminNotifKey);
+    if (savedAdmin) { try { const p = JSON.parse(savedAdmin); if (Array.isArray(p)) adminNotifs = p; } catch(e) {} }
+    const ratingLabel = feedbackRating <= 3 ? `⚠️ Şikayet/Öneri` : `⭐ Memnuniyet`;
+    const adminNotif = {
+      id: Date.now() + 1,
+      title: `Yeni Geri Bildirim — ${ratingLabel}`,
+      text: `${activeUser.name || 'Hasta'} ${feedbackRating}/5 yıldız verdi. ${feedbackComment.trim() ? `"${feedbackComment.trim().substring(0, 60)}${feedbackComment.trim().length > 60 ? '...' : ''}"` : 'Yorumsuz değerlendirme.'}`,
+      time: 'Az önce',
+      unread: true,
+      type: feedbackRating <= 3 ? 'COMPLAINT' : 'REVIEW'
+    };
+    localStorage.setItem(adminNotifKey, JSON.stringify([adminNotif, ...adminNotifs]));
 
     setFeedbackSuccess('Geri bildiriminiz ve puanınız yönetime başarıyla iletildi. Değerli görüşleriniz için teşekkür ederiz!');
     setFeedbackComment('');
@@ -830,17 +849,35 @@ const PatientDashboard = () => {
 
               {/* Yorum / Şikayet Metin Alanı */}
               <div className="space-y-2">
-                <label className="block text-xs font-black text-stone-600 dark:text-stone-300">
-                  Görüş, Öneri veya Şikayetiniz:
+                <label className="flex items-center justify-between text-xs font-black text-stone-600 dark:text-stone-300">
+                  <span>Görüş, Öneri veya Şikayetiniz:</span>
+                  {feedbackRating <= 3 && feedbackRating > 0 ? (
+                    <span className="text-red-500 font-black text-[10px] uppercase tracking-wider animate-pulse">⚠ Zorunlu</span>
+                  ) : (
+                    <span className="text-stone-400 font-bold text-[10px]">(İsteğe bağlı)</span>
+                  )}
                 </label>
                 <textarea
                   rows="4"
-                  required
-                  placeholder="Tahlil analiziniz, sistem deneyiminiz veya iletmek istediğiniz bir şikayet/öneri var mı? Buraya yazabilirsiniz..."
+                  required={feedbackRating <= 3}
+                  placeholder={
+                    feedbackRating <= 3 && feedbackRating > 0
+                      ? 'Lütfen şikayetinizi veya önerinizi açıklayın...'
+                      : 'Tahlil analiziniz, sistem deneyiminiz veya iletmek istediğiniz bir şikayet/öneri var mı? Buraya yazabilirsiniz...'
+                  }
                   value={feedbackComment}
                   onChange={(e) => setFeedbackComment(e.target.value)}
-                  className="w-full p-4 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                  className={`w-full p-4 bg-theme-bg border rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 transition ${
+                    feedbackRating <= 3 && feedbackRating > 0 && !feedbackComment.trim()
+                      ? 'border-red-400 dark:border-red-600 focus:ring-red-400/20'
+                      : 'border-stone-200 dark:border-stone-700 focus:ring-amber-500/20'
+                  }`}
                 ></textarea>
+                {feedbackRating <= 3 && feedbackRating > 0 && !feedbackComment.trim() && (
+                  <p className="text-red-500 text-[10px] font-bold mt-1">
+                    3 yıldız ve altında değerlendirmelerde açıklama zorunludur.
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-end space-x-3 pt-2">
