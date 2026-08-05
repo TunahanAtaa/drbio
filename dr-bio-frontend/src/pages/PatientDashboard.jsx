@@ -12,21 +12,6 @@ import Profile from './Profile';
 const sampleHistory = [
   {
     id: 1,
-    title: 'Tam Kan Sayımı (Hemogram)',
-    date: '2026-08-01',
-    fileName: 'kan_tahlili_agustos.pdf',
-    status: 'WARNING',
-    summaryNote: 'Hemoglobin değeri hafif düşük. Kolesterol değeri yüksek. Demir takviyesi ve diyet önerilir.',
-    doctorNote: 'Hafif demir eksikliği var. Takviyeye devam edin, 1 ay sonra tekrar kan verin.',
-    params: [
-      { name: 'Hemoglobin (HGB)', value: '11.2 g/dL', range: '13.5 - 17.5', status: 'LOW' },
-      { name: 'WBC (Lökosit)', value: '8.4 x10^3/µL', range: '4.5 - 11.0', status: 'NORMAL' },
-      { name: 'Kolesterol (Total)', value: '240 mg/dL', range: '0 - 200', status: 'HIGH' },
-      { name: 'Glukoz (Açlık)', value: '95 mg/dL', range: '70 - 100', status: 'NORMAL' }
-    ]
-  },
-  {
-    id: 2,
     title: 'Biyokimya & Karaciğer Paneli',
     date: '2026-06-15',
     fileName: 'biyokimya_haziran.pdf',
@@ -41,7 +26,7 @@ const sampleHistory = [
     ]
   },
   {
-    id: 3,
+    id: 2,
     title: 'Vitamin & Mineral Kontrolü',
     date: '2026-03-10',
     fileName: 'vitamin_paneli_mart.pdf',

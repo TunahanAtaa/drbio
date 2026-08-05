@@ -5,14 +5,6 @@ import { LogOut, Sun, Moon, Bell, User, CheckCircle2, Sparkles, AlertCircle, X, 
 const initialNotifications = [
   {
     id: 1,
-    title: 'Tahlil Analizi Tamamlandı',
-    text: 'Tam Kan Sayımı (Hemogram) tahlil sonucunuz başarıyla analiz edildi.',
-    time: '10 dk önce',
-    unread: true,
-    type: 'ANALYSIS'
-  },
-  {
-    id: 2,
     title: 'Günlük Su Hatırlatıcısı',
     text: 'Böbrek sağlığınız için günlük su hedefinizi (2.5L) tamamlamayı unutmayın.',
     time: '1 saat önce',
@@ -20,7 +12,7 @@ const initialNotifications = [
     type: 'HEALTH'
   },
   {
-    id: 3,
+    id: 2,
     title: 'Hoş Geldiniz',
     text: 'Dr. Bio akıllı sağlık asistanına hoş geldiniz! Profil bilgilerinizi güncel tutarak daha isabetli yönlendirmeler alabilirsiniz.',
     time: '5 saat önce',
