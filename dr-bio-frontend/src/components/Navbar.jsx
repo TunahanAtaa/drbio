@@ -26,12 +26,24 @@ const Navbar = ({ title, user }) => {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState(() => {
+    const userEmail = (user?.email || '').toLowerCase();
+    // Kullanıcıya özel admin bildirimleri (drbio_notif_<email>)
+    const specificKey = `drbio_notif_${userEmail}`;
+    const specificSaved = localStorage.getItem(specificKey);
+    let specificNotifs = [];
+    if (specificSaved) { try { const p = JSON.parse(specificSaved); if (Array.isArray(p)) specificNotifs = p; } catch(e) {} }
+
+    // Genel bildirimler
     const saved = localStorage.getItem('userNotifications');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
-    }
-    return initialNotifications;
+    let generalNotifs = initialNotifications;
+    if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) generalNotifs = p; } catch(e) {} }
+
+    // İkisini birleştir, tekrarları id'ye göre temizle
+    const merged = [...specificNotifs, ...generalNotifs];
+    const seen = new Set();
+    return merged.filter(n => { if (seen.has(n.id)) return false; seen.add(n.id); return true; });
   });
+
 
   const dropdownRef = useRef(null);
 

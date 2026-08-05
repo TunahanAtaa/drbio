@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Shield, User, Loader2, UserPlus, CheckCircle2, ArrowRight, ArrowLeft, HeartPulse, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
 
@@ -10,6 +10,26 @@ const defaultUsers = [
 
 const Login = () => {
   const navigate = useNavigate();
+
+  // Bozuk localStorage verilerini temizle
+  useEffect(() => {
+    const safeKeys = ['user', 'userAccounts', 'adminReferences', 'drbio_feedbacks', 'userNotifications', 'theme'];
+    safeKeys.forEach(key => {
+      const val = localStorage.getItem(key);
+      if (val) {
+        try { JSON.parse(val); } catch(e) { localStorage.removeItem(key); }
+      }
+    });
+    // Ayrıca 'user' varsa ama geçerli role içermiyorsa temizle
+    const userRaw = localStorage.getItem('user');
+    if (userRaw) {
+      try {
+        const u = JSON.parse(userRaw);
+        if (!u || !u.role || !u.email) localStorage.removeItem('user');
+      } catch(e) { localStorage.removeItem('user'); }
+    }
+  }, []);
+
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [step, setStep] = useState(1); // 1: Temel Kayıt, 2: Sağlık Bilgileri Formu

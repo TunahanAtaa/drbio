@@ -5,8 +5,42 @@ import {
   Database, Plus, Trash2, Users, CheckCircle, XCircle, Search, Edit2, 
   Shield, Activity, FileText, Sparkles, Filter, ChevronRight, UserPlus, 
   Settings, Server, ArrowUpRight, Save, X, Eye, AlertTriangle, UserCheck, 
-  Heart, Pill, Stethoscope, Scale, Ruler, Briefcase, Flame
+  Heart, Pill, Stethoscope, Scale, Ruler, Briefcase, Flame, Star, MessageSquare,
+  Send, CheckCircle2, Bell
 } from 'lucide-react';
+
+const defaultFeedbacks = [
+  { 
+    id: 1, 
+    userName: 'Zeynep Ersal', 
+    userEmail: 'hasta@drbio.com', 
+    rating: 5, 
+    comment: 'Tahlil sonuçlarındaki hemoglobin ve kolesterol analizleri çok anlaşılır ifade edilmiş. Yapay zeka tavsiyeleri harika!', 
+    date: '2026-08-05', 
+    status: 'REVIEWED', 
+    category: 'MEMNUNİYET' 
+  },
+  { 
+    id: 2, 
+    userName: 'Ahmet Yılmaz', 
+    userEmail: 'ahmet@ornek.com', 
+    rating: 4, 
+    comment: 'PDF yükledikten sonra analiz hızlı geldi. Telefon ekranında grafiklerin biraz daha büyük olmasını öneririm.', 
+    date: '2026-08-04', 
+    status: 'UNREAD', 
+    category: 'MEMNUNİYET' 
+  },
+  { 
+    id: 3, 
+    userName: 'Ayşe Kaya', 
+    userEmail: 'ayse@ornek.com', 
+    rating: 2, 
+    comment: 'Tahlil raporundaki bazı kısaltmalar (ALT, AST) açıklanırken tıbbi terimler biraz ağır kalmış. Daha sade dille yazılabilirdi.', 
+    date: '2026-08-03', 
+    status: 'UNREAD', 
+    category: 'ŞİKAYET / ÖNERİ' 
+  }
+];
 
 const defaultAdminUsers = [
   { 
@@ -225,7 +259,8 @@ const AdminDashboard = () => {
 
     // localStorage ekle
     const storedUsers = localStorage.getItem('userAccounts');
-    let accounts = storedUsers ? JSON.parse(storedUsers) : [];
+    let accounts = [];
+    if (storedUsers) { try { accounts = JSON.parse(storedUsers) || []; } catch(e) {} }
     accounts.push({
       name: newUserFormData.name,
       email: newUserFormData.email,
@@ -241,6 +276,103 @@ const AdminDashboard = () => {
   const toggleUserStatus = (id) => {
     setUsersList(usersList.map(u => u.id === id ? { ...u, status: u.status === 'ACTIVE' ? 'PASSIVE' : 'ACTIVE' } : u));
   };
+
+  // Geri Bildirimler State'leri
+  const [feedbacks, setFeedbacks] = useState(() => {
+    const saved = localStorage.getItem('drbio_feedbacks');
+    if (saved) {
+      try { 
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {}
+    }
+    return defaultFeedbacks;
+  });
+
+  const [feedbackSearch, setFeedbackSearch] = useState('');
+  const [starFilter, setStarFilter] = useState('ALL');
+  const [acknowledgedIds, setAcknowledgedIds] = useState(() => {
+    const saved = localStorage.getItem('drbio_acknowledged_ids');
+    if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) return p; } catch(e) {} }
+    return [];
+  });
+  const [ackToast, setAckToast] = useState('');
+
+  const safeFeedbacks = Array.isArray(feedbacks) ? feedbacks : [];
+
+  const handleDeleteFeedback = (id) => {
+    const newList = safeFeedbacks.filter(f => f.id !== id);
+    setFeedbacks(newList);
+    localStorage.setItem('drbio_feedbacks', JSON.stringify(newList));
+  };
+
+  const toggleFeedbackStatus = (id) => {
+    const newList = safeFeedbacks.map(f => f.id === id ? { ...f, status: f.status === 'UNREAD' ? 'REVIEWED' : 'UNREAD' } : f);
+    setFeedbacks(newList);
+    localStorage.setItem('drbio_feedbacks', JSON.stringify(newList));
+  };
+
+  const handleSendAcknowledgement = (item) => {
+    // Bildirimi hasta'nın notification key'ine yaz
+    const userEmail = (item.userEmail || '').toLowerCase();
+    const notifKey = `drbio_notif_${userEmail}`;
+    let notifs = [];
+    const saved = localStorage.getItem(notifKey);
+    if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) notifs = p; } catch(e) {} }
+    const newNotif = {
+      id: Date.now(),
+      title: 'Geri Bildiriminiz Alındı ✅',
+      text: 'Şikayetiniz / geri bildiriminiz ekibimize iletildi. En kısa sürede konuyla ilgili tarafınıza bilgi verilecektir. İlginiz için teşekkür ederiz.',
+      time: 'Az önce',
+      unread: true,
+      type: 'SYSTEM'
+    };
+    localStorage.setItem(notifKey, JSON.stringify([newNotif, ...notifs]));
+
+    // ayrıca genel 'userNotifications' key'ini de güncelle (hasta kendi hesabındaysa görsün)
+    const generalKey = 'userNotifications';
+    let generalNotifs = [];
+    const generalSaved = localStorage.getItem(generalKey);
+    if (generalSaved) { try { const p = JSON.parse(generalSaved); if (Array.isArray(p)) generalNotifs = p; } catch(e) {} }
+    localStorage.setItem(generalKey, JSON.stringify([newNotif, ...generalNotifs]));
+
+    // Feedback'i REVIEWED yap
+    const newList = safeFeedbacks.map(f => f.id === item.id ? { ...f, status: 'REVIEWED' } : f);
+    setFeedbacks(newList);
+    localStorage.setItem('drbio_feedbacks', JSON.stringify(newList));
+
+    // acknowledgedIds güncelle
+    const newAcked = [...acknowledgedIds, item.id];
+    setAcknowledgedIds(newAcked);
+    localStorage.setItem('drbio_acknowledged_ids', JSON.stringify(newAcked));
+
+    // Toast göster
+    setAckToast(`"${item.userName}" adlı hastaya bildirim başarıyla gönderildi!`);
+    setTimeout(() => setAckToast(''), 4000);
+  };
+
+  // Filtrelenmiş geri bildirimler
+  const filteredFeedbacks = safeFeedbacks.filter(f => {
+    if (!f) return false;
+    const searchLower = (feedbackSearch || '').toLowerCase();
+    const matchesSearch = (f.userName || '').toLowerCase().includes(searchLower) ||
+                          (f.userEmail || '').toLowerCase().includes(searchLower) ||
+                          (f.comment || '').toLowerCase().includes(searchLower);
+    
+    let matchesStar = true;
+    if (starFilter === '5') matchesStar = f.rating === 5;
+    else if (starFilter === '4') matchesStar = f.rating === 4;
+    else if (starFilter === '3_BELOW') matchesStar = (f.rating || 0) <= 3;
+
+    return matchesSearch && matchesStar;
+  });
+
+  // Metrik hesaplamaları
+  const avgRating = safeFeedbacks.length > 0 
+    ? (safeFeedbacks.reduce((acc, curr) => acc + ((curr && curr.rating) || 5), 0) / safeFeedbacks.length).toFixed(1)
+    : '5.0';
+  const satisfiedCount = safeFeedbacks.filter(f => f && (f.rating || 0) >= 4).length;
+  const complaintCount = safeFeedbacks.filter(f => f && (f.rating || 0) <= 3).length;
 
   // Filtrelenmiş referanslar
   const filteredReferences = references.filter(r => 
@@ -293,6 +425,18 @@ const AdminDashboard = () => {
         >
           <Users className="w-4 h-4" />
           <span>Kullanıcı Yönetimi ({usersList.length})</span>
+        </button>
+
+        <button 
+          onClick={() => navigate('/admin/feedbacks')}
+          className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
+            currentTab === 'feedbacks' 
+              ? 'bg-red-600 text-white shadow-clay-btn' 
+              : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
+          }`}
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>Geri Bildirimler ({feedbacks.length})</span>
         </button>
       </div>
 
@@ -607,6 +751,219 @@ const AdminDashboard = () => {
             ))}
           </div>
 
+        </div>
+      )}
+
+      {/* --- 4. GERİ BİLDİRİMLER VE ŞİKAYETLER TABI --- */}
+      {currentTab === 'feedbacks' && (
+        <div className="space-y-6 animate-fade-in">
+          
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+            <div>
+              <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200">Geri Bildirimler ve Şikayetler</h2>
+              <p className="text-xs font-bold text-stone-400 mt-1">Hastaların tahlil yükleme ve analiz hizmeti için verdikleri 5 yıldızlı puanlar ve yorumlar</p>
+            </div>
+          </div>
+
+          {/* İstatistik Metrik Kartları */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/40 rounded-2xl flex items-center justify-center text-amber-500 shrink-0">
+                <Star className="w-7 h-7 fill-amber-500 text-amber-500" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Ortalama Puan</span>
+                <span className="text-2xl font-black text-stone-800 dark:text-stone-200">{avgRating} / 5.0</span>
+              </div>
+            </div>
+
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
+                <MessageSquare className="w-7 h-7 text-blue-600" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Toplam Bildirim</span>
+                <span className="text-2xl font-black text-stone-800 dark:text-stone-200">{feedbacks.length}</span>
+              </div>
+            </div>
+
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl flex items-center justify-center text-emerald-600 shrink-0">
+                <CheckCircle className="w-7 h-7 text-emerald-600" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Memnun Hastalar</span>
+                <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{satisfiedCount} Hasta</span>
+              </div>
+            </div>
+
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-red-50 dark:bg-red-950/40 rounded-2xl flex items-center justify-center text-red-600 shrink-0">
+                <AlertTriangle className="w-7 h-7 text-red-600" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Şikayet / Öneri</span>
+                <span className="text-2xl font-black text-red-600 dark:text-red-400">{complaintCount} Kayıt</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Arama ve Yıldız Filtresi */}
+          <div className="bg-theme-card p-4 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <div className="relative w-full sm:w-80">
+              <Search className="w-4 h-4 absolute left-4 top-3.5 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Hasta adı, e-posta veya yorum ara..."
+                value={feedbackSearch}
+                onChange={(e) => setFeedbackSearch(e.target.value)}
+                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 w-full sm:w-auto">
+              <Filter className="w-4 h-4 text-stone-400 shrink-0" />
+              <span className="text-xs font-bold text-stone-400">Yıldız Filtresi:</span>
+              <select
+                value={starFilter}
+                onChange={(e) => setStarFilter(e.target.value)}
+                className="px-3 py-2 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none"
+              >
+                <option value="ALL">Tümü ({feedbacks.length})</option>
+                <option value="5">5 Yıldız (Harika)</option>
+                <option value="4">4 Yıldız (Çok İyi)</option>
+                <option value="3_BELOW">1-3 Yıldız (Şikayet / Öneri)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Geri Bildirim Kartları */}
+          {filteredFeedbacks.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4">
+              {filteredFeedbacks.map((item) => (
+                <div 
+                  key={item.id}
+                  className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col space-y-4"
+                >
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-stone-100 dark:border-stone-800 pb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-red-600 text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-sm">
+                        {(item.userName || 'H').charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-black text-stone-800 dark:text-stone-200 text-sm">{item.userName}</h4>
+                        <p className="text-xs font-bold text-stone-400">{item.userEmail} • Tarih: {item.date}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      {/* Yıldız Gösterimi */}
+                      <div className="flex items-center space-x-1 bg-amber-50 dark:bg-amber-950/40 px-3 py-1.5 rounded-full border border-amber-200 dark:border-amber-900/40">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${
+                              star <= item.rating
+                                ? 'text-amber-400 fill-amber-400'
+                                : 'text-stone-300 dark:text-stone-700'
+                            }`}
+                          />
+                        ))}
+                        <span className="text-xs font-black text-amber-700 dark:text-amber-300 ml-1">
+                          {item.rating}.0
+                        </span>
+                      </div>
+
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                        item.status === 'REVIEWED' 
+                          ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' 
+                          : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
+                      }`}>
+                        {item.status === 'REVIEWED' ? 'İncelendi' : 'Yeni Bildirim'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Yorum / Şikayet Metni */}
+                  <div className="bg-theme-bg p-4 rounded-2xl border border-stone-100 dark:border-stone-800 text-xs font-bold text-stone-700 dark:text-stone-300 leading-relaxed">
+                    <p className="font-black text-stone-400 text-[10px] uppercase mb-1">Hasta Görüşü / Şikayeti:</p>
+                    <p>"{item.comment}"</p>
+                  </div>
+
+                  {/* Alt İşlem Butonları */}
+                  <div className="flex flex-wrap justify-end gap-2 pt-1">
+
+                    {/* Bildirim Gönder Butonu - Şikayet/öneri olan kartlarda vurgulu */}
+                    {acknowledgedIds.includes(item.id) ? (
+                      <span className="px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Bildirim Gönderildi</span>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleSendAcknowledgement(item)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm ${
+                          (item.rating || 5) <= 3
+                            ? 'bg-amber-500 hover:bg-amber-600 text-stone-950 animate-pulse'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                        title={`${item.userName} adlı hastaya şikayeti aldığınıza dair bildirim gönder`}
+                      >
+                        <Bell className="w-3.5 h-3.5" />
+                        <span>Hastayı Bilgilendir</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => toggleFeedbackStatus(item.id)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 ${
+                        item.status === 'REVIEWED'
+                          ? 'bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300'
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                      }`}
+                    >
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      <span>{item.status === 'REVIEWED' ? 'Yeni Olarak İşaretle' : 'İncelendi İşaretle'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteFeedback(item.id)}
+                      className="px-3 py-2 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 text-red-600 rounded-xl text-xs font-bold transition flex items-center space-x-1"
+                      title="Sil"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Sil</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-theme-card rounded-[2.5rem] p-12 text-center border-theme-border shadow-clay-card dark:shadow-clay-card-dark space-y-4">
+              <div className="w-20 h-20 bg-theme-bg rounded-3xl mx-auto flex items-center justify-center text-stone-400 border border-stone-200 dark:border-stone-800">
+                <MessageSquare className="w-10 h-10" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">
+                  {feedbackSearch || starFilter !== 'ALL' ? 'Filtreleme ile Eşleşen Geri Bildirim Bulunamadı' : 'Henüz Geri Bildirim Yapılmadı'}
+                </h3>
+                <p className="text-xs font-bold text-stone-400 mt-1 max-w-sm mx-auto">
+                  Hastaların gönderdikleri puanlama ve yorumlar burada listelenecektir.
+                </p>
+              </div>
+            </div>
+          )}
+
+        </div>
+      )}
+
+      {/* --- ACK TOAST BİLDİRİMİ --- */}
+      {ackToast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-fade-in">
+          <div className="flex items-center space-x-3 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm max-w-sm">
+            <Send className="w-5 h-5 shrink-0" />
+            <span>{ackToast}</span>
+          </div>
         </div>
       )}
 
