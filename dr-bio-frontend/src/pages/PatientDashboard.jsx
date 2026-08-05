@@ -1,13 +1,97 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { UploadCloud, AlertTriangle, CheckCircle, ArrowDownCircle, ArrowUpCircle, Stethoscope, Sparkles, Loader2, FileText } from 'lucide-react';
+import { 
+  UploadCloud, AlertTriangle, CheckCircle, ArrowDownCircle, ArrowUpCircle, 
+  Stethoscope, Sparkles, Loader2, FileText, Activity, Calendar, Clock, 
+  Search, Filter, Eye, Download, Plus, HeartPulse, ChevronRight, ShieldCheck, 
+  TrendingUp, Pill, Trash2
+} from 'lucide-react';
+import Profile from './Profile';
+
+const sampleHistory = [
+  {
+    id: 1,
+    title: 'Tam Kan Sayımı (Hemogram)',
+    date: '2026-08-01',
+    fileName: 'kan_tahlili_agustos.pdf',
+    status: 'WARNING',
+    summaryNote: 'Hemoglobin değeri hafif düşük. Kolesterol değeri yüksek. Demir takviyesi ve diyet önerilir.',
+    doctorNote: 'Hafif demir eksikliği var. Takviyeye devam edin, 1 ay sonra tekrar kan verin.',
+    params: [
+      { name: 'Hemoglobin (HGB)', value: '11.2 g/dL', range: '13.5 - 17.5', status: 'LOW' },
+      { name: 'WBC (Lökosit)', value: '8.4 x10^3/µL', range: '4.5 - 11.0', status: 'NORMAL' },
+      { name: 'Kolesterol (Total)', value: '240 mg/dL', range: '0 - 200', status: 'HIGH' },
+      { name: 'Glukoz (Açlık)', value: '95 mg/dL', range: '70 - 100', status: 'NORMAL' }
+    ]
+  },
+  {
+    id: 2,
+    title: 'Biyokimya & Karaciğer Paneli',
+    date: '2026-06-15',
+    fileName: 'biyokimya_haziran.pdf',
+    status: 'NORMAL',
+    summaryNote: 'Böbrek ve karaciğer fonksiyon testleri tamamen referans aralıklarındadır.',
+    doctorNote: 'Tüm değerler harika, rutin kontrollere devam edebilirsiniz.',
+    params: [
+      { name: 'ALT (SGPT)', value: '22 U/L', range: '7 - 56', status: 'NORMAL' },
+      { name: 'AST (SGOT)', value: '25 U/L', range: '10 - 40', status: 'NORMAL' },
+      { name: 'Kreatinin', value: '0.8 mg/dL', range: '0.6 - 1.2', status: 'NORMAL' },
+      { name: 'Üre', value: '28 mg/dL', range: '10 - 50', status: 'NORMAL' }
+    ]
+  },
+  {
+    id: 3,
+    title: 'Vitamin & Mineral Kontrolü',
+    date: '2026-03-10',
+    fileName: 'vitamin_paneli_mart.pdf',
+    status: 'WARNING',
+    summaryNote: '25-OH Vitamin D seviyesi referans değerin altındadır.',
+    doctorNote: 'Haftalık D3 vitamini damlasına başlanması önerilir.',
+    params: [
+      { name: 'Vitamin D (25-OH)', value: '14.5 ng/mL', range: '30 - 100', status: 'LOW' },
+      { name: 'Vitamin B12', value: '450 pg/mL', range: '200 - 900', status: 'NORMAL' },
+      { name: 'Ferritin', value: '35 ng/mL', range: '12 - 150', status: 'NORMAL' }
+    ]
+  }
+];
 
 const PatientDashboard = () => {
+  const { tab } = useParams();
+  const navigate = useNavigate();
   const [isPageLoading, setIsPageLoading] = useState(true);
+
+  // Tab yönetimi: 'dashboard' (Ana Sayfa), 'upload' (Tahlil Yükle), 'history' (Geçmiş Tahlillerim), 'profile' (Profilim)
+  const [currentView, setCurrentView] = useState(tab || 'dashboard');
+
+  useEffect(() => {
+    if (tab) {
+      setCurrentView(tab);
+    } else {
+      setCurrentView('dashboard');
+    }
+  }, [tab]);
+
+  // Geçmiş Tahliller Verisi State'i (LocalStorage Senkronizasyonu)
+  const [historyList, setHistoryList] = useState(() => {
+    const saved = localStorage.getItem('userTestHistory');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    }
+    return sampleHistory;
+  });
+
+  // Tahlil Yükleme ve Analiz State'leri
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
+  const [saveToast, setSaveToast] = useState('');
+
+  // Geçmiş Tahliller Arama & Filtreleme
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [selectedTestModal, setSelectedTestModal] = useState(null);
 
   const handleFile = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -22,35 +106,59 @@ const PatientDashboard = () => {
     setError(null);
     setResults(null);
 
-    // Simulate API upload
     setTimeout(() => {
-      if (file.name.includes('error')) {
-        setError('Dosya okunamadı. Lütfen geçerli bir PDF yükleyin.');
+      if (file.name.toLowerCase().includes('error')) {
+        setError('Dosya okunamadı. Lütfen geçerli bir PDF veya resim tahlil dosyası yükleyin.');
         setFile(null);
         setLoading(false);
         return;
       }
 
-      setResults({
+      const mockResult = {
+        id: Date.now(),
+        title: file.name.replace('.pdf', '') || 'Yeni Yüklenen Tahlil',
+        date: new Date().toISOString().split('T')[0],
+        fileName: file.name,
+        status: 'WARNING',
         params: [
-          { name: 'Hemoglobin (HGB)', value: '11.2', range: '13.5 - 17.5', status: 'LOW' },
-          { name: 'WBC (Lökosit)', value: '8.4', range: '4.5 - 11.0', status: 'NORMAL' },
-          { name: 'Kolesterol', value: '240', range: '0 - 200', status: 'HIGH' }
+          { name: 'Hemoglobin (HGB)', value: '11.2 g/dL', range: '13.5 - 17.5', status: 'LOW' },
+          { name: 'WBC (Lökosit)', value: '8.4 x10^3/µL', range: '4.5 - 11.0', status: 'NORMAL' },
+          { name: 'Kolesterol (Total)', value: '240 mg/dL', range: '0 - 200', status: 'HIGH' },
+          { name: 'Ferritin', value: '18 ng/mL', range: '12 - 150', status: 'NORMAL' }
         ],
-        systemNote: 'Hemoglobin değeriniz referans aralığının altındadır. Kansızlık (anemi) belirtisi olabilir. Kolesterol değeriniz yüksek, diyetinize dikkat etmeniz önerilir.',
-        doctorNote: 'Son tahlillerinize göre hafif bir demir eksikliği var. Size yazdığım takviyeye başlayın, 1 ay sonra tekrar görüşelim.'
-      });
+        systemNote: 'Hemoglobin değeriniz referans aralığının altındadır. Kansızlık (anemi) belirtisi olabilir. Kolesterol değeriniz yüksek, beslenmenize dikkat etmeniz tavsiye edilir.',
+        doctorNote: 'Hafif demir eksikliği anemisi gözlenmiştir. Diyetinize kırmızı et ve yeşil yapraklı sebzeler ekleyin.'
+      };
+
+      setResults(mockResult);
       setLoading(false);
     }, 1500);
   };
 
+  const handleSaveToHistory = () => {
+    if (!results) return;
+    const updated = [results, ...historyList];
+    setHistoryList(updated);
+    localStorage.setItem('userTestHistory', JSON.stringify(updated));
+    setSaveToast('Tahlil analiziniz geçmiş tahlillerinize başarıyla kaydedildi!');
+    setTimeout(() => setSaveToast(''), 3000);
+  };
+
   useEffect(() => {
-    // Simulate fetching user data/history
     const timer = setTimeout(() => {
       setIsPageLoading(false);
-    }, 800);
+    }, 400);
     return () => clearTimeout(timer);
   }, []);
+
+  // Aktif kullanıcı adı ve e-postası
+  const activeUser = (() => {
+    const saved = localStorage.getItem('user');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return { name: 'Zeynep Ersal', email: 'zeynep@ornek.com' };
+  })();
 
   if (isPageLoading) {
     return (
@@ -64,107 +172,493 @@ const PatientDashboard = () => {
     );
   }
 
+  // Filtrelenmiş geçmiş tahliller
+  const filteredHistory = historyList.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (item.summaryNote && item.summaryNote.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesFilter = statusFilter === 'ALL' || item.status === statusFilter;
+    return matchesSearch && matchesFilter;
+  });
+
   return (
-    <Layout title="Hasta Paneli" role="PATIENT">
+    <Layout title="Hasta Paneli" role="PATIENT" onViewChange={setCurrentView}>
       
-      {/* Disclaimer */}
-      <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-[2rem] p-4 mb-8 shadow-sm flex items-start space-x-3">
-        <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
-        <p className="text-sm font-bold text-amber-800 dark:text-amber-500 leading-relaxed">
-          Yasal Uyarı: Bu sistemin sunduğu otomatik analiz sonuçları yapay zeka destekli ön değerlendirmedir. Kesin teşhis ve tedavi kararı yalnızca uzman doktorunuz tarafından verilebilir.
-        </p>
-      </div>
+      {/* 1. SEKMELERE GÖRE İÇERİK YÖNETİMİ */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Upload Section */}
-        <div className="lg:col-span-1 space-y-6">
-          <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200">Tahlil Yükle</h2>
-          <div className="bg-theme-card rounded-[2rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center">
-            
-            <div className="w-24 h-24 bg-theme-bg rounded-3xl shadow-inner flex items-center justify-center mb-6">
-              <UploadCloud className="w-10 h-10 text-red-600" />
-            </div>
-            
-            <p className="font-bold text-stone-600 dark:text-stone-300 mb-2">PDF formatında tahlil sonucunuzu seçin</p>
-            <p className="text-xs text-stone-400 mb-6 font-medium">Maksimum dosya boyutu: 5MB</p>
-            
-            <input type="file" id="file" accept=".pdf" className="hidden" onChange={handleFile} />
-            <label htmlFor="file" className="px-6 py-3 bg-theme-bg text-stone-600 dark:text-stone-300 font-black text-sm rounded-2xl shadow-clay-card cursor-pointer hover:scale-105 active:scale-95 transition-all mb-4">
-              {file ? file.name : 'Dosya Seç'}
-            </label>
-            
-            <button 
-              onClick={handleUpload}
-              disabled={!file || loading}
-              className="w-full py-4 mt-2 bg-red-600 text-white font-black rounded-3xl shadow-clay-btn active:shadow-clay-pressed active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
-            >
-              {loading ? 'Yükleniyor ve Analiz Ediliyor...' : 'Yükle ve Analiz Et'}
-            </button>
-            
-            {error && <p className="text-sm text-red-600 font-bold mt-4 animate-fade-in">{error}</p>}
-          </div>
-        </div>
+      {/* --- PROFiL SEKMESİ --- */}
+      {currentView === 'profile' && <Profile />}
 
-        {/* Results Section */}
-        <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200">Analiz Sonuçları</h2>
+      {/* --- ANA SAYFA SEKMESİ --- */}
+      {(currentView === 'dashboard' || currentView === 'home') && (
+        <div className="space-y-8 animate-fade-in">
           
-          {results ? (
-            <div className="space-y-6 animate-fade-in">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {results.params.map((param, idx) => (
-                  <div key={idx} className="bg-theme-card p-5 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border">
-                    <p className="text-xs font-black text-stone-400 uppercase tracking-wider mb-2">{param.name}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-black text-stone-700 dark:text-stone-200">{param.value}</span>
-                      
-                      {param.status === 'NORMAL' && <CheckCircle className="w-6 h-6 text-emerald-500" />}
-                      {param.status === 'HIGH' && <ArrowUpCircle className="w-6 h-6 text-red-600" />}
-                      {param.status === 'LOW' && <ArrowDownCircle className="w-6 h-6 text-blue-600" />}
+          {/* Karşılama Banner */}
+          <div className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+            <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8 translate-y-8">
+              <Activity className="w-80 h-80 text-white" />
+            </div>
+
+            <div className="relative z-10 space-y-4">
+              <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Dr. Bio Akıllı Sağlık Asistanı</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black">Hoş geldin, {activeUser.name}! 👋</h1>
+              <p className="text-red-100 font-medium max-w-2xl text-sm sm:text-base leading-relaxed">
+                Tahlil sonuçlarınızı yükleyerek yapay zeka destekli anlık referans analizlerini görüntüleyebilir ve sağlık geçmişinizi güvenle takip edebilirsiniz.
+              </p>
+
+              {/* Hızlı Eylem Butonları */}
+              <div className="pt-4 flex flex-wrap gap-3">
+                <button
+                  onClick={() => navigate('/patient/upload')}
+                  className="px-6 py-3.5 bg-white text-red-600 hover:bg-red-50 font-black rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
+                >
+                  <UploadCloud className="w-5 h-5" />
+                  <span>Yeni Tahlil Yükle</span>
+                </button>
+                <button
+                  onClick={() => navigate('/patient/history')}
+                  className="px-6 py-3.5 bg-white/20 hover:bg-white/30 text-white border border-white/30 font-black rounded-2xl hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
+                >
+                  <FileText className="w-5 h-5" />
+                  <span>Geçmiş Tahlillerim ({historyList.length})</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* İstatistik & Metrik Kartları */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-red-50 dark:bg-red-950/40 rounded-2xl flex items-center justify-center text-red-600 shrink-0">
+                <Calendar className="w-7 h-7" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Son Tahlil</span>
+                <span className="text-lg font-black text-stone-800 dark:text-stone-200">1 Ağustos 2026</span>
+              </div>
+            </div>
+
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/40 rounded-2xl flex items-center justify-center text-amber-600 shrink-0">
+                <AlertTriangle className="w-7 h-7" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Anormal Değerler</span>
+                <span className="text-lg font-black text-amber-600 dark:text-amber-400">2 Parametre</span>
+              </div>
+            </div>
+
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
+                <Pill className="w-7 h-7" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Günlük Takviye</span>
+                <span className="text-lg font-black text-stone-800 dark:text-stone-200">Demir & D3</span>
+              </div>
+            </div>
+
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl flex items-center justify-center text-emerald-600 shrink-0">
+                <HeartPulse className="w-7 h-7" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Genel Takip</span>
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">%85 Stabil</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Son Tahlil Özeti & Sağlık İpuçları */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Sol: Son Tahlil Özet Kartı */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-black text-stone-800 dark:text-stone-200 flex items-center space-x-2">
+                  <Activity className="w-5 h-5 text-red-600" />
+                  <span>Son Yüklenen Tahlil Özeti</span>
+                </h2>
+                <button 
+                  onClick={() => navigate('/patient/history')}
+                  className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center space-x-1"
+                >
+                  <span>Tümünü Gör</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {historyList.length > 0 ? (
+                <div className="bg-theme-card rounded-[2rem] p-6 shadow-clay-card dark:shadow-clay-card-dark border-theme-border space-y-6">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-stone-200 dark:border-stone-800 pb-4">
+                    <div>
+                      <h3 className="font-black text-lg text-stone-800 dark:text-stone-200">{historyList[0].title}</h3>
+                      <p className="text-xs text-stone-400 font-bold mt-0.5">Tarih: {historyList[0].date}</p>
                     </div>
-                    <p className="text-xs font-bold text-stone-400 mt-2">Ref: {param.range}</p>
-                    
-                    <div className={`mt-3 pt-3 border-t border-stone-100 dark:border-stone-800 text-xs font-black ${
-                      param.status === 'NORMAL' ? 'text-emerald-600' :
-                      param.status === 'HIGH' ? 'text-red-600' : 'text-blue-600'
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase inline-self-start sm:inline-self-auto ${
+                      historyList[0].status === 'NORMAL' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
                     }`}>
-                      {param.status === 'NORMAL' ? 'NORMAL' : param.status === 'HIGH' ? 'YÜKSEK' : 'DÜŞÜK'}
-                    </div>
+                      {historyList[0].status === 'NORMAL' ? 'Tüm Değerler Normal' : 'Takip Gerektiren Değer Var'}
+                    </span>
                   </div>
-                ))}
-              </div>
 
-              <div className="bg-theme-card p-6 rounded-[2rem] shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-start space-x-4">
-                <div className="w-12 h-12 shrink-0 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="font-black text-stone-800 dark:text-stone-200 mb-2">Sistem Önerisi</h3>
-                  <p className="text-sm font-medium text-stone-500 dark:text-stone-400 leading-relaxed">{results.systemNote}</p>
-                </div>
-              </div>
+                  {/* Parametre Özet Badgeleri */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {historyList[0].params.map((p, i) => (
+                      <div key={i} className="bg-theme-bg p-3.5 rounded-2xl border border-stone-100 dark:border-stone-800/60">
+                        <span className="block text-[10px] font-black text-stone-400 uppercase truncate">{p.name}</span>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-sm font-black text-stone-800 dark:text-stone-200">{p.value}</span>
+                          {p.status === 'NORMAL' && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                          {p.status === 'HIGH' && <ArrowUpCircle className="w-4 h-4 text-red-600" />}
+                          {p.status === 'LOW' && <ArrowDownCircle className="w-4 h-4 text-blue-600" />}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-              {results.doctorNote && (
-                <div className="bg-theme-card p-6 rounded-[2rem] shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-start space-x-4">
-                  <div className="w-12 h-12 shrink-0 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl flex items-center justify-center">
-                    <Stethoscope className="w-6 h-6" />
+                  {/* Sistem Önerisi */}
+                  <div className="p-4 bg-red-50/60 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 rounded-2xl flex items-start space-x-3 text-xs font-bold text-red-800 dark:text-red-300">
+                    <Sparkles className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                    <span>{historyList[0].summaryNote}</span>
                   </div>
-                  <div>
-                    <h3 className="font-black text-stone-800 dark:text-stone-200 mb-2">Doktorunuzun Notu</h3>
-                    <p className="text-sm font-bold text-red-700 dark:text-red-400 leading-relaxed">{results.doctorNote}</p>
-                  </div>
+                </div>
+              ) : (
+                <div className="bg-theme-card rounded-[2rem] p-8 text-center text-stone-400 font-bold border-theme-border shadow-clay-card dark:shadow-clay-card-dark">
+                  Henüz tahlil yüklenmedi.
                 </div>
               )}
             </div>
-          ) : (
-            <div className="bg-theme-card rounded-[2rem] p-12 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center text-stone-400 h-full min-h-[400px]">
-              <FileText className="w-16 h-16 text-stone-200 dark:text-stone-800 mb-4" />
-              <p className="font-bold text-lg">Sonuçları görmek için tahlil dosyanızı yükleyin.</p>
+
+            {/* Sağ: Günlük AI Sağlık İpuçları */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-black text-stone-800 dark:text-stone-200 flex items-center space-x-2">
+                <Sparkles className="w-5 h-5 text-amber-500" />
+                <span>Kişiselleştirilmiş İpuçları</span>
+              </h2>
+
+              <div className="bg-theme-card rounded-[2rem] p-6 shadow-clay-card dark:shadow-clay-card-dark border-theme-border space-y-4 text-xs font-bold">
+                <div className="p-4 bg-amber-50/70 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-900/40 text-amber-800 dark:text-amber-300">
+                  <p className="font-black text-amber-900 dark:text-amber-200 mb-1">🍋 C Vitamini Tüketimi</p>
+                  <p className="leading-relaxed">Demir emilimini artırmak için demir takviyenizi taze sıkılmış portakal suyu veya C vitamini içeren gıdalarla almanız tavsiye edilir.</p>
+                </div>
+
+                <div className="p-4 bg-blue-50/70 dark:bg-blue-950/30 rounded-2xl border border-blue-200 dark:border-blue-900/40 text-blue-800 dark:text-blue-300">
+                  <p className="font-black text-blue-900 dark:text-blue-200 mb-1">💧 Düzenli Sıvı Alımı</p>
+                  <p className="leading-relaxed">Böbrek ve biyokimya değerlerinizin dengede kalması için günde en az 2 - 2.5 litre su içmeyi ihmal etmeyin.</p>
+                </div>
+
+                <div className="p-4 bg-emerald-50/70 dark:bg-emerald-950/30 rounded-2xl border border-emerald-200 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-300">
+                  <p className="font-black text-emerald-900 dark:text-emerald-200 mb-1">🏃‍♂️ Haftalık Tempolu Yürüyüş</p>
+                  <p className="leading-relaxed">Kolesterol seviyenizi kontrol altında tutmak için haftada en az 3 gün 30 dakika tempolu yürüyüş yapın.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* --- TAHLİL YÜKLE SEKMESİ --- */}
+      {currentView === 'upload' && (
+        <div className="space-y-8 animate-fade-in">
+          
+          {/* Disclaimer */}
+          <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-[2rem] p-4 shadow-sm flex items-start space-x-3">
+            <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-sm font-bold text-amber-800 dark:text-amber-500 leading-relaxed">
+              Yasal Uyarı: Bu sistemin sunduğu otomatik analiz sonuçları yapay zeka destekli ön değerlendirmedir. Kesin teşhis ve tedavi kararı yalnızca uzman doktorunuz tarafından verilebilir.
+            </p>
+          </div>
+
+          {saveToast && (
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-3xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
+              <CheckCircle className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+              <span>{saveToast}</span>
             </div>
           )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            {/* Upload Section */}
+            <div className="lg:col-span-1 space-y-6">
+              <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200">Tahlil Yükle</h2>
+              <div className="bg-theme-card rounded-[2rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center">
+
+                <div className="w-24 h-24 bg-theme-bg rounded-3xl shadow-inner flex items-center justify-center mb-6 border border-stone-200 dark:border-stone-800">
+                  <UploadCloud className="w-10 h-10 text-red-600" />
+                </div>
+
+                <p className="font-bold text-stone-600 dark:text-stone-300 mb-2 text-sm">PDF veya Resim formatında tahlil sonucunuzu seçin</p>
+                <p className="text-xs text-stone-400 mb-6 font-medium">Maksimum dosya boyutu: 10MB (SSL Şifreli)</p>
+
+                <input type="file" id="file" accept=".pdf,.png,.jpg,.jpeg" className="hidden" onChange={handleFile} />
+                <label htmlFor="file" className="w-full px-6 py-3.5 bg-theme-bg text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 font-black text-sm rounded-2xl shadow-clay-card cursor-pointer hover:scale-105 active:scale-95 transition-all mb-4 text-center truncate">
+                  {file ? file.name : '📁 Dosya Seç'}
+                </label>
+
+                <button
+                  onClick={handleUpload}
+                  disabled={!file || loading}
+                  className="w-full py-4 mt-2 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Analiz Ediliyor...</span>
+                    </>
+                  ) : (
+                    <span>Yükle ve Analiz Et</span>
+                  )}
+                </button>
+
+                {error && <p className="text-sm text-red-600 font-bold mt-4 animate-fade-in">{error}</p>}
+              </div>
+            </div>
+
+            {/* Results Section */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200">Analiz Sonuçları</h2>
+                {results && (
+                  <button
+                    onClick={handleSaveToHistory}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-sm transition flex items-center space-x-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Geçmişe Kaydet</span>
+                  </button>
+                )}
+              </div>
+
+              {results ? (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+                    {results.params.map((param, idx) => (
+                      <div key={idx} className="bg-theme-card p-5 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border">
+                        <p className="text-xs font-black text-stone-400 uppercase tracking-wider mb-2">{param.name}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-black text-stone-700 dark:text-stone-200">{param.value}</span>
+
+                          {param.status === 'NORMAL' && <CheckCircle className="w-6 h-6 text-emerald-500" />}
+                          {param.status === 'HIGH' && <ArrowUpCircle className="w-6 h-6 text-red-600" />}
+                          {param.status === 'LOW' && <ArrowDownCircle className="w-6 h-6 text-blue-600" />}
+                        </div>
+                        <p className="text-xs font-bold text-stone-400 mt-2">Ref: {param.range}</p>
+
+                        <div className={`mt-3 pt-3 border-t border-stone-100 dark:border-stone-800 text-xs font-black ${
+                          param.status === 'NORMAL' ? 'text-emerald-600' :
+                          param.status === 'HIGH' ? 'text-red-600' : 'text-blue-600'
+                        }`}>
+                          {param.status === 'NORMAL' ? 'NORMAL' : param.status === 'HIGH' ? 'YÜKSEK' : 'DÜŞÜK'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-theme-card p-6 rounded-[2rem] shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-start space-x-4">
+                    <div className="w-12 h-12 shrink-0 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-2xl flex items-center justify-center">
+                      <Sparkles className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-stone-800 dark:text-stone-200 mb-2">Sistem Değerlendirmesi</h3>
+                      <p className="text-sm font-medium text-stone-500 dark:text-stone-400 leading-relaxed">{results.systemNote}</p>
+                    </div>
+                  </div>
+
+                  {results.doctorNote && (
+                    <div className="bg-theme-card p-6 rounded-[2rem] shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-start space-x-4">
+                      <div className="w-12 h-12 shrink-0 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl flex items-center justify-center">
+                        <Stethoscope className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-black text-stone-800 dark:text-stone-200 mb-2">Uzman Önerisi</h3>
+                        <p className="text-sm font-bold text-red-700 dark:text-red-400 leading-relaxed">{results.doctorNote}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-theme-card rounded-[2rem] p-12 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center text-stone-400 h-full min-h-[380px]">
+                  <FileText className="w-16 h-16 text-stone-300 dark:text-stone-700 mb-4" />
+                  <p className="font-bold text-lg text-stone-600 dark:text-stone-400">Sonuçları ve AI analizini görmek için tahlil dosyanızı yükleyin.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* --- GEÇMİŞ TAHLİLLERİM SEKMESİ --- */}
+      {currentView === 'history' && (
+        <div className="space-y-6 animate-fade-in">
+          
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+            <div>
+              <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200">Geçmiş Tahlillerim</h2>
+              <p className="text-xs font-bold text-stone-400 mt-1">Önceden yüklediğiniz ve analiz edilen tahlil raporlarınız</p>
+            </div>
+
+            <button
+              onClick={() => navigate('/patient/upload')}
+              className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Yeni Tahlil Ekle</span>
+            </button>
+          </div>
+
+          {/* Arama ve Filtre Çubuğu */}
+          <div className="bg-theme-card p-4 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col sm:flex-row gap-4 justify-between items-center">
+            
+            {/* Arama İnputu */}
+            <div className="relative w-full sm:w-80">
+              <Search className="w-4 h-4 absolute left-4 top-3.5 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Tahlil adı veya içerik ara..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
+              />
+            </div>
+
+            {/* Durum Filtresi */}
+            <div className="flex items-center space-x-2 w-full sm:w-auto">
+              <Filter className="w-4 h-4 text-stone-400 shrink-0" />
+              <span className="text-xs font-bold text-stone-400">Filtrele:</span>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none"
+              >
+                <option value="ALL">Tümü ({historyList.length})</option>
+                <option value="NORMAL">Normal</option>
+                <option value="WARNING">Uyarı Var</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Tahlil Listesi */}
+          {filteredHistory.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4">
+              {filteredHistory.map((item) => (
+                <div 
+                  key={item.id}
+                  className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-red-600/30 transition duration-200"
+                >
+                  <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="px-3 py-1 bg-theme-bg text-stone-500 rounded-full text-xs font-bold border border-stone-200 dark:border-stone-800 flex items-center space-x-1">
+                        <Calendar className="w-3.5 h-3.5 text-red-600" />
+                        <span>{item.date}</span>
+                      </span>
+
+                      <span className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${
+                        item.status === 'NORMAL' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
+                      }`}>
+                        {item.status === 'NORMAL' ? 'Normal' : 'Takip Var'}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-black text-stone-800 dark:text-stone-200">{item.title}</h3>
+                    <p className="text-xs font-medium text-stone-500 dark:text-stone-400 leading-relaxed line-clamp-2">
+                      {item.summaryNote}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-2 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-200 dark:border-stone-800">
+                    <button
+                      onClick={() => setSelectedTestModal(item)}
+                      className="flex-1 md:flex-none px-4 py-2.5 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-1 border border-stone-200 dark:border-stone-700"
+                    >
+                      <Eye className="w-4 h-4 text-red-600" />
+                      <span>Detay İncele</span>
+                    </button>
+
+                    <button
+                      onClick={() => alert(`"${item.fileName}" dosyasını indirme simülasyonu başlatıldı.`)}
+                      className="px-3 py-2.5 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 rounded-2xl text-xs font-bold transition flex items-center justify-center border border-stone-200 dark:border-stone-700"
+                      title="Raporu İndir"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-theme-card rounded-3xl p-12 text-center text-stone-400 font-bold border-theme-border shadow-clay-card dark:shadow-clay-card-dark">
+              Aramanızla eşleşen tahlil kaydı bulunamadı.
+            </div>
+          )}
+
+          {/* DETAY İNCELE MODAL */}
+          {selectedTestModal && (
+            <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+              <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-start border-b border-stone-200 dark:border-stone-800 pb-4">
+                  <div>
+                    <h3 className="text-2xl font-black text-stone-800 dark:text-stone-200">{selectedTestModal.title}</h3>
+                    <p className="text-xs font-bold text-stone-400 mt-1">Tarih: {selectedTestModal.date} | Dosya: {selectedTestModal.fileName}</p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedTestModal(null)}
+                    className="p-2 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 rounded-full font-black text-stone-500"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="text-sm font-black uppercase text-stone-400 tracking-wider">Parametre Detayları</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {selectedTestModal.params.map((p, idx) => (
+                      <div key={idx} className="bg-theme-bg p-4 rounded-2xl border border-stone-200 dark:border-stone-800">
+                        <span className="block text-xs font-black text-stone-400 uppercase">{p.name}</span>
+                        <div className="flex justify-between items-center mt-1">
+                          <span className="text-lg font-black text-stone-800 dark:text-stone-200">{p.value}</span>
+                          <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                            p.status === 'NORMAL' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' :
+                            p.status === 'HIGH' ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400'
+                          }`}>
+                            {p.status}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-stone-400 font-bold mt-1">Referans: {p.range}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="p-4 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-2xl text-xs font-bold text-blue-800 dark:text-blue-300">
+                    <p className="font-black mb-1">Sistem Notu:</p>
+                    <p>{selectedTestModal.summaryNote}</p>
+                  </div>
+
+                  {selectedTestModal.doctorNote && (
+                    <div className="p-4 bg-red-50/70 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-2xl text-xs font-bold text-red-800 dark:text-red-300">
+                      <p className="font-black mb-1">Uzman Notu:</p>
+                      <p>{selectedTestModal.doctorNote}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 flex justify-end">
+                  <button
+                    onClick={() => setSelectedTestModal(null)}
+                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl text-xs"
+                  >
+                    Kapat
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      )}
+
     </Layout>
   );
 };

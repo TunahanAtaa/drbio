@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
-import DoctorDashboard from './pages/DoctorDashboard';
 import PatientDashboard from './pages/PatientDashboard';
 
 function App() {
@@ -12,8 +11,6 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/:tab" element={<AdminDashboard />} />
-        <Route path="/doctor" element={<DoctorDashboard />} />
-        <Route path="/doctor/:tab" element={<DoctorDashboard />} />
         <Route path="/patient" element={<PatientDashboard />} />
         <Route path="/patient/:tab" element={<PatientDashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -23,3 +20,4 @@ function App() {
 }
 
 export default App;
+

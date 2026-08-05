@@ -56,7 +56,7 @@ const AdminDashboard = () => {
 
       {tab === 'users' && (
         <div className="bg-theme-card p-8 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border">
-          <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200 mb-6">Hasta - Doktor Eşleşmeleri</h2>
+          <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200 mb-6">Sistem Kullanıcıları</h2>
           <div className="space-y-4">
             {users.map(u => (
               <div key={u.id} className="p-4 bg-theme-bg rounded-2xl shadow-inner flex items-center justify-between">
@@ -64,7 +64,7 @@ const AdminDashboard = () => {
                   <div className="p-3 bg-theme-card rounded-xl shadow-sm"><Users className="w-5 h-5 text-stone-400" /></div>
                   <div>
                     <p className="font-black text-stone-700 dark:text-stone-200">{u.name}</p>
-                    <p className="text-xs font-bold text-stone-400">Atanan Doktor: {u.doctor}</p>
+                    <p className="text-xs font-bold text-stone-400">Rol: {u.role === 'PATIENT' ? 'Hasta' : u.role}</p>
                   </div>
                 </div>
                 <div className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold flex items-center space-x-1">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Users, Search, Database, Upload, FileText, User } from 'lucide-react';
+import { Home, Users, Database, Upload, FileText, User } from 'lucide-react';
 
 const Sidebar = ({ role }) => {
   const location = useLocation();
@@ -12,12 +12,6 @@ const Sidebar = ({ role }) => {
           { name: 'Ana Sayfa', path: '/admin', icon: Home },
           { name: 'Kullanıcılar', path: '/admin/users', icon: Users },
           { name: 'Referans Kütüphanesi', path: '/admin/references', icon: Database },
-        ];
-      case 'DOCTOR':
-        return [
-          { name: 'Ana Sayfa', path: '/doctor', icon: Home },
-          { name: 'Hastalarım', path: '/doctor/patients', icon: Users },
-          { name: 'Hasta Ara', path: '/doctor/search', icon: Search },
         ];
       case 'PATIENT':
         return [
