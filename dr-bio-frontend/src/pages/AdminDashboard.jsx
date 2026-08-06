@@ -7,8 +7,9 @@ import {
   Shield, Activity, FileText, Sparkles, Filter, ChevronRight, UserPlus, 
   Settings, Server, ArrowUpRight, Save, X, Eye, AlertTriangle, UserCheck, 
   Heart, Pill, Stethoscope, Scale, Ruler, Briefcase, Flame, Star, MessageSquare,
-  Send, CheckCircle2, Bell, Check, RotateCcw, TrendingUp
+  Send, CheckCircle2, Bell, Check, RotateCcw, TrendingUp, Loader2
 } from 'lucide-react';
+import api from '../services/api';
 
 const defaultFeedbacks = [
   { 
@@ -252,39 +253,39 @@ const AdminDashboard = () => {
   const currentTab = tab || 'dashboard';
 
   // State'ler
-  const [usersList, setUsersList] = useState(() => {
-    const saved = localStorage.getItem('userAccounts');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return parsed.map((u, index) => {
-          const matchDefault = defaultAdminUsers.find(d => d.email.trim().toLowerCase() === u.email.trim().toLowerCase());
-          return {
-            id: index + 200,
-            name: u.name || u.email.split('@')[0],
-            email: u.email,
-            role: u.role || 'PATIENT',
-            status: 'ACTIVE',
-            regDate: u.regDate || '2026-08-05',
-            healthProfile: u.healthProfile || (matchDefault ? matchDefault.healthProfile : {
-              age: '29', weight: '70', height: '172', gender: 'Belirtilmedi', maritalStatus: 'Belirtilmedi',
-              childrenCount: '0', occupation: 'Belirtilmedi', genetics: 'Yok', surgeries: 'Yok',
-              medications: 'Yok', allergies: 'Yok', chronicPain: 'Yok', habits: 'Kullanmıyor'
-            })
-          };
-        });
-      } catch (e) {}
-    }
-    return defaultAdminUsers;
-  });
+  const [usersList, setUsersList] = useState([]);
+  const [references, setReferences] = useState([]);
+  const [totalReports, setTotalReports] = useState(0);
 
-  const [references, setReferences] = useState(() => {
-    const saved = localStorage.getItem('adminReferences');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return defaultReferences;
-  });
+  const [loadingData, setLoadingData] = useState(true);
+  const [errorData, setErrorData] = useState('');
+
+  // Verileri Backend'den Çek
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoadingData(true);
+      setErrorData('');
+      try {
+        const [usersRes, refsRes, reportsRes] = await Promise.all([
+          api.get('/users'),
+          api.get('/reference-values'),
+          api.get('/reports/all')
+        ]);
+        
+        setUsersList(usersRes.data);
+        setReferences(refsRes.data);
+        setTotalReports(reportsRes.data.length);
+      } catch (err) {
+        console.error('Admin verileri alınamadı:', err);
+        setErrorData('Sunucudan veriler alınırken bir hata oluştu.');
+        // Hata durumunda boş bırakıyoruz
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    
+    fetchData();
+  }, [currentTab]);
 
   // Arama & Filtre
   const [refSearch, setRefSearch] = useState('');
@@ -306,14 +307,27 @@ const AdminDashboard = () => {
   // Kullanıcı Tüm Detay Modalı State
   const [selectedUserDetail, setSelectedUserDetail] = useState(null);
 
-  const saveReferences = (newList) => {
-    setReferences(newList);
-    localStorage.setItem('adminReferences', JSON.stringify(newList));
+  const saveReferences = async (refData, isEdit) => {
+    try {
+      if (isEdit) {
+        const res = await api.put(`/reference-values/${refData.id}`, refData);
+        setReferences(references.map(r => r.id === res.data.id ? res.data : r));
+      } else {
+        const res = await api.post('/reference-values', refData);
+        setReferences([res.data, ...references]);
+      }
+    } catch (error) {
+      console.error("Referans kaydedilemedi", error);
+    }
   };
 
-  const handleDeleteRef = (id) => {
-    const newList = references.filter(r => r.id !== id);
-    saveReferences(newList);
+  const handleDeleteRef = async (id) => {
+    try {
+      await api.delete(`/reference-values/${id}`);
+      setReferences(references.filter(r => r.id !== id));
+    } catch (error) {
+      console.error("Referans silinemedi", error);
+    }
   };
 
   const handleOpenRefModal = (refObj = null) => {
@@ -329,52 +343,53 @@ const AdminDashboard = () => {
 
   const handleSaveRefSubmit = (e) => {
     e.preventDefault();
-    if (editingRef) {
-      const newList = references.map(r => r.id === editingRef.id ? { ...r, ...refFormData } : r);
-      saveReferences(newList);
-    } else {
-      const newObj = { id: Date.now(), ...refFormData };
-      saveReferences([newObj, ...references]);
-    }
+    saveReferences(refFormData, !!editingRef);
     setRefModalOpen(false);
   };
 
-  const handleAddUserSubmit = (e) => {
+  const handleAddUserSubmit = async (e) => {
     e.preventDefault();
-    const newUser = {
-      id: Date.now(),
-      name: newUserFormData.name,
-      email: newUserFormData.email,
-      role: newUserFormData.role,
-      status: 'ACTIVE',
-      regDate: new Date().toISOString().split('T')[0],
-      healthProfile: {
-        age: '30', weight: '70', height: '175', gender: 'Belirtilmedi', maritalStatus: 'Belirtilmedi',
-        childrenCount: '0', occupation: 'Belirtilmedi', genetics: 'Yok', surgeries: 'Yok',
-        medications: 'Yok', allergies: 'Yok', chronicPain: 'Yok', habits: 'Kullanmıyor'
-      }
-    };
-    const updated = [newUser, ...usersList];
-    setUsersList(updated);
-
-    // localStorage ekle
-    const storedUsers = localStorage.getItem('userAccounts');
-    let accounts = [];
-    if (storedUsers) { try { accounts = JSON.parse(storedUsers) || []; } catch(e) {} }
-    accounts.push({
-      name: newUserFormData.name,
-      email: newUserFormData.email,
-      password: newUserFormData.password,
-      role: newUserFormData.role,
-      healthProfile: newUser.healthProfile
-    });
-    localStorage.setItem('userAccounts', JSON.stringify(accounts));
+    try {
+      await api.post('/auth/register', {
+        fullName: newUserFormData.name,
+        email: newUserFormData.email,
+        password: newUserFormData.password,
+        kvkkApproved: true
+      });
+      // Yeniden listele
+      const usersRes = await api.get('/users');
+      setUsersList(usersRes.data);
+    } catch (err) {
+      console.error("Kullanıcı eklenemedi:", err);
+    }
 
     setUserModalOpen(false);
   };
 
   const toggleUserStatus = (id) => {
     setUsersList(usersList.map(u => u.id === id ? { ...u, status: u.status === 'ACTIVE' ? 'PASSIVE' : 'ACTIVE' } : u));
+  };
+
+  const handleDeleteUser = async (userId, userName) => {
+    if (window.confirm(`${userName} kullanıcısını ve TÜM tıbbi raporlarını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`)) {
+      try {
+        await api.delete(`/users/${userId}`);
+        const usersRes = await api.get('/users');
+        setUsersList(usersRes.data);
+      } catch (err) {
+        alert(err.response?.data?.message || 'Kullanıcı silinirken bir hata oluştu.');
+      }
+    }
+  };
+
+  const handleChangeRole = async (userId, newRole) => {
+    try {
+      await api.put(`/users/${userId}/role`, { role: newRole });
+      const usersRes = await api.get('/users');
+      setUsersList(usersRes.data);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Rol değiştirilirken bir hata oluştu.');
+    }
   };
 
   // Geri Bildirimler State'leri
@@ -842,7 +857,7 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-        <button
+        <button 
           onClick={handleResetAllData}
           title="Tüm kullanıcı ve geri bildirim verilerini sıfırla, taze test verileri yükle"
           className="px-4 py-3 bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 font-extrabold rounded-2xl text-xs transition flex items-center space-x-2 shadow-sm shrink-0"
@@ -852,7 +867,22 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* --- 1. GENEL BAKIŞ (DASHBOARD) TABI --- */}
+      {loadingData && (
+        <div className="w-full flex justify-center py-12">
+          <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+        </div>
+      )}
+
+      {errorData && (
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
+          <AlertTriangle className="w-5 h-5 shrink-0" />
+          <span>{errorData}</span>
+        </div>
+      )}
+
+      {!loadingData && !errorData && (
+        <>
+          {/* --- 1. GENEL BAKIŞ (DASHBOARD) TABI --- */}
       {(currentTab === 'dashboard' || currentTab === 'admin') && (
         <div className="space-y-8 animate-fade-in">
           
@@ -911,8 +941,8 @@ const AdminDashboard = () => {
                 <FileText className="w-7 h-7" />
               </div>
               <div>
-                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Bu Ayki Analiz</span>
-                <span className="text-2xl font-black text-stone-800 dark:text-stone-200">128</span>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Toplam Rapor</span>
+                <span className="text-2xl font-black text-stone-800 dark:text-stone-200">{totalReports}</span>
               </div>
             </div>
           </div>
@@ -1133,11 +1163,16 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${
-                    u.role === 'ADMIN' ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300'
-                  }`}>
-                    {u.role === 'ADMIN' ? 'Yönetici' : 'Hasta'}
-                  </span>
+                  <select
+                    value={u.role}
+                    onChange={(e) => handleChangeRole(u.id, e.target.value)}
+                    className={`px-3 py-1 rounded-full text-xs font-black uppercase appearance-none outline-none cursor-pointer text-center ${
+                      u.role === 'ADMIN' ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300'
+                    }`}
+                  >
+                    <option value="PATIENT">HASTA</option>
+                    <option value="ADMIN">YÖNETİCİ</option>
+                  </select>
 
                   <button
                     onClick={() => toggleUserStatus(u.id)}
@@ -1148,15 +1183,23 @@ const AdminDashboard = () => {
                     }`}
                   >
                     <CheckCircle className="w-3.5 h-3.5" />
-                    <span>{u.status === 'ACTIVE' ? 'Aktif' : 'Pasif'}</span>
+                    <span className="hidden sm:inline">{u.status === 'ACTIVE' ? 'Aktif' : 'Pasif'}</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteUser(u.id, u.name)}
+                    className="px-3.5 py-1.5 bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-800/60 text-red-600 dark:text-red-400 rounded-full text-xs font-black transition flex items-center shadow-sm shrink-0"
+                    title="Kullanıcıyı Sil"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
 
                   <button
                     onClick={() => setSelectedUserDetail(u)}
-                    className="px-3.5 py-1.5 bg-lime-700 hover:bg-lime-800 text-white rounded-full text-xs font-black transition flex items-center space-x-1 shadow-sm"
+                    className="px-3.5 py-1.5 bg-lime-700 hover:bg-lime-800 text-white rounded-full text-xs font-black transition flex items-center space-x-1 shadow-sm shrink-0"
                   >
                     <Eye className="w-3.5 h-3.5" />
-                    <span>Tüm Bilgileri Gör</span>
+                    <span className="hidden sm:inline">İncele</span>
                   </button>
                 </div>
               </div>
@@ -2112,6 +2155,8 @@ const AdminDashboard = () => {
           </div>
         </div>,
         document.body
+      )}
+      </>
       )}
 
     </Layout>
