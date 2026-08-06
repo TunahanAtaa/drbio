@@ -228,24 +228,24 @@ const Login = () => {
     <div
       className="min-h-screen w-full flex items-center justify-center p-4 py-8 relative overflow-hidden"
     >
-      {/* Soft & Balanced Medikal Overlay & Glassmorphism Blur */}
-      <div className="absolute inset-0 bg-white/20 dark:bg-stone-950/75 backdrop-blur-[2px]"></div>
+      {/* Light overlay — no blur for performance */}
+      <div className="absolute inset-0 bg-white/30 dark:bg-stone-950/70"></div>
 
       {/* Theme Toggle Top Right */}
       <div className="absolute top-6 right-6 z-20">
-        <ThemeToggle className="bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border border-white/50 dark:border-white/10" />
+        <ThemeToggle className="bg-white/90 dark:bg-stone-900/90 border border-stone-200 dark:border-stone-700 shadow-sm" />
       </div>
 
       <AuthBackground />
 
-      <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-theme-card/95 backdrop-blur-md rounded-[2.5rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
+      <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-white/90 dark:bg-stone-900/90 rounded-[2.5rem] p-8 shadow-lg border border-stone-200 dark:border-stone-800 animate-fade-in transition-all duration-300`}>
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-lime-700 rounded-2xl shadow-clay-btn flex items-center justify-center text-white font-black text-3xl">
+          <div className="w-16 h-16 bg-emerald-600 rounded-2xl shadow-md flex items-center justify-center text-white font-black text-3xl">
             <Activity className="w-8 h-8" />
           </div>
         </div>
 
-        <h1 className="text-3xl font-black text-center text-lime-700 dark:text-lime-400 mb-2">Dr. Bio</h1>
+        <h1 className="text-3xl font-black text-center text-emerald-700 dark:text-emerald-400 mb-2">Dr. Bio</h1>
 
         {successMessage && (
           <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
@@ -304,7 +304,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-4 disabled:opacity-50"
+                className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-3xl shadow-md active:scale-95 transition-all flex items-center justify-center space-x-2 mt-4 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Şifreyi Güncelle ve Giriş Yap</span>}
               </button>
@@ -387,7 +387,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading || !email}
-                className="w-full py-4 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Giriş Yap</span>}
               </button>
@@ -399,7 +399,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => { setLoginError(''); setIsRegisterOpen(true); setStep(1); }}
-                className="w-full py-4 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2"
+                className="w-full py-4 bg-transparent border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold rounded-3xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 active:scale-95 transition-all flex items-center justify-center space-x-2"
               >
                 <UserPlus className="w-5 h-5" />
                 <span>Kayıt Ol</span>
@@ -409,8 +409,8 @@ const Login = () => {
             <div className="mt-8 pt-6 border-t border-stone-200 dark:border-stone-800">
               <p className="text-xs font-bold text-stone-400 text-center mb-4 uppercase">Test Hesapları (Gerçek Backend)</p>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><Shield className="w-4 h-4 mb-1" />Admin</button>
-                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><User className="w-4 h-4 mb-1" />Hasta</button>
+                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('admin123'); setLoginError(''); }} className="p-2 bg-stone-50 dark:bg-stone-800 rounded-xl text-xs font-bold text-stone-500 hover:text-emerald-600 border border-stone-200 dark:border-stone-700 flex flex-col items-center"><Shield className="w-4 h-4 mb-1" />Admin</button>
+                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('hasta123'); setLoginError(''); }} className="p-2 bg-stone-50 dark:bg-stone-800 rounded-xl text-xs font-bold text-stone-500 hover:text-emerald-600 border border-stone-200 dark:border-stone-700 flex flex-col items-center"><User className="w-4 h-4 mb-1" />Hasta</button>
               </div>
             </div>
           </div>
@@ -481,7 +481,7 @@ const Login = () => {
               {/* Devam Et Butonu */}
               <button
                 type="submit"
-                className="w-full py-4 bg-lime-800 hover:bg-lime-900 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-6"
+                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center space-x-2 mt-6"
               >
                 <span>Devam Et (Sağlık Bilgileri)</span>
                 <ArrowRight className="w-5 h-5" />
@@ -708,7 +708,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Kaydı Tamamla ve Panele Git</span>}
                 </button>

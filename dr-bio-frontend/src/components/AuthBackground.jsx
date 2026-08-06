@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Beaker, HeartPulse, ShieldAlert, Droplets, TrendingUp, TrendingDown, ClipboardList } from 'lucide-react';
+import { Activity, HeartPulse, ShieldAlert, Droplets, TrendingUp, TrendingDown, ClipboardList } from 'lucide-react';
 
 const decorativeCards = [
   {
@@ -11,8 +11,6 @@ const decorativeCards = [
     icon: Droplets,
     color: 'text-lime-700',
     position: 'top-[12%] left-[8%]',
-    delay: '0s',
-    duration: '24s',
     rotation: '-rotate-3',
     scale: 'scale-100',
     hideOnMobile: true
@@ -28,8 +26,6 @@ const decorativeCards = [
     icon: Activity,
     color: 'text-blue-500',
     position: 'top-[20%] right-[10%]',
-    delay: '2s',
-    duration: '28s',
     rotation: 'rotate-2',
     scale: 'scale-95',
     hideOnMobile: false
@@ -43,8 +39,6 @@ const decorativeCards = [
     icon: ShieldAlert,
     color: 'text-emerald-500',
     position: 'bottom-[25%] left-[6%]',
-    delay: '4s',
-    duration: '22s',
     rotation: 'rotate-6',
     scale: 'scale-105',
     hideOnMobile: false
@@ -58,8 +52,6 @@ const decorativeCards = [
     icon: ClipboardList,
     color: 'text-purple-500',
     position: 'top-[50%] left-[2%]',
-    delay: '1s',
-    duration: '32s',
     rotation: '-rotate-2',
     scale: 'scale-90',
     hideOnMobile: true
@@ -75,8 +67,6 @@ const decorativeCards = [
     icon: HeartPulse,
     color: 'text-amber-500',
     position: 'bottom-[20%] right-[8%]',
-    delay: '3s',
-    duration: '26s',
     rotation: '-rotate-6',
     scale: 'scale-110',
     hideOnMobile: true
@@ -90,8 +80,6 @@ const decorativeCards = [
     icon: Activity,
     color: 'text-lime-700',
     position: 'top-[55%] right-[2%]',
-    delay: '5s',
-    duration: '35s',
     rotation: 'rotate-3',
     scale: 'scale-95',
     hideOnMobile: true
@@ -101,65 +89,33 @@ const decorativeCards = [
 const AuthBackground = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0 bg-theme-bg">
-      {/* Ambient Blobs (Animations removed for performance) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-blue-300/20 dark:bg-blue-900/10 rounded-full blur-3xl"></div>
-      <div className="absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-emerald-300/20 dark:bg-emerald-900/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-[-10%] left-[20%] w-[45rem] h-[45rem] bg-purple-300/20 dark:bg-purple-900/10 rounded-full blur-3xl"></div>
+      {/* Static ambient color blobs — no blur filter, just soft color with opacity */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-emerald-200/15 dark:bg-emerald-900/10 rounded-full"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-blue-200/15 dark:bg-blue-900/10 rounded-full"></div>
+      <div className="absolute bottom-[-10%] left-[20%] w-[45rem] h-[45rem] bg-purple-200/10 dark:bg-purple-900/8 rounded-full"></div>
 
-      {/* SVG Network Lines */}
-      <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20">
-        <defs>
-          <linearGradient id="line-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="0.1" />
-            <stop offset="50%" stopColor="currentColor" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0.1" />
-          </linearGradient>
-        </defs>
-        
-        <g className="text-stone-400 dark:text-stone-600 stroke-current">
-          {/* Hemo -> B12 */}
-          <line x1="15%" y1="18%" x2="85%" y2="25%" strokeWidth="1" stroke="url(#line-grad-1)" strokeDasharray="4 4" />
-          {/* B12 -> Cholesterol */}
-          <line x1="85%" y1="25%" x2="95%" y2="60%" strokeWidth="1" stroke="url(#line-grad-1)" />
-          {/* Hemo -> Rapor */}
-          <line x1="15%" y1="18%" x2="8%" y2="55%" strokeWidth="1" stroke="url(#line-grad-1)" />
-          {/* Rapor -> Health Score */}
-          <line x1="8%" y1="55%" x2="12%" y2="70%" strokeWidth="1" stroke="url(#line-grad-1)" strokeDasharray="2 6" />
-          {/* Health Score -> Vit D */}
-          <line x1="12%" y1="70%" x2="88%" y2="75%" strokeWidth="1" stroke="url(#line-grad-1)" />
-          {/* Cholesterol -> Vit D */}
-          <line x1="95%" y1="60%" x2="88%" y2="75%" strokeWidth="1" stroke="url(#line-grad-1)" strokeDasharray="4 4" />
-        </g>
-      </svg>
-
-      {/* Floating Cards */}
+      {/* Static decorative cards — no animation, low opacity */}
       {decorativeCards.map((card) => (
         <div
           key={card.id}
           className={`absolute ${card.position} ${card.hideOnMobile ? 'hidden md:block' : 'block'}`}
-          // Animation removed for performance
         >
-          <div className={`${card.rotation} ${card.scale} flex flex-col bg-theme-card/70 dark:bg-theme-card/40 backdrop-blur-md border border-white/60 dark:border-white/10 shadow-clay-card dark:shadow-clay-card-dark rounded-3xl p-5 opacity-80 dark:opacity-60 min-w-[200px]`}>
-            
-            <div className="flex items-center justify-between mb-3 opacity-90">
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 bg-theme-bg rounded-xl shadow-clay-btn ${card.color}`}>
-                  <card.icon className="w-5 h-5" />
+          <div className={`${card.rotation} ${card.scale} flex flex-col bg-white/50 dark:bg-stone-800/30 border border-stone-200/50 dark:border-stone-700/30 shadow-sm rounded-2xl p-4 opacity-30 dark:opacity-15 min-w-[180px]`}>
+
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <div className={`p-1.5 bg-stone-50 dark:bg-stone-800 rounded-lg ${card.color}`}>
+                  <card.icon className="w-4 h-4" />
                 </div>
-                <span className="font-black text-xs text-stone-500 dark:text-stone-400 uppercase tracking-widest">{card.title}</span>
+                <span className="font-bold text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-wider">{card.title}</span>
               </div>
-              
-              {/* Optional top-right indicator */}
-              {card.type === 'score' && (
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              )}
             </div>
 
             {/* Dynamic Content based on type */}
             {card.type === 'standard' && (
               <>
-                <div className="text-2xl font-black text-stone-700 dark:text-stone-200 mb-1">{card.value}</div>
-                <div className={`text-xs font-bold ${card.status === 'Normal' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                <div className="text-xl font-black text-stone-700 dark:text-stone-200 mb-0.5">{card.value}</div>
+                <div className={`text-[10px] font-bold ${card.status === 'Normal' ? 'text-emerald-500' : 'text-amber-500'}`}>
                   {card.status}
                 </div>
               </>
@@ -168,30 +124,30 @@ const AuthBackground = () => {
             {card.type === 'trend' && (
               <div className="flex items-end justify-between">
                 <div>
-                  <div className="text-3xl font-black text-stone-700 dark:text-stone-200 leading-none mb-1">
-                    {card.value} <span className="text-sm text-stone-400 font-bold">{card.unit}</span>
+                  <div className="text-2xl font-black text-stone-700 dark:text-stone-200 leading-none mb-0.5">
+                    {card.value} <span className="text-xs text-stone-400 font-bold">{card.unit}</span>
                   </div>
-                  <div className={`text-xs font-bold ${card.status === 'Normal' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                  <div className={`text-[10px] font-bold ${card.status === 'Normal' ? 'text-emerald-500' : 'text-amber-500'}`}>
                     {card.status}
                   </div>
                 </div>
-                <div className={`p-1.5 rounded-lg ${card.trend === 'up' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'}`}>
-                  {card.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                <div className={`p-1 rounded-md ${card.trend === 'up' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'}`}>
+                  {card.trend === 'up' ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                 </div>
               </div>
             )}
 
             {card.type === 'score' && (
-              <div className="flex items-center space-x-3">
-                <div className="text-4xl font-black text-emerald-600 dark:text-emerald-400">{card.value}</div>
-                <div className="text-xs font-bold text-stone-500 leading-tight">Genel<br/>Durum<br/><span className="text-emerald-500">Mükemmel</span></div>
+              <div className="flex items-center space-x-2">
+                <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{card.value}</div>
+                <div className="text-[10px] font-bold text-stone-500 leading-tight">Genel<br/>Durum<br/><span className="text-emerald-500">Mükemmel</span></div>
               </div>
             )}
 
             {card.type === 'report' && (
               <>
-                <div className="text-lg font-black text-stone-700 dark:text-stone-200 mb-1">{card.value}</div>
-                <div className="text-xs font-bold text-stone-400">{card.date}</div>
+                <div className="text-base font-black text-stone-700 dark:text-stone-200 mb-0.5">{card.value}</div>
+                <div className="text-[10px] font-bold text-stone-400">{card.date}</div>
               </>
             )}
 
