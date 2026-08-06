@@ -103,7 +103,7 @@ export default function UserProfile({ initialUserData }) {
         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
             
             {/* Üst Header / Profil Kartı */}
-            <div className="bg-gradient-to-r from-lime-700 via-lime-800 to-emerald-800 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+            <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-900 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
                 <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                     <Heart className="w-64 h-64 text-white" />
                 </div>
@@ -115,7 +115,7 @@ export default function UserProfile({ initialUserData }) {
                         </div>
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-black">{user.name}</h1>
-                            <p className="text-lime-100 font-medium text-sm mt-0.5">{user.email}</p>
+                            <p className="text-red-100 font-medium text-sm mt-0.5">{user.email}</p>
                             <span className="inline-block mt-2 px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold uppercase tracking-wider">
                                 {user.role === 'PATIENT' ? 'Hasta Profili' : user.role}
                             </span>
@@ -125,7 +125,7 @@ export default function UserProfile({ initialUserData }) {
                     {!isEditing && (
                         <button
                             onClick={() => { setFormData(user); setIsEditing(true); }}
-                            className="bg-white/20 hover:bg-white/30 active:scale-95 text-white font-bold px-5 py-3 rounded-2xl text-sm transition duration-200 flex items-center space-x-2 border border-white/20 shadow-sm"
+                            className="bg-white/20 hover:bg-white/30 active:scale-95 text-white font-bold px-5 py-3 rounded-2xl text-sm transition duration-200 flex items-center space-x-2 border border-white/20 shadow-clay-btn"
                         >
                             <Edit3 className="w-4 h-4" />
                             <span>Bilgileri Düzenle</span>
@@ -151,7 +151,7 @@ export default function UserProfile({ initialUserData }) {
                         {/* Fiziksel Bilgiler Kartları */}
                         <div>
                             <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                                <Sparkles className="w-5 h-5 text-lime-700 dark:text-lime-400" />
+                                <Sparkles className="w-5 h-5 text-red-600 dark:text-red-400" />
                                 <span>Kişisel ve Fiziksel Bilgiler</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-theme-bg p-5 rounded-3xl shadow-inner">
@@ -177,7 +177,7 @@ export default function UserProfile({ initialUserData }) {
                         {/* Sosyal ve Yaşam Tarzı */}
                         <div>
                             <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                                <User className="w-5 h-5 text-lime-700 dark:text-lime-400" />
+                                <User className="w-5 h-5 text-red-600 dark:text-red-400" />
                                 <span>Sosyal ve Yaşam Tarzı</span>
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -203,7 +203,7 @@ export default function UserProfile({ initialUserData }) {
                         {/* Tıbbi Geçmiş ve Sağlık */}
                         <div>
                             <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                                <Activity className="w-5 h-5 text-lime-700 dark:text-lime-400" />
+                                <Activity className="w-5 h-5 text-red-600 dark:text-red-400" />
                                 <span>Tıbbi Geçmiş ve Sağlık Bilgileri</span>
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -235,28 +235,28 @@ export default function UserProfile({ initialUserData }) {
                     <form onSubmit={handleUpdate} className="space-y-6">
                         <div className="flex justify-between items-center pb-4 border-b border-stone-200 dark:border-stone-800">
                             <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Profil Bilgilerini Güncelle</h3>
-                            <span className="text-xs text-lime-700 dark:text-lime-400 font-bold">⚠️ Zorunlu alanlar işaretlidir</span>
+                            <span className="text-xs text-red-500 font-bold">⚠️ Zorunlu alanlar işaretlidir</span>
                         </div>
 
                         {/* Temel Bilgiler */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">Ad Soyad</label>
+                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Ad Soyad</label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-800/20"
+                                    className="w-full px-5 py-3.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-3xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-4 focus:ring-red-600/20"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">E-posta Adresi</label>
+                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">E-posta Adresi</label>
                                 <input
                                     type="email"
                                     required
-                                    className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20"
+                                    className="w-full px-5 py-3.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-3xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-4 focus:ring-red-600/20"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
@@ -431,7 +431,7 @@ export default function UserProfile({ initialUserData }) {
                         <div className="flex gap-4 pt-4">
                             <button
                                 type="submit"
-                                className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition text-sm flex items-center justify-center space-x-2"
+                                className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition text-sm flex items-center justify-center space-x-2"
                             >
                                 <Save className="w-5 h-5" />
                                 <span>Değişiklikleri Kaydet</span>

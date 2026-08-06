@@ -101,9 +101,8 @@ const UserProfile = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-      
       {/* Üst Header / Profil Kartı */}
-      <div className="bg-gradient-to-r from-lime-700 via-lime-800 to-emerald-800 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+      <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-900 rounded-2xl p-8 text-white shadow-clay-card dark:shadow-clay-card-dark border-theme-border relative overflow-hidden">
         <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
           <Heart className="w-64 h-64 text-white" />
         </div>
@@ -115,7 +114,7 @@ const UserProfile = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-black">{user.name}</h1>
-              <p className="text-lime-100 font-medium text-sm mt-0.5">{user.email}</p>
+              <p className="text-red-100 font-medium text-sm mt-0.5">{user.email}</p>
               <span className="inline-block mt-2 px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold uppercase tracking-wider">
                 {user.role === 'PATIENT' ? 'Hasta Profili' : user.role}
               </span>
@@ -125,7 +124,7 @@ const UserProfile = () => {
           {!isEditing && (
             <button
               onClick={() => { setFormData(user); setIsEditing(true); }}
-              className="bg-white/20 hover:bg-white/30 active:scale-95 text-white font-bold px-5 py-3 rounded-2xl text-sm transition duration-200 flex items-center space-x-2 border border-white/20 shadow-sm"
+              className="bg-white/20 hover:bg-white/30 active:scale-95 text-white font-bold px-5 py-3 rounded-2xl text-sm transition duration-200 flex items-center space-x-2 border border-white/20 shadow-clay-btn"
             >
               <Edit3 className="w-4 h-4" />
               <span>Bilgileri Düzenle</span>
@@ -136,96 +135,96 @@ const UserProfile = () => {
 
       {/* Başarı Bildirimi */}
       {successMsg && (
-        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-3xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
           <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {/* İçerik Alanı: Görüntüleme veya Düzenleme Formu */}
-      <div className="bg-theme-card rounded-[2.5rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border">
+      <div className="bg-theme-card rounded-2xl p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border">
         {!isEditing ? (
           /* --- GÖRÜNTÜLEME MODU --- */
           <div className="space-y-8">
             
             {/* Fiziksel Bilgiler Kartları */}
             <div>
-              <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-lime-700 dark:text-lime-400" />
+              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center space-x-2">
+                <Sparkles className="w-5 h-5 text-red-600 dark:text-red-400" />
                 <span>Kişisel ve Fiziksel Bilgiler</span>
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-theme-bg p-5 rounded-3xl shadow-inner">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-theme-bg p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800">
                 <div>
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">YAŞ</span>
-                  <span className="text-xl font-black text-stone-800 dark:text-stone-200">{user.age}</span>
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">YAŞ</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-slate-100">{user.age}</span>
                 </div>
                 <div>
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">CİNSİYET</span>
-                  <span className="text-xl font-black text-stone-800 dark:text-stone-200">{user.gender}</span>
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">CİNSİYET</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-slate-100">{user.gender}</span>
                 </div>
                 <div>
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">BOY</span>
-                  <span className="text-xl font-black text-stone-800 dark:text-stone-200">{user.height} cm</span>
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">BOY</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-slate-100">{user.height} cm</span>
                 </div>
                 <div>
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">KİLO</span>
-                  <span className="text-xl font-black text-stone-800 dark:text-stone-200">{user.weight} kg</span>
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">KİLO</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-slate-100">{user.weight} kg</span>
                 </div>
               </div>
             </div>
 
             {/* Sosyal ve Yaşam Tarzı */}
             <div>
-              <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                <User className="w-5 h-5 text-lime-700 dark:text-lime-400" />
+              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center space-x-2">
+                <User className="w-5 h-5 text-red-600 dark:text-red-400" />
                 <span>Sosyal ve Yaşam Tarzı</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="flex justify-between py-3 border-b border-stone-200 dark:border-stone-800 font-bold">
-                  <span className="text-stone-500">Medeni Durum:</span>
-                  <span className="text-stone-800 dark:text-stone-200">{user.maritalStatus}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200 dark:border-slate-800 font-bold">
+                  <span className="text-slate-500">Medeni Durum:</span>
+                  <span className="text-slate-800 dark:text-slate-200">{user.maritalStatus}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-stone-200 dark:border-stone-800 font-bold">
-                  <span className="text-stone-500">Çocuk Durumu:</span>
-                  <span className="text-stone-800 dark:text-stone-200">{user.hasChildren}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200 dark:border-slate-800 font-bold">
+                  <span className="text-slate-500">Çocuk Durumu:</span>
+                  <span className="text-slate-800 dark:text-slate-200">{user.hasChildren}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-stone-200 dark:border-stone-800 font-bold">
-                  <span className="text-stone-500">Meslek:</span>
-                  <span className="text-stone-800 dark:text-stone-200">{user.occupation || 'Belirtilmemiş'}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200 dark:border-slate-800 font-bold">
+                  <span className="text-slate-500">Meslek:</span>
+                  <span className="text-slate-800 dark:text-slate-200">{user.occupation || 'Belirtilmemiş'}</span>
                 </div>
-                <div className="flex justify-between py-3 border-b border-stone-200 dark:border-stone-800 font-bold">
-                  <span className="text-stone-500">Sigara / Alkol:</span>
-                  <span className="text-stone-800 dark:text-stone-200">{user.smoking} / {user.alcohol}</span>
+                <div className="flex justify-between py-3 border-b border-slate-200 dark:border-slate-800 font-bold">
+                  <span className="text-slate-500">Sigara / Alkol:</span>
+                  <span className="text-slate-800 dark:text-slate-200">{user.smoking} / {user.alcohol}</span>
                 </div>
               </div>
             </div>
 
             {/* Tıbbi Geçmiş ve Sağlık */}
             <div>
-              <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-lime-700 dark:text-lime-400" />
+              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4 flex items-center space-x-2">
+                <Activity className="w-5 h-5 text-red-600 dark:text-red-400" />
                 <span>Tıbbi Geçmiş ve Sağlık Bilgileri</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="bg-theme-bg p-4 rounded-2xl">
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">GENETİK / KRONİK HASTALIKLAR</span>
-                  <p className="text-stone-800 dark:text-stone-200 font-bold">{user.geneticDiseases || 'Yok'}</p>
+                <div className="bg-theme-bg p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800">
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">GENETİK / KRONİK HASTALIKLAR</span>
+                  <p className="text-slate-800 dark:text-slate-200 font-bold">{user.geneticDiseases || 'Yok'}</p>
                 </div>
-                <div className="bg-theme-bg p-4 rounded-2xl">
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">GEÇİRİLEN OPERASYONLAR</span>
-                  <p className="text-stone-800 dark:text-stone-200 font-bold">{user.pastSurgeries || 'Yok'}</p>
+                <div className="bg-theme-bg p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800">
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">GEÇİRİLEN OPERASYONLAR</span>
+                  <p className="text-slate-800 dark:text-slate-200 font-bold">{user.pastSurgeries || 'Yok'}</p>
                 </div>
-                <div className="bg-theme-bg p-4 rounded-2xl">
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">SÜREKLİ KULLANILAN İLAÇLAR</span>
-                  <p className="text-stone-800 dark:text-stone-200 font-bold">{user.regularMedications || 'Yok'}</p>
+                <div className="bg-theme-bg p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800">
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">SÜREKLİ KULLANILAN İLAÇLAR</span>
+                  <p className="text-slate-800 dark:text-slate-200 font-bold">{user.regularMedications || 'Yok'}</p>
                 </div>
-                <div className="bg-theme-bg p-4 rounded-2xl">
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">BİLİNEN ALERJİLER</span>
-                  <p className="text-stone-800 dark:text-stone-200 font-bold">{user.allergies || 'Yok'}</p>
+                <div className="bg-theme-bg p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800">
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">BİLİNEN ALERJİLER</span>
+                  <p className="text-slate-800 dark:text-slate-200 font-bold">{user.allergies || 'Yok'}</p>
                 </div>
-                <div className="bg-theme-bg p-4 rounded-2xl md:col-span-2">
-                  <span className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-1">KRONİK AĞRI / ŞİKAYETLER</span>
-                  <p className="text-stone-800 dark:text-stone-200 font-bold">{user.chronicComplaints || 'Yok'}</p>
+                <div className="bg-theme-bg p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 md:col-span-2">
+                  <span className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">KRONİK AĞRI / ŞİKAYETLER</span>
+                  <p className="text-slate-800 dark:text-slate-200 font-bold">{user.chronicComplaints || 'Yok'}</p>
                 </div>
               </div>
             </div>
@@ -233,30 +232,30 @@ const UserProfile = () => {
         ) : (
           /* --- DÜZENLEME (GÜNCELLEME) FORMU --- */
           <form onSubmit={handleUpdate} className="space-y-6">
-            <div className="flex justify-between items-center pb-4 border-b border-stone-200 dark:border-stone-800">
-              <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Profil Bilgilerini Güncelle</h3>
+            <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800">
+              <h3 className="text-xl font-black text-slate-800 dark:text-slate-100">Profil Bilgilerini Güncelle</h3>
               <span className="text-xs text-red-500 font-bold">⚠️ Zorunlu alanlar işaretlidir</span>
             </div>
 
             {/* Temel Bilgiler */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">Ad Soyad</label>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Ad Soyad</label>
                 <input
                   type="text"
                   required
-                  className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-800/20"
+                  className="w-full px-5 py-3.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">E-posta Adresi</label>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">E-posta Adresi</label>
                 <input
                   type="email"
                   required
-                  className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20"
+                  className="w-full px-5 py-3.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -264,22 +263,22 @@ const UserProfile = () => {
             </div>
 
             {/* Zorunlu Fiziksel Veriler */}
-            <div className="bg-blue-50/80 dark:bg-blue-950/30 p-5 rounded-3xl border border-blue-200 dark:border-blue-900">
-              <p className="text-xs font-black text-blue-800 dark:text-blue-300 uppercase tracking-wider mb-3">Zorunlu Sağlık Verileri ⚠️</p>
+            <div className="bg-sky-50/80 dark:bg-sky-950/30 p-5 rounded-2xl border border-sky-200 dark:border-sky-900">
+              <p className="text-xs font-black text-sky-800 dark:text-sky-300 uppercase tracking-wider mb-3">Zorunlu Sağlık Verileri ⚠️</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">Yaş ⚠️</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Yaş ⚠️</label>
                   <input 
                     type="number" required 
-                    className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                     value={formData.age}
                     onChange={(e) => setFormData({...formData, age: e.target.value})}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">Cinsiyet ⚠️</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Cinsiyet ⚠️</label>
                   <select 
-                    required className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required className="w-full px-4 py-2.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                     value={formData.gender}
                     onChange={(e) => setFormData({...formData, gender: e.target.value})}
                   >
@@ -289,19 +288,19 @@ const UserProfile = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">Boy (cm) ⚠️</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Boy (cm) ⚠️</label>
                   <input 
                     type="number" required 
-                    className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                     value={formData.height}
                     onChange={(e) => setFormData({...formData, height: e.target.value})}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">Kilo (kg) ⚠️</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Kilo (kg) ⚠️</label>
                   <input 
                     type="number" required 
-                    className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                     value={formData.weight}
                     onChange={(e) => setFormData({...formData, weight: e.target.value})}
                   />
@@ -309,129 +308,11 @@ const UserProfile = () => {
               </div>
             </div>
 
-            {/* Sosyal Bilgiler */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Medeni Durum</label>
-                <select 
-                  className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                  value={formData.maritalStatus}
-                  onChange={(e) => setFormData({...formData, maritalStatus: e.target.value})}
-                >
-                  <option value="Bekar">Bekar</option>
-                  <option value="Evli">Evli</option>
-                  <option value="Diğer">Diğer</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Çocuk Durumu</label>
-                <select 
-                  className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                  value={formData.hasChildren}
-                  onChange={(e) => setFormData({...formData, hasChildren: e.target.value})}
-                >
-                  <option value="Hayır">Hayır</option>
-                  <option value="Evet">Evet</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Meslek</label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                value={formData.occupation}
-                onChange={(e) => setFormData({...formData, occupation: e.target.value})}
-              />
-            </div>
-
-            {/* Tıbbi Detaylar */}
-            <div>
-              <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Genetik / Kronik Hastalıklar</label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                value={formData.geneticDiseases}
-                onChange={(e) => setFormData({...formData, geneticDiseases: e.target.value})}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Geçirilen Operasyonlar</label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                value={formData.pastSurgeries}
-                onChange={(e) => setFormData({...formData, pastSurgeries: e.target.value})}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Sürekli Kullanılan İlaçlar</label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                value={formData.regularMedications}
-                onChange={(e) => setFormData({...formData, regularMedications: e.target.value})}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Bilinen Alerjiler</label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                value={formData.allergies}
-                onChange={(e) => setFormData({...formData, allergies: e.target.value})}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Kronik Ağrı / Şikayetler</label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                value={formData.chronicComplaints}
-                onChange={(e) => setFormData({...formData, chronicComplaints: e.target.value})}
-              />
-            </div>
-
-            {/* Yaşam Tarzı */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Sigara Tüketimi</label>
-                <select 
-                  className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                  value={formData.smoking}
-                  onChange={(e) => setFormData({...formData, smoking: e.target.value})}
-                >
-                  <option value="Kullanmıyor">Kullanmıyor</option>
-                  <option value="Ara sıra">Ara sıra</option>
-                  <option value="Düzenli / Kullanıyor">Düzenli / Kullanıyor</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Alkol Tüketimi</label>
-                <select 
-                  className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-sm focus:outline-none"
-                  value={formData.alcohol}
-                  onChange={(e) => setFormData({...formData, alcohol: e.target.value})}
-                >
-                  <option value="Kullanmıyor">Kullanmıyor</option>
-                  <option value="Sosyal olarak">Sosyal olarak</option>
-                  <option value="Düzenli">Düzenli</option>
-                </select>
-              </div>
-            </div>
-
             {/* Düzenleme Kontrol Butonları */}
             <div className="flex gap-4 pt-4">
               <button 
                 type="submit" 
-                className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition text-sm flex items-center justify-center space-x-2"
+                className="flex-1 py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-clay-btn active:scale-95 transition text-sm flex items-center justify-center space-x-2"
               >
                 <Save className="w-5 h-5" />
                 <span>Değişiklikleri Kaydet</span>
@@ -439,7 +320,7 @@ const UserProfile = () => {
               <button 
                 type="button" 
                 onClick={() => { setFormData(user); setIsEditing(false); }}
-                className="px-6 py-4 bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 font-bold rounded-3xl transition text-sm flex items-center justify-center space-x-2"
+                className="px-6 py-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl transition text-sm flex items-center justify-center space-x-2"
               >
                 <X className="w-5 h-5" />
                 <span>İptal</span>

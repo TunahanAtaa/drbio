@@ -25,7 +25,7 @@ public class DataSeeder {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void seedData() {
-        createUserIfNotExists(
+        createOrUpdateUser(
                 "admin@drbio.com",
                 "admin123",
                 "Sistem Yöneticisi",
@@ -33,22 +33,39 @@ public class DataSeeder {
                 LocalDate.of(1985, 1, 15),
                 Role.ADMIN);
 
-        log.info("DataSeeder: Sadece admin kullanıcısı kontrol edildi / oluşturuldu.");
+        createOrUpdateUser(
+                "hasta@drbio.com",
+                "hasta123",
+                "Test Hastası",
+                Gender.FEMALE,
+                LocalDate.of(1995, 5, 20),
+                Role.PATIENT);
+
+        log.info("DataSeeder: Test kullanıcıları kontrol edildi / oluşturuldu.");
     }
 
-    private void createUserIfNotExists(String email, String password, String fullName,
+    private void createOrUpdateUser(String email, String password, String fullName,
             Gender gender, LocalDate birthDate, Role role) {
-        if (!userRepository.existsByEmail(email)) {
-            User user = User.builder()
-                    .email(email)
-                    .passwordHash(passwordEncoder.encode(password))
-                    .fullName(fullName)
-                    .gender(gender)
-                    .birthDate(birthDate)
-                    .role(role)
-                    .build();
-            userRepository.save(user);
-            log.info("DataSeeder: '{}' kullanıcısı oluşturuldu (Rol: {}).", email, role);
-        }
+        userRepository.findByEmail(email).ifPresentOrElse(
+            existingUser -> {
+                if (!passwordEncoder.matches(password, existingUser.getPasswordHash())) {
+                    existingUser.setPasswordHash(passwordEncoder.encode(password));
+                    userRepository.save(existingUser);
+                    log.info("DataSeeder: '{}' kullanıcısının şifresi güncellendi.", email);
+                }
+            },
+            () -> {
+                User user = User.builder()
+                        .email(email)
+                        .passwordHash(passwordEncoder.encode(password))
+                        .fullName(fullName)
+                        .gender(gender)
+                        .birthDate(birthDate)
+                        .role(role)
+                        .build();
+                userRepository.save(user);
+                log.info("DataSeeder: '{}' kullanıcısı oluşturuldu (Rol: {}).", email, role);
+            }
+        );
     }
 }

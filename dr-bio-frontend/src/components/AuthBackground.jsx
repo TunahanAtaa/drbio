@@ -9,7 +9,7 @@ const decorativeCards = [
     value: '13.8 g/dL',
     status: 'Normal',
     icon: Droplets,
-    color: 'text-lime-700',
+    color: 'text-red-600',
     position: 'top-[12%] left-[8%]',
     rotation: '-rotate-3',
     scale: 'scale-100',
@@ -78,7 +78,7 @@ const decorativeCards = [
     value: '185 mg/dL',
     status: 'Normal',
     icon: Activity,
-    color: 'text-lime-700',
+    color: 'text-red-600',
     position: 'top-[55%] right-[2%]',
     rotation: 'rotate-3',
     scale: 'scale-95',
@@ -100,21 +100,21 @@ const AuthBackground = () => {
           key={card.id}
           className={`absolute ${card.position} ${card.hideOnMobile ? 'hidden md:block' : 'block'}`}
         >
-          <div className={`${card.rotation} ${card.scale} flex flex-col bg-white/50 dark:bg-stone-800/30 border border-stone-200/50 dark:border-stone-700/30 shadow-sm rounded-2xl p-4 opacity-30 dark:opacity-15 min-w-[180px]`}>
+          <div className={`${card.rotation} ${card.scale} flex flex-col bg-white/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-700/30 shadow-sm rounded-2xl p-4 opacity-30 dark:opacity-15 min-w-[180px]`}>
 
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
-                <div className={`p-1.5 bg-stone-50 dark:bg-stone-800 rounded-lg ${card.color}`}>
+                <div className={`p-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg ${card.color}`}>
                   <card.icon className="w-4 h-4" />
                 </div>
-                <span className="font-bold text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-wider">{card.title}</span>
+                <span className="font-bold text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">{card.title}</span>
               </div>
             </div>
 
             {/* Dynamic Content based on type */}
             {card.type === 'standard' && (
               <>
-                <div className="text-xl font-black text-stone-700 dark:text-stone-200 mb-0.5">{card.value}</div>
+                <div className="text-xl font-black text-slate-700 dark:text-slate-200 mb-0.5">{card.value}</div>
                 <div className={`text-[10px] font-bold ${card.status === 'Normal' ? 'text-emerald-500' : 'text-amber-500'}`}>
                   {card.status}
                 </div>
@@ -124,8 +124,8 @@ const AuthBackground = () => {
             {card.type === 'trend' && (
               <div className="flex items-end justify-between">
                 <div>
-                  <div className="text-2xl font-black text-stone-700 dark:text-stone-200 leading-none mb-0.5">
-                    {card.value} <span className="text-xs text-stone-400 font-bold">{card.unit}</span>
+                  <div className="text-2xl font-black text-slate-700 dark:text-slate-200 leading-none mb-0.5">
+                    {card.value} <span className="text-xs text-slate-400 font-bold">{card.unit}</span>
                   </div>
                   <div className={`text-[10px] font-bold ${card.status === 'Normal' ? 'text-emerald-500' : 'text-amber-500'}`}>
                     {card.status}
@@ -140,14 +140,14 @@ const AuthBackground = () => {
             {card.type === 'score' && (
               <div className="flex items-center space-x-2">
                 <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{card.value}</div>
-                <div className="text-[10px] font-bold text-stone-500 leading-tight">Genel<br/>Durum<br/><span className="text-emerald-500">Mükemmel</span></div>
+                <div className="text-[10px] font-bold text-slate-500 leading-tight">Genel<br/>Durum<br/><span className="text-emerald-500">Mükemmel</span></div>
               </div>
             )}
 
             {card.type === 'report' && (
               <>
-                <div className="text-base font-black text-stone-700 dark:text-stone-200 mb-0.5">{card.value}</div>
-                <div className="text-[10px] font-bold text-stone-400">{card.date}</div>
+                <div className="text-base font-black text-slate-700 dark:text-slate-200 mb-0.5">{card.value}</div>
+                <div className="text-[10px] font-bold text-slate-400">{card.date}</div>
               </>
             )}
 
