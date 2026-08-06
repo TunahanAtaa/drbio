@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Sun, Moon, Bell, User, CheckCircle2, Sparkles, AlertCircle, X, Trash2 } from 'lucide-react';
+import { LogOut, Sun, Moon, Bell, User, CheckCircle2, Sparkles, AlertCircle, X, Trash2, MessageSquare, Star } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 const initialNotifications = [
   {

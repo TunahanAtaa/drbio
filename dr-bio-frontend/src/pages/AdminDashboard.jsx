@@ -6,7 +6,7 @@ import {
   Shield, Activity, FileText, Sparkles, Filter, ChevronRight, UserPlus, 
   Settings, Server, ArrowUpRight, Save, X, Eye, AlertTriangle, UserCheck, 
   Heart, Pill, Stethoscope, Scale, Ruler, Briefcase, Flame, Star, MessageSquare,
-  Send, CheckCircle2, Bell
+  Send, CheckCircle2, Bell, Check
 } from 'lucide-react';
 
 const defaultFeedbacks = [
@@ -291,10 +291,22 @@ const AdminDashboard = () => {
 
   const [feedbackSearch, setFeedbackSearch] = useState('');
   const [starFilter, setStarFilter] = useState('ALL');
+  const [feedbackSubTab, setFeedbackSubTab] = useState('all'); // 'all' | 'complaints' | 'pending_contact'
   const [acknowledgedIds, setAcknowledgedIds] = useState(() => {
     const saved = localStorage.getItem('drbio_acknowledged_ids');
     if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) return p; } catch(e) {} }
     return [];
+  });
+  const [contactPendingIds, setContactPendingIds] = useState(() => {
+    const saved = localStorage.getItem('drbio_contact_pending_ids');
+    if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) return p; } catch(e) {} }
+    return [];
+  });
+  // Son gönderilen şablon: { [feedbackId]: templateId }
+  const [feedbackLastAction, setFeedbackLastAction] = useState(() => {
+    const saved = localStorage.getItem('drbio_last_action');
+    if (saved) { try { const p = JSON.parse(saved); if (typeof p === 'object') return p; } catch(e) {} }
+    return {};
   });
   const [ackToast, setAckToast] = useState('');
 
@@ -363,46 +375,189 @@ const AdminDashboard = () => {
   };
 
 
-  // Mesaj şablon listesi
+  // Mesaj şablon listesi (Kalıp Cümleler)
   const MESSAGE_TEMPLATES = [
-    { id: 'received',      emoji: '📬', label: 'Alındı Onayı',            title: 'Geri Bildiriminiz Alındı',          text: '📬 Geri bildiriminiz ekibimize ulaştı. Kısa süre içinde konuyla ilgili tarafınıza bilgi verilecektir. Değerli görüşleriniz için teşekkür ederiz.' },
-    { id: 'investigating', emoji: '🔍', label: 'İnceleniyor',             title: 'Şikayetiniz İnceleniyor',           text: '🔍 Şikayetinizi aldık ve ekibimiz konuyu aktif olarak inceliyor. En kısa sürede size dönüş yapılacaktır. Sabrınız için teşekkür ederiz.' },
-    { id: 'resolved',      emoji: '✅', label: 'Çözüme Kavuştu',          title: 'Sorununuz Çözüldü',                 text: '✅ Bildirdiğiniz konu incelendi ve gerekli düzenlemeler yapıldı. Hizmetimizi daha iyi hale getirmemize katkı sağladığınız için teşekkür ederiz.' },
-    { id: 'will_contact',  emoji: '📞', label: 'İletişime Geçilecek',     title: 'Yakında Sizi Arayacağız',           text: '📞 Geri bildiriminizi değerlendirdik. Ekibimiz en kısa sürede sizinle iletişime geçecektir. Anlayışınız için teşekkür ederiz.' },
-    { id: 'thankyou',      emoji: '🙏', label: 'Teşekkür',                title: 'Görüşleriniz İçin Teşekkürler',     text: '🙏 Değerli geri bildiriminiz için teşekkür ederiz. Görüşleriniz hizmet kalitemizi artırmamıza büyük katkı sağlamaktadır.' },
-    { id: 'apology',       emoji: '🤝', label: 'Özür & Anlayış',          title: 'Yaşattığımız Sorunu Özür Dileriz',  text: '🤝 Yaşadığınız olumsuz deneyim için özür dileriz. Sorununuzu en kısa sürede çözmek için çalışıyoruz. Anlayışınız için teşekkür ederiz.' },
+    { 
+      id: 'received',      
+      emoji: '📬', 
+      label: 'Şikayet & Talep Alındı',            
+      title: 'Şikayetiniz Alınmıştır',          
+      text: 'Şikayetiniz ve talebiniz alınmıştır. En kısa süre içerisinde uzman ekibimiz tarafından detaylı inceleme yapılıp tarafınıza geri dönüş sağlanacaktır.',
+      badgeBg: 'bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800'
+    },
+    { 
+      id: 'investigating', 
+      emoji: '🔍', 
+      label: 'İnceleme Başlatıldı',             
+      title: 'Konu İncelenmektedir',           
+      text: 'Görüşleriniz ve geri bildiriminiz bizim için çok değerli. Hizmet kalitemizi artırmak adına bildirdiğiniz konu hakkında gerekli incelemeler başlatılmıştır.',
+      badgeBg: 'bg-blue-100 dark:bg-blue-950/50 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800'
+    },
+    { 
+      id: 'thankyou',      
+      emoji: '🙏', 
+      label: 'Geri Bildirim Teşekkürü',                
+      title: 'Geri Bildiriminiz İçin Teşekkürler',     
+      text: 'Geri bildiriminiz ve değerli önerileriniz için Dr. Bio ailesi olarak çok teşekkür ederiz. Sağlıklı günler dileriz!',
+      badgeBg: 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+    },
+    { 
+      id: 'praise',        
+      emoji: '⭐', 
+      label: 'Güzel Yorum Teşekkürü',          
+      title: 'Nazik Yorumlarınız İçin Teşekkürler',  
+      text: 'Güzel ve nazik yorumlarınız için çok teşekkür ederiz! Yorumlarınız ve memnuniyetiniz bizlere ilham veriyor. Sağlıklı günler dileriz.',
+      badgeBg: 'bg-purple-100 dark:bg-purple-950/50 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800'
+    },
+    { 
+      id: 'resolved',      
+      emoji: '✅', 
+      label: 'Çözüme Ulaştırıldı',          
+      title: 'Talebiniz Çözüme Ulaştırıldı',                 
+      text: 'Bildirdiğiniz konu incelenmiş ve gerekli düzenlemeler yapılmıştır. Hizmetimizi iyileştirmemize katkı sağladığınız için teşekkür ederiz.',
+      badgeBg: 'bg-teal-100 dark:bg-teal-950/50 text-teal-800 dark:text-teal-300 border-teal-300 dark:border-teal-800'
+    },
+    { 
+      id: 'will_contact',  
+      emoji: '📞', 
+      label: 'Temsilci İletişimi',     
+      title: 'Sizinle İletişime Geçilecek',           
+      text: 'Geri bildiriminizi değerlendirdik. Ekibimiz en kısa süre içerisinde tarafınızla iletişime geçecektir.',
+      badgeBg: 'bg-rose-100 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800'
+    },
+  ];
+
+  // Çözüm mesajları (Bekleyen Dönüşler → Geri Dönüş Yap butonu için)
+  const RESOLUTION_TEMPLATES = [
+    {
+      id: 'resolved',
+      emoji: '✅',
+      label: 'Sorun Çözüldü',
+      title: 'Talebiniz Çözüme Kavuşturuldu',
+      text: 'Bildirdiğiniz sorun ve talebiniz ekibimiz tarafından incelenerek çözüme kavuşturulmuştur. İlginiz ve sabrınız için teşekkür ederiz. Sağlıklı günler dileriz.',
+      badgeBg: 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+    },
+    {
+      id: 'fixed_bug',
+      emoji: '🛠️',
+      label: 'Hata Düzeltildi',
+      title: 'Bildirdiğiniz Hata Giderildi',
+      text: 'Bildirdiğiniz teknik hata/sorun tespit edilmiş ve gerekli düzeltme işlemi tamamlanmıştır. Değerli geri bildiriminiz sistemimizin gelişimine katkı sağladı.',
+      badgeBg: 'bg-blue-100 dark:bg-blue-950/50 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800'
+    },
+    {
+      id: 'update_done',
+      emoji: '🔄',
+      label: 'Güncelleme Yapıldı',
+      title: 'Talebiniz Doğrultusunda Güncelleme Yapıldı',
+      text: 'Talebiniz ve öneriniz doğrultusunda sistemimizde gerekli güncelleme yapılmıştır. Katkılarınız Dr. Bio ailesini daha iyi hale getiriyor.',
+      badgeBg: 'bg-purple-100 dark:bg-purple-950/50 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-800'
+    },
+    {
+      id: 'apology',
+      emoji: '🤝',
+      label: 'Özür & Çözüm Bilgisi',
+      title: 'Yaşattığımız Rahatsızlık İçin Özür Dileriz',
+      text: 'Yaşadığınız olumsuz deneyim için içtenlikle özür dileriz. Sorununuz çözüme kavuşturulmuş olup, benzer bir durumun tekrarlanmaması için gerekli önlemler alınmıştır.',
+      badgeBg: 'bg-rose-100 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800'
+    },
+    {
+      id: 'thankyou',
+      emoji: '🙏',
+      label: 'Teşekkür & Kapanış',
+      title: 'Geri Bildiriminiz İçin Teşekkürler',
+      text: 'Geri bildiriminiz ve sabrınız için içtenlikle teşekkür ederiz. Konunuz ilgili ekibimize iletilmiş olup en kısa sürede gerekli adımlar atılacaktır.',
+      badgeBg: 'bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800'
+    },
   ];
 
   const [ackModalTarget, setAckModalTarget] = useState(null);
-  const [ackSelectedTemplate, setAckSelectedTemplate] = useState(null);
-  const [ackCustomNote, setAckCustomNote] = useState('');
+  const [ackSelectedTemplate, setAckSelectedTemplate] = useState(MESSAGE_TEMPLATES[0]);
+  const [ackCustomNote, setAckCustomNote] = useState(MESSAGE_TEMPLATES[0].text);
+
+  // Çözüm/Geri dönüş modalı state
+  const [resolveModalTarget, setResolveModalTarget] = useState(null);
+  const [resolveSelectedTemplate, setResolveSelectedTemplate] = useState(null);
+  const [resolveCustomNote, setResolveCustomNote] = useState('');
+
+  const openResolveModal = (item) => {
+    setResolveModalTarget(item);
+    setResolveSelectedTemplate(RESOLUTION_TEMPLATES[0]);
+    setResolveCustomNote(RESOLUTION_TEMPLATES[0].text);
+  };
+
+  const handleSelectResolutionTemplate = (tpl) => {
+    setResolveSelectedTemplate(tpl);
+    setResolveCustomNote(tpl.text);
+  };
+
+  const handleSendResolution = (e) => {
+    if (e) e.preventDefault();
+    if (!resolveModalTarget || !resolveCustomNote.trim()) return;
+
+    const item = resolveModalTarget;
+    const title = resolveSelectedTemplate
+      ? `${resolveSelectedTemplate.emoji} ${resolveSelectedTemplate.title}`
+      : '✅ Dr. Bio — Talebiniz Yanıtlandı';
+    const finalText = resolveCustomNote.trim();
+
+    // Hastaya bildirim gönder
+    const userEmail = (item.userEmail || '').toLowerCase();
+    const notifKey = `drbio_notif_${userEmail}`;
+    let notifs = [];
+    const savedN = localStorage.getItem(notifKey);
+    if (savedN) { try { const p = JSON.parse(savedN); if (Array.isArray(p)) notifs = p; } catch(e) {} }
+    const newNotif = { id: Date.now(), title, text: finalText, time: 'Az önce', unread: true, type: 'SYSTEM' };
+    localStorage.setItem(notifKey, JSON.stringify([newNotif, ...notifs]));
+
+    // Feedback'i REVIEWED yap
+    const newList = safeFeedbacks.map(f => f.id === item.id ? { ...f, status: 'REVIEWED' } : f);
+    setFeedbacks(newList);
+    localStorage.setItem('drbio_feedbacks', JSON.stringify(newList));
+
+    // Bekleyen listesinden çıkar (sorun çözüldü)
+    const newPending = contactPendingIds.filter(id => id !== item.id);
+    setContactPendingIds(newPending);
+    localStorage.setItem('drbio_contact_pending_ids', JSON.stringify(newPending));
+
+    // Son eylemi güncelle
+    const newLastAction = { ...feedbackLastAction, [item.id]: resolveSelectedTemplate?.id || 'resolved' };
+    setFeedbackLastAction(newLastAction);
+    localStorage.setItem('drbio_last_action', JSON.stringify(newLastAction));
+
+    setResolveModalTarget(null);
+    setAckToast(`"${item.userName}" adlı hastaya çözüm mesajı iletildi ve bekleyen listesinden çıkarıldı!`);
+    setTimeout(() => setAckToast(''), 5000);
+  };
 
   const openAckModal = (item) => {
     setAckModalTarget(item);
-    setAckSelectedTemplate(null);
-    setAckCustomNote('');
+    // Varsayılan kalıp olarak şikayet ise 'received', yüksek puan ise 'thankyou' seçilsin
+    const defaultTpl = (item.rating || 5) <= 3 ? MESSAGE_TEMPLATES[0] : MESSAGE_TEMPLATES[2];
+    setAckSelectedTemplate(defaultTpl);
+    setAckCustomNote(defaultTpl.text);
   };
 
-  const handleSendAcknowledgement = (item, templateId, customNote) => {
-    const template = MESSAGE_TEMPLATES.find(t => t.id === templateId);
-    if (!template) return;
-    const finalText = customNote.trim()
-      ? `${template.text}\n\n💬 Ek Not: ${customNote.trim()}`
-      : template.text;
+  const handleSelectTemplate = (tpl) => {
+    setAckSelectedTemplate(tpl);
+    setAckCustomNote(tpl.text);
+  };
+
+  const handleSendAcknowledgement = (e) => {
+    if (e) e.preventDefault();
+    if (!ackModalTarget || !ackCustomNote.trim()) return;
+
+    const item = ackModalTarget;
+    const title = ackSelectedTemplate ? `${ackSelectedTemplate.emoji} ${ackSelectedTemplate.title}` : '💬 Dr. Bio Yönetim Bildirimi';
+    const finalText = ackCustomNote.trim();
 
     const userEmail = (item.userEmail || '').toLowerCase();
     const notifKey = `drbio_notif_${userEmail}`;
     let notifs = [];
     const saved = localStorage.getItem(notifKey);
     if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) notifs = p; } catch(e) {} }
-    const newNotif = { id: Date.now(), title: `${template.emoji} ${template.title}`, text: finalText, time: 'Az önce', unread: true, type: 'SYSTEM' };
+    const newNotif = { id: Date.now(), title: title, text: finalText, time: 'Az önce', unread: true, type: 'SYSTEM' };
     localStorage.setItem(notifKey, JSON.stringify([newNotif, ...notifs]));
-
-    const generalKey = 'userNotifications';
-    let generalNotifs = [];
-    const generalSaved = localStorage.getItem(generalKey);
-    if (generalSaved) { try { const p = JSON.parse(generalSaved); if (Array.isArray(p)) generalNotifs = p; } catch(e) {} }
-    localStorage.setItem(generalKey, JSON.stringify([newNotif, ...generalNotifs]));
 
     const newList = safeFeedbacks.map(f => f.id === item.id ? { ...f, status: 'REVIEWED' } : f);
     setFeedbacks(newList);
@@ -412,19 +567,57 @@ const AdminDashboard = () => {
     setAcknowledgedIds(newAcked);
     localStorage.setItem('drbio_acknowledged_ids', JSON.stringify(newAcked));
 
+    // Bekleyen dönüşler mantığı:
+    // 'received', 'investigating', 'will_contact' → bekleyene ekle
+    // 'resolved', 'thankyou', 'praise', 'apology' → bekleyenden çıkar (çözüme kavuştu)
+    const PENDING_TRIGGER_IDS = ['received', 'investigating', 'will_contact'];
+    const PENDING_RESOLVE_IDS = ['resolved', 'thankyou', 'praise', 'apology'];
+
+    // Son eylemi kaydet
+    const newLastAction = { ...feedbackLastAction, [item.id]: ackSelectedTemplate?.id || 'custom' };
+    setFeedbackLastAction(newLastAction);
+    localStorage.setItem('drbio_last_action', JSON.stringify(newLastAction));
+
+    if (PENDING_TRIGGER_IDS.includes(ackSelectedTemplate?.id)) {
+      if (!contactPendingIds.includes(item.id)) {
+        const newPending = [...contactPendingIds, item.id];
+        setContactPendingIds(newPending);
+        localStorage.setItem('drbio_contact_pending_ids', JSON.stringify(newPending));
+      }
+    } else if (PENDING_RESOLVE_IDS.includes(ackSelectedTemplate?.id)) {
+      if (contactPendingIds.includes(item.id)) {
+        const newPending = contactPendingIds.filter(id => id !== item.id);
+        setContactPendingIds(newPending);
+        localStorage.setItem('drbio_contact_pending_ids', JSON.stringify(newPending));
+      }
+    }
+
     setAckModalTarget(null);
-    setAckToast(`"${item.userName}" adlı hastaya "${template.label}" mesajı gönderildi!`);
+    setAckToast(`"${item.userName}" adlı hastaya geri bildirim mesajınız başarıyla iletildi!`);
     setTimeout(() => setAckToast(''), 4000);
   };
 
-  // Filtrelenmiş geri bildirimler
+  // Filtrelenmiş geri bildirimler: önce alt sekme, sonra arama + yıldız filtresi
   const filteredFeedbacks = safeFeedbacks.filter(f => {
     if (!f) return false;
+
+    // 1) Alt sekme filtresi
+    if (feedbackSubTab === 'complaints') {
+      // Şikayetler: rating <= 3, yanıtlanmamış VE bekleyen listesinde olmayan
+      if ((f.rating || 0) > 3) return false;
+      if (contactPendingIds.includes(f.id)) return false;  // bekleyen dönüşlere taşındı
+      if (acknowledgedIds.includes(f.id)) return false;    // yanıtlandı, şikayetlerden çıkar
+    }
+    if (feedbackSubTab === 'pending_contact' && !contactPendingIds.includes(f.id)) return false;
+    if (feedbackSubTab === 'responded' && !acknowledgedIds.includes(f.id)) return false; // yalnızca yanıtlananlar
+
+    // 2) Arama filtresi
     const searchLower = (feedbackSearch || '').toLowerCase();
     const matchesSearch = (f.userName || '').toLowerCase().includes(searchLower) ||
                           (f.userEmail || '').toLowerCase().includes(searchLower) ||
                           (f.comment || '').toLowerCase().includes(searchLower);
-    
+
+    // 3) Yıldız filtresi
     let matchesStar = true;
     if (starFilter === '5') matchesStar = f.rating === 5;
     else if (starFilter === '4') matchesStar = f.rating === 4;
@@ -433,12 +626,44 @@ const AdminDashboard = () => {
     return matchesSearch && matchesStar;
   });
 
+  // Süreç notu yardımcı fonksiyonu
+  const getProcessNote = (feedbackId) => {
+    const lastAction = feedbackLastAction[feedbackId];
+    const MAP = {
+      'received':      { emoji: '📬', text: 'Şikayet alindı, yanıt bekleniyor',   color: 'text-amber-600 dark:text-amber-400',   bg: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900' },
+      'investigating': { emoji: '🔍', text: 'İnceleme başlatıldı',                  color: 'text-blue-600 dark:text-blue-400',     bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900' },
+      'will_contact':  { emoji: '📞', text: 'Temsilci en kısa sürede ulaşacak',  color: 'text-rose-600 dark:text-rose-400',     bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900' },
+    };
+    return MAP[lastAction] || { emoji: '⏳', text: 'Görüş bildirildi, inceleme bekleniyor', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-900' };
+  };
+
+  // Yanıtlananlar için son mesaj notunu göster
+  const getRespondedNote = (feedbackId) => {
+    const lastAction = feedbackLastAction[feedbackId];
+    const MAP = {
+      'received':      { emoji: '📬', text: 'Şikayet alındı mesajı gönderildi',          color: 'text-amber-700 dark:text-amber-400',   bg: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900' },
+      'investigating': { emoji: '🔍', text: 'İnceleme başlatıldı bilgisi verildi',       color: 'text-blue-700 dark:text-blue-400',     bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900' },
+      'will_contact':  { emoji: '📞', text: 'Temsilci iletişim bilgisi gönderildi',   color: 'text-rose-700 dark:text-rose-400',     bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900' },
+      'thankyou':      { emoji: '🙏', text: 'Teşekkür mesajı gönderildi',              color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900' },
+      'praise':        { emoji: '⭐', text: 'Güzel yorum teşekkür mesajı gönderildi',  color: 'text-purple-700 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900' },
+      'resolved':      { emoji: '✅', text: 'Çözüme ulaştırıldı mesajı gönderildi',    color: 'text-teal-700 dark:text-teal-400',     bg: 'bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-900' },
+      'fixed_bug':     { emoji: '🛠️', text: 'Hata düzeltildi bilgisi verildi',         color: 'text-blue-700 dark:text-blue-400',     bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900' },
+      'update_done':   { emoji: '🔄', text: 'Güncelleme yapıldı bilgisi verildi',      color: 'text-purple-700 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900' },
+      'apology':       { emoji: '🤝', text: 'Telafi ve özür mesajı gönderildi',       color: 'text-rose-700 dark:text-rose-400',     bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900' },
+    };
+    return MAP[lastAction] || { emoji: '💬', text: 'Özel yanıt gönderildi',                    color: 'text-stone-700 dark:text-stone-400',   bg: 'bg-stone-50 dark:bg-stone-900/50 border-stone-200 dark:border-stone-800' };
+  };
+
+  const complaintCount = safeFeedbacks.filter(f =>
+    f && (f.rating || 0) <= 3 && !contactPendingIds.includes(f.id) && !acknowledgedIds.includes(f.id)
+  ).length;
+
   // Metrik hesaplamaları
   const avgRating = safeFeedbacks.length > 0 
     ? (safeFeedbacks.reduce((acc, curr) => acc + ((curr && curr.rating) || 5), 0) / safeFeedbacks.length).toFixed(1)
     : '5.0';
   const satisfiedCount = safeFeedbacks.filter(f => f && (f.rating || 0) >= 4).length;
-  const complaintCount = safeFeedbacks.filter(f => f && (f.rating || 0) <= 3).length;
+
 
   // Filtrelenmiş referanslar
   const filteredReferences = references.filter(r => 
@@ -903,21 +1128,99 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* Alt Sekme Navigasyonu: Tümü / Şikayetler / Bekleyen Dönüşler / Yanıtlananlar */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setFeedbackSubTab('all')}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center space-x-1.5 ${
+                feedbackSubTab === 'all'
+                  ? 'bg-stone-800 dark:bg-stone-200 text-white dark:text-stone-900 shadow-sm'
+                  : 'bg-theme-bg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Tümü ({safeFeedbacks.length})</span>
+            </button>
+            <button
+              onClick={() => setFeedbackSubTab('complaints')}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center space-x-1.5 ${
+                feedbackSubTab === 'complaints'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'bg-theme-bg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              }`}
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+              <span>Şikayetler ({complaintCount})</span>
+            </button>
+            <button
+              onClick={() => setFeedbackSubTab('pending_contact')}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center space-x-1.5 relative ${
+                feedbackSubTab === 'pending_contact'
+                  ? 'bg-orange-500 text-white shadow-sm'
+                  : 'bg-theme-bg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              }`}
+            >
+              <Bell className="w-3.5 h-3.5" />
+              <span>Bekleyen Dönüşler ({contactPendingIds.length})</span>
+              {contactPendingIds.length > 0 && feedbackSubTab !== 'pending_contact' && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+                  {contactPendingIds.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setFeedbackSubTab('responded')}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center space-x-1.5 ${
+                feedbackSubTab === 'responded'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-theme-bg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Yanıtlananlar ({acknowledgedIds.length})</span>
+            </button>
+          </div>
+
           {/* Geri Bildirim Kartları */}
           {filteredFeedbacks.length > 0 ? (
             <div className="grid grid-cols-1 gap-4">
               {filteredFeedbacks.map((item) => (
                 <div 
                   key={item.id}
-                  className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col space-y-4"
+                  className={`bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col space-y-4 ${
+                    contactPendingIds.includes(item.id)
+                      ? 'ring-2 ring-orange-400/60 dark:ring-orange-500/40'
+                      : feedbackSubTab === 'responded' && acknowledgedIds.includes(item.id)
+                        ? 'ring-2 ring-emerald-400/50 dark:ring-emerald-500/30'
+                        : ''
+                  }`}
                 >
                   <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-stone-100 dark:border-stone-800 pb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-red-600 text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-sm">
-                        {(item.userName || 'H').charAt(0)}
+                      <div className="relative">
+                        <div className="w-10 h-10 bg-red-600 text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-sm">
+                          {(item.userName || 'H').charAt(0)}
+                        </div>
+                        {/* Bekleyen dönüş rozeti */}
+                        {contactPendingIds.includes(item.id) && (
+                          <span
+                            title="Bu hasta geri dönüş bekliyor!"
+                            className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-orange-500 text-white text-[10px] font-black rounded-full flex items-center justify-center animate-pulse shadow-sm border-2 border-white dark:border-stone-900"
+                          >
+                            !
+                          </span>
+                        )}
                       </div>
                       <div>
-                        <h4 className="font-black text-stone-800 dark:text-stone-200 text-sm">{item.userName}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-black text-stone-800 dark:text-stone-200 text-sm">{item.userName}</h4>
+                          {contactPendingIds.includes(item.id) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-100 dark:bg-orange-950/50 text-orange-700 dark:text-orange-400 text-[10px] font-black rounded-full border border-orange-300 dark:border-orange-800">
+                              <Bell className="w-2.5 h-2.5" />
+                              Geri Dönüş Bekliyor
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs font-bold text-stone-400">{item.userEmail} • Tarih: {item.date}</p>
                       </div>
                     </div>
@@ -956,27 +1259,75 @@ const AdminDashboard = () => {
                     <p>"{item.comment}"</p>
                   </div>
 
+                  {/* Süreç Notu — Bekleyen Dönüşler veya Yanıtlananlar sekmesinde göster */}
+                  {feedbackSubTab === 'pending_contact' && contactPendingIds.includes(item.id) && (() => {
+                    const note = getProcessNote(item.id);
+                    return (
+                      <div className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl border text-xs font-bold ${note.bg}`}>
+                        <span className="text-base">{note.emoji}</span>
+                        <div>
+                          <span className="font-black text-[10px] uppercase tracking-widest block text-stone-400 dark:text-stone-500 mb-0.5">Süreç Durumu</span>
+                          <span className={`${note.color} font-extrabold`}>{note.text}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  {feedbackSubTab === 'responded' && acknowledgedIds.includes(item.id) && (() => {
+                    const note = getRespondedNote(item.id);
+                    return (
+                      <div className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl border text-xs font-bold ${note.bg}`}>
+                        <span className="text-base">{note.emoji}</span>
+                        <div>
+                          <span className="font-black text-[10px] uppercase tracking-widest block text-stone-400 dark:text-stone-500 mb-0.5">Gönderilen Yanıt</span>
+                          <span className={`${note.color} font-extrabold`}>{note.text}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* Alt İşlem Butonları */}
                   <div className="flex flex-wrap justify-end gap-2 pt-1">
 
-                    {/* Bildirim Gönder Butonu - Şikayet/öneri olan kartlarda vurgulu */}
-                    {acknowledgedIds.includes(item.id) ? (
-                      <span className="px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
+                    {/* Bekleyen Dönüşler sekmesindeyken → Geri Dönüş Yap butonu öne çıkar */}
+                    {feedbackSubTab === 'pending_contact' && contactPendingIds.includes(item.id) && (
+                      <button
+                        onClick={() => openResolveModal(item)}
+                        className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-sm transition flex items-center space-x-1.5 animate-pulse"
+                        title="Hastanın sorununu çözdüğünüzü bildirin ve bekleyen listesinden çıkarın"
+                      >
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Bildirim Gönderildi</span>
-                      </span>
+                        <span>🔁 Geri Dönüş Yap / Çözümü Bildir</span>
+                      </button>
+                    )}
+
+                    {/* Normal bilgilendirme butonu */}
+                    {acknowledgedIds.includes(item.id) ? (
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Bildirim Gönderildi</span>
+                        </span>
+                        <button
+                          onClick={() => openAckModal(item)}
+                          className="px-3 py-2 rounded-xl text-xs font-bold bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition flex items-center space-x-1"
+                          title="Hastaya tekrar mesaj veya kalıp yanıt gönder"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>Yeniden Mesaj Gönder</span>
+                        </button>
+                      </div>
                     ) : (
                       <button
-                        onClick={() => handleSendAcknowledgement(item)}
+                        onClick={() => openAckModal(item)}
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm ${
                           (item.rating || 5) <= 3
-                            ? 'bg-amber-500 hover:bg-amber-600 text-stone-950 animate-pulse'
+                            ? 'bg-amber-500 hover:bg-amber-600 text-stone-950'
                             : 'bg-blue-600 hover:bg-blue-700 text-white'
                         }`}
-                        title={`${item.userName} adlı hastaya şikayeti aldığınıza dair bildirim gönder`}
+                        title={`${item.userName} adlı hastaya kalıp mesaj veya özel yanıt gönder`}
                       >
-                        <Bell className="w-3.5 h-3.5" />
-                        <span>Hastayı Bilgilendir</span>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Hastayı Bilgilendir / Yanıt Gönder</span>
                       </button>
                     )}
 
@@ -1373,6 +1724,255 @@ const AdminDashboard = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- HASTAYA GERİ BİLDİRİM & KALIP CÜMLE GÖNDERME MODALI --- */}
+      {ackModalTarget && (
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
+            
+            {/* Modal Başlık */}
+            <div className="flex justify-between items-start border-b border-stone-200 dark:border-stone-800 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/60 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400">
+                  <Send className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Hastaya Yanıt & Bildirim Gönder</h3>
+                  <p className="text-xs font-bold text-stone-400 mt-0.5">
+                    <span className="text-red-600 font-extrabold">{ackModalTarget.userName}</span> ({ackModalTarget.userEmail}) için kalıp cümle seçin veya özel mesaj yazın.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setAckModalTarget(null)}
+                className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 bg-theme-bg rounded-xl transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Orijinal Hasta Yorum Özeti */}
+            <div className="bg-stone-50 dark:bg-stone-900/60 p-4 rounded-2xl border border-stone-200 dark:border-stone-800/80 text-xs">
+              <div className="flex justify-between items-center mb-1">
+                <span className="font-black text-stone-400 uppercase tracking-widest text-[10px]">Hasta Geri Bildirimi</span>
+                <span className="font-extrabold text-amber-500 flex items-center gap-1">
+                  ⭐ {ackModalTarget.rating} / 5 Yıldız
+                </span>
+              </div>
+              <p className="font-semibold text-stone-700 dark:text-stone-300 italic">
+                "{ackModalTarget.comment || 'Yorum belirtilmemiş.'}"
+              </p>
+            </div>
+
+            {/* Kalıp Cümle Şablon Seçenekleri */}
+            <div>
+              <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2.5 ml-1">
+                ⚡ Hızlı Kalıp Cümleler (Seçmek için Tıklayın)
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {MESSAGE_TEMPLATES.map((tpl) => {
+                  const isSelected = ackSelectedTemplate?.id === tpl.id;
+                  return (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      onClick={() => handleSelectTemplate(tpl)}
+                      className={`p-3 rounded-2xl text-left border transition-all flex items-start space-x-3 text-xs ${
+                        isSelected
+                          ? 'bg-blue-50/90 dark:bg-blue-950/50 border-blue-500 ring-2 ring-blue-500/20 shadow-sm'
+                          : 'bg-theme-bg border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
+                      }`}
+                    >
+                      <span className="text-xl shrink-0 mt-0.5">{tpl.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <span className="font-black text-stone-800 dark:text-stone-200 truncate">{tpl.label}</span>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />}
+                        </div>
+                        <p className="text-[11px] font-medium text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">
+                          {tpl.text}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Düzenlenebilir Mesaj Metni Formu */}
+            <form onSubmit={handleSendAcknowledgement} className="space-y-4">
+              <div>
+                <div className="flex justify-between items-center mb-1.5 ml-1">
+                  <label className="block text-xs font-black text-stone-400 uppercase tracking-widest">
+                    ✏️ Gönderilecek Mesaj Metni (Düzenlenebilir)
+                  </label>
+                  {ackSelectedTemplate && (
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${ackSelectedTemplate.badgeBg}`}>
+                      {ackSelectedTemplate.emoji} {ackSelectedTemplate.label}
+                    </span>
+                  )}
+                </div>
+                <textarea
+                  rows={4}
+                  required
+                  value={ackCustomNote}
+                  onChange={(e) => setAckCustomNote(e.target.value)}
+                  placeholder="Hastaya iletilecek mesaj içeriğini yazın..."
+                  className="w-full p-4 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-xs text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 leading-relaxed shadow-inner"
+                />
+                <p className="text-[10px] font-bold text-stone-400 mt-1 ml-1">
+                  * Bu mesaj hastanın bildirim kutusunda ("Bildirimler" menüsünde) anında görüntülenecektir.
+                </p>
+              </div>
+
+              {/* Alt Aksiyon Butonları */}
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="submit"
+                  disabled={!ackCustomNote.trim()}
+                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl text-xs shadow-clay-btn transition flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Geri Bildirimi Hastaya Gönder</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAckModalTarget(null)}
+                  className="px-5 py-3.5 bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-200 font-bold rounded-2xl text-xs transition"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+      {/* --- GERİ DÖNÜŞ YAP / ÇÖZÜM BİLDİRİM MODALI --- */}
+      {resolveModalTarget && (
+        <div className="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
+
+            {/* Modal Başlık */}
+            <div className="flex justify-between items-start border-b border-stone-200 dark:border-stone-800 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/60 rounded-2xl flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Geri Dönüş Yap / Çözüm Bildir</h3>
+                  <p className="text-xs font-bold text-stone-400 mt-0.5">
+                    <span className="text-orange-500 font-extrabold">{resolveModalTarget.userName}</span> ({resolveModalTarget.userEmail}) adlı hastanın bekleyen talebine yanıt verin.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setResolveModalTarget(null)}
+                className="p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 bg-theme-bg rounded-xl transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Hasta Şikayet Özeti */}
+            <div className="bg-orange-50 dark:bg-orange-950/30 p-4 rounded-2xl border border-orange-200 dark:border-orange-900/50 text-xs">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="font-black text-orange-700 dark:text-orange-400 uppercase tracking-widest text-[10px] flex items-center gap-1">
+                  <Bell className="w-3 h-3" /> Bekleyen Şikayet / Geri Bildirim
+                </span>
+                <span className="font-extrabold text-amber-600 flex items-center gap-1">
+                  ⭐ {resolveModalTarget.rating} / 5 Yıldız
+                </span>
+              </div>
+              <p className="font-semibold text-stone-700 dark:text-stone-300 italic">
+                "{resolveModalTarget.comment || 'Yorum belirtilmemiş.'}"
+              </p>
+            </div>
+
+            {/* Çözüm Kalıp Cümle Seçenekleri */}
+            <div>
+              <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2.5 ml-1">
+                ⚡ Çözüm Kalıpları (Seçmek için Tıklayın)
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {RESOLUTION_TEMPLATES.map((tpl) => {
+                  const isSelected = resolveSelectedTemplate?.id === tpl.id;
+                  return (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      onClick={() => handleSelectResolutionTemplate(tpl)}
+                      className={`p-3 rounded-2xl text-left border transition-all flex items-start space-x-3 text-xs ${
+                        isSelected
+                          ? 'bg-emerald-50/90 dark:bg-emerald-950/50 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm'
+                          : 'bg-theme-bg border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
+                      }`}
+                    >
+                      <span className="text-xl shrink-0 mt-0.5">{tpl.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                          <span className="font-black text-stone-800 dark:text-stone-200 truncate">{tpl.label}</span>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />}
+                        </div>
+                        <p className="text-[11px] font-medium text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">
+                          {tpl.text}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Düzenlenebilir Mesaj */}
+            <form onSubmit={handleSendResolution} className="space-y-4">
+              <div>
+                <div className="flex justify-between items-center mb-1.5 ml-1">
+                  <label className="block text-xs font-black text-stone-400 uppercase tracking-widest">
+                    ✏️ Gönderilecek Çözüm Mesajı (Düzenlenebilir)
+                  </label>
+                  {resolveSelectedTemplate && (
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${resolveSelectedTemplate.badgeBg}`}>
+                      {resolveSelectedTemplate.emoji} {resolveSelectedTemplate.label}
+                    </span>
+                  )}
+                </div>
+                <textarea
+                  rows={4}
+                  required
+                  value={resolveCustomNote}
+                  onChange={(e) => setResolveCustomNote(e.target.value)}
+                  placeholder="Hastaya iletilecek çözüm mesajını yazın..."
+                  className="w-full p-4 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-xs text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 leading-relaxed shadow-inner"
+                />
+                <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 ml-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Gönderildiğinde bu hasta "Bekleyen Dönüşler" listesinden otomatik olarak çıkarılacak.
+                </p>
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="submit"
+                  disabled={!resolveCustomNote.trim()}
+                  className="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-xs shadow-clay-btn transition flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Çözümü Bildir &amp; Hastayı Bilgilendir</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResolveModalTarget(null)}
+                  className="px-5 py-3.5 bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-200 font-bold rounded-2xl text-xs transition"
+                >
+                  İptal
+                </button>
+              </div>
+            </form>
+
           </div>
         </div>
       )}
