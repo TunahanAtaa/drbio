@@ -19,6 +19,4 @@ public class MedicalReportResponseDTO {
     private ReportStatus status;
     private LocalDate reportDate;
     private UUID userId;
-    private String doctorNote;
-    private String doctorName;
 }

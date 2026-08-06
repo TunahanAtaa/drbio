@@ -1,8 +1,5 @@
 package com.drbio.domain.report.service;
 
-import com.drbio.domain.doctor.dto.DoctorDTO;
-import com.drbio.domain.doctor.entity.Doctor;
-import com.drbio.domain.doctor.repository.DoctorRepository;
 import com.drbio.domain.report.dto.MedicalReportItemDTO;
 import com.drbio.domain.report.dto.ReportRecommendationDTO;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +17,6 @@ import java.util.stream.Collectors;
 public class ReportRecommendationServiceImpl implements ReportRecommendationService {
 
     private final MedicalReportService medicalReportService;
-    private final DoctorRepository doctorRepository;
 
     @Override
     public List<ReportRecommendationDTO> generateRecommendations(UUID reportId) {
@@ -56,22 +52,9 @@ public class ReportRecommendationServiceImpl implements ReportRecommendationServ
         for (Map.Entry<String, String> entry : branchRecommendations.entrySet()) {
             String specialty = entry.getKey();
             String message = entry.getValue();
-            
-            // Bu branştaki doktorları veritabanından bul ve DTO'ya çevir
-            List<Doctor> docs = doctorRepository.findBySpecialty(specialty);
-            List<DoctorDTO> docDTOs = docs.stream()
-                    .map(d -> DoctorDTO.builder()
-                            .id(d.getId())
-                            .name(d.getName())
-                            .specialty(d.getSpecialty())
-                            .hospital(d.getHospital())
-                            .build())
-                    .collect(Collectors.toList());
-                    
             recommendations.add(ReportRecommendationDTO.builder()
                     .recommendedSpecialty(specialty)
                     .message(message)
-                    .availableDoctors(docDTOs)
                     .build());
         }
         

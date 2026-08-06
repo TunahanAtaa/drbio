@@ -92,12 +92,4 @@ public class MedicalReportController {
         return ResponseEntity.ok(recommendations);
     }
 
-    @PostMapping("/{reportId}/doctor-note")
-    public ResponseEntity<Void> addDoctorNote(
-            @PathVariable("reportId") UUID reportId,
-            @RequestParam("doctorId") UUID doctorId,
-            @RequestBody String note) {
-        reportService.addDoctorNote(reportId, doctorId, note);
-        return ResponseEntity.ok().build();
-    }
 }

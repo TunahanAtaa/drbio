@@ -143,8 +143,6 @@ public class MedicalReportServiceImpl implements MedicalReportService {
                 .status(report.getStatus())
                 .reportDate(report.getReportDate())
                 .userId(report.getUser().getId())
-                .doctorNote(report.getDoctorNote())
-                .doctorName(report.getDoctor() != null ? report.getDoctor().getFullName() : null)
                 .build()).collect(Collectors.toList());
     }
 
@@ -158,8 +156,6 @@ public class MedicalReportServiceImpl implements MedicalReportService {
                 .status(report.getStatus())
                 .reportDate(report.getReportDate())
                 .userId(report.getUser().getId())
-                .doctorNote(report.getDoctorNote())
-                .doctorName(report.getDoctor() != null ? report.getDoctor().getFullName() : null)
                 .build()).collect(Collectors.toList());
     }
 
@@ -186,8 +182,6 @@ public class MedicalReportServiceImpl implements MedicalReportService {
                 .status(report.getStatus())
                 .reportDate(report.getReportDate())
                 .userId(report.getUser().getId())
-                .doctorNote(report.getDoctorNote())
-                .doctorName(report.getDoctor() != null ? report.getDoctor().getFullName() : null)
                 .items(itemDTOs)
                 .build();
     }
@@ -227,16 +221,4 @@ public class MedicalReportServiceImpl implements MedicalReportService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional
-    public void addDoctorNote(UUID reportId, UUID doctorId, String note) {
-        MedicalReport report = medicalReportRepository.findById(reportId)
-                .orElseThrow(() -> new ReportNotFoundException("Rapor bulunamadı: " + reportId));
-        com.drbio.domain.user.entity.User doctor = userRepository.findById(doctorId)
-                .orElseThrow(() -> new UserNotFoundException("Doktor bulunamadı: " + doctorId));
-        
-        report.setDoctor(doctor);
-        report.setDoctorNote(note);
-        medicalReportRepository.save(report);
-    }
 }

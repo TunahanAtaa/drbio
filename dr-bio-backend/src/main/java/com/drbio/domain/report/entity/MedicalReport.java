@@ -63,13 +63,6 @@ public class MedicalReport {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "doctor_note", columnDefinition = "TEXT")
-    private String doctorNote;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id")
-    private User doctor;
-
     @Builder.Default
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicalReportItem> items = new ArrayList<>();

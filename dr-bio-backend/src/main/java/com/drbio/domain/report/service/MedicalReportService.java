@@ -18,5 +18,4 @@ public interface MedicalReportService {
     MedicalReportDetailResponseDTO getReportDetails(UUID reportId);
     List<MedicalReportItemDTO> getReportAnomalies(UUID reportId);
     List<ReportTrendDTO> getParameterTrend(UUID userId, String parameterName);
-    void addDoctorNote(UUID reportId, UUID doctorId, String note);
 }
