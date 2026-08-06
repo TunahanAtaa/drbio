@@ -22,37 +22,87 @@ const initialNotifications = [
   }
 ];
 
+const defaultAdminNotifications = [
+  {
+    id: 1001,
+    title: '⚠️ Yeni Şikayet — Deniz Yıldız',
+    text: 'Deniz Yıldız 1/5 yıldız verdi: "Son tahlilimde Ferritin seviyem kritik sınırda görünüyordu fakat bildirim gelmedi."',
+    time: '5 dakika önce',
+    unread: true,
+    type: 'COMPLAINT'
+  },
+  {
+    id: 1002,
+    title: '⭐ Yeni Değerlendirme — Canan Arslan',
+    text: 'Canan Arslan 4/5 yıldız verdi: "Tahlil sonuçlarımdaki referans dışı değerler kırmızı ile çok güzel vurgulanmış."',
+    time: '15 dakika önce',
+    unread: true,
+    type: 'REVIEW'
+  },
+  {
+    id: 1003,
+    title: '⭐ Yeni Değerlendirme — Selin Tekin',
+    text: 'Selin Tekin 5/5 yıldız verdi: "Glukoz ve HbA1c dalgalanmalarını Dr. Bio sayesinde saniyeler içinde anladım."',
+    time: '1 saat önce',
+    unread: false,
+    type: 'REVIEW'
+  }
+];
+
 const Navbar = ({ title, user }) => {
   const navigate = useNavigate();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(() => {
-    const userEmail = (user?.email || '').toLowerCase();
-    const isAdmin = (user?.role || '').toUpperCase() === 'ADMIN';
 
-    // Admin ise admin_notifications key'ini oku
-    let adminSpecificNotifs = [];
+  const userEmail = (user?.email || '').toLowerCase();
+  const isAdmin = (user?.role || '').toUpperCase() === 'ADMIN';
+
+  const [notifications, setNotifications] = useState(() => {
     if (isAdmin) {
       const aSaved = localStorage.getItem('admin_notifications');
-      if (aSaved) { try { const p = JSON.parse(aSaved); if (Array.isArray(p)) adminSpecificNotifs = p; } catch (e) { } }
+      if (aSaved) {
+        try {
+          const p = JSON.parse(aSaved);
+          if (Array.isArray(p)) return p;
+        } catch (e) {}
+      }
+      return defaultAdminNotifications;
+    } else {
+      const specificKey = `drbio_notif_${userEmail}`;
+      const specificSaved = localStorage.getItem(specificKey);
+      if (specificSaved) {
+        try {
+          const p = JSON.parse(specificSaved);
+          if (Array.isArray(p)) return p;
+        } catch (e) {}
+      }
+      return initialNotifications;
     }
-
-    // Kullanıcıya özel bildirimler (hasta için drbio_notif_<email>)
-    const specificKey = `drbio_notif_${userEmail}`;
-    const specificSaved = localStorage.getItem(specificKey);
-    let specificNotifs = [];
-    if (specificSaved) { try { const p = JSON.parse(specificSaved); if (Array.isArray(p)) specificNotifs = p; } catch (e) { } }
-
-    // Genel bildirimler
-    const saved = localStorage.getItem('userNotifications');
-    let generalNotifs = isAdmin ? [] : initialNotifications;
-    if (saved) { try { const p = JSON.parse(saved); if (Array.isArray(p)) generalNotifs = p; } catch (e) { } }
-
-    // Hepsini birleştir, tekrarları id'ye göre temizle
-    const merged = [...adminSpecificNotifs, ...specificNotifs, ...generalNotifs];
-    const seen = new Set();
-    return merged.filter(n => { if (!n || seen.has(n.id)) return false; seen.add(n.id); return true; });
   });
 
+  useEffect(() => {
+    if (isAdmin) {
+      const aSaved = localStorage.getItem('admin_notifications');
+      if (aSaved) {
+        try {
+          const p = JSON.parse(aSaved);
+          if (Array.isArray(p)) setNotifications(p);
+        } catch (e) {}
+      } else {
+        setNotifications(defaultAdminNotifications);
+      }
+    } else {
+      const specificKey = `drbio_notif_${userEmail}`;
+      const specificSaved = localStorage.getItem(specificKey);
+      if (specificSaved) {
+        try {
+          const p = JSON.parse(specificSaved);
+          if (Array.isArray(p)) setNotifications(p);
+        } catch (e) {}
+      } else {
+        setNotifications(initialNotifications);
+      }
+    }
+  }, [isNotificationsOpen, userEmail, isAdmin]);
 
   const dropdownRef = useRef(null);
 
@@ -72,16 +122,24 @@ const Navbar = ({ title, user }) => {
     navigate('/');
   };
 
-  const markAllAsRead = () => {
-    const updated = notifications.map(n => ({ ...n, unread: false }));
-    setNotifications(updated);
-    localStorage.setItem('userNotifications', JSON.stringify(updated));
+  const handleClearAllNotifications = () => {
+    setNotifications([]);
+    if (isAdmin) {
+      localStorage.setItem('admin_notifications', JSON.stringify([]));
+    } else {
+      localStorage.setItem(`drbio_notif_${userEmail}`, JSON.stringify([]));
+      localStorage.setItem('userNotifications', JSON.stringify([]));
+    }
   };
 
   const removeNotification = (id) => {
     const updated = notifications.filter(n => n.id !== id);
     setNotifications(updated);
-    localStorage.setItem('userNotifications', JSON.stringify(updated));
+    if (isAdmin) {
+      localStorage.setItem('admin_notifications', JSON.stringify(updated));
+    } else {
+      localStorage.setItem(`drbio_notif_${userEmail}`, JSON.stringify(updated));
+    }
   };
 
   const unreadCount = notifications.filter(n => n.unread).length;
@@ -91,7 +149,7 @@ const Navbar = ({ title, user }) => {
       <div>
         <h1 className="text-xl md:text-2xl font-black text-stone-800 dark:text-stone-200">{title}</h1>
         <p className="text-sm font-bold text-stone-400">
-          Hoş geldin, <span className="text-red-600">{user?.name || 'Kullanıcı'}</span>
+          Hoş geldin, <span className="text-lime-700 dark:text-lime-400">{user?.name || 'Kullanıcı'}</span>
         </p>
       </div>
 
@@ -108,7 +166,7 @@ const Navbar = ({ title, user }) => {
           >
             <Bell className="w-5 h-5 text-stone-500 dark:text-stone-300" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse"></span>
+              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-lime-700 rounded-full animate-pulse"></span>
             )}
           </button>
 
@@ -119,17 +177,17 @@ const Navbar = ({ title, user }) => {
                 <div className="flex items-center space-x-2">
                   <h4 className="font-black text-stone-800 dark:text-stone-200 text-sm">Bildirimler</h4>
                   {unreadCount > 0 && (
-                    <span className="px-2 py-0.5 bg-red-600 text-white text-[10px] font-black rounded-full">
+                    <span className="px-2 py-0.5 bg-lime-700 text-white text-[10px] font-black rounded-full">
                       {unreadCount} Yeni
                     </span>
                   )}
                 </div>
-                {unreadCount > 0 && (
+                {notifications.length > 0 && (
                   <button
-                    onClick={markAllAsRead}
-                    className="text-xs text-red-600 dark:text-red-400 hover:underline font-bold"
+                    onClick={handleClearAllNotifications}
+                    className="text-xs text-lime-700 dark:text-lime-400 hover:underline font-bold"
                   >
-                    Tümünü Okundu İşaretle
+                    Tümünü Okundu İşaretle ve Sil
                   </button>
                 )}
               </div>
@@ -141,23 +199,23 @@ const Navbar = ({ title, user }) => {
                     <div
                       key={notif.id}
                       className={`p-3.5 rounded-2xl text-xs relative group transition-all border ${notif.unread
-                        ? 'bg-red-50/60 dark:bg-red-950/30 border-red-200 dark:border-red-900/50'
+                        ? 'bg-lime-50/80 dark:bg-lime-950/40 border-lime-200 dark:border-lime-900/50'
                         : 'bg-theme-bg border-stone-100 dark:border-stone-800/60 opacity-80'
                         }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-2 mb-1">
-                          {notif.type === 'ANALYSIS' && <Sparkles className="w-4 h-4 text-red-600 shrink-0" />}
+                          {notif.type === 'ANALYSIS' && <Sparkles className="w-4 h-4 text-lime-700 shrink-0" />}
                           {notif.type === 'HEALTH' && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
                           {notif.type === 'SYSTEM' && <AlertCircle className="w-4 h-4 text-blue-500 shrink-0" />}
-                          {notif.type === 'COMPLAINT' && <MessageSquare className="w-4 h-4 text-red-600 shrink-0 animate-pulse" />}
+                          {notif.type === 'COMPLAINT' && <MessageSquare className="w-4 h-4 text-lime-700 shrink-0 animate-pulse" />}
                           {notif.type === 'REVIEW' && <Star className="w-4 h-4 text-amber-500 shrink-0" />}
                           <h5 className="font-black text-stone-800 dark:text-stone-200 text-xs">{notif.title}</h5>
                         </div>
 
                         <button
                           onClick={() => removeNotification(notif.id)}
-                          className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-red-600 transition"
+                          className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-lime-700 transition"
                           title="Sil"
                         >
                           <X className="w-3.5 h-3.5" />
@@ -185,7 +243,7 @@ const Navbar = ({ title, user }) => {
         {/* Çıkış Yap */}
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-2 px-4 md:px-5 py-3 rounded-2xl font-black text-white bg-red-600 shadow-clay-btn hover:brightness-110 active:shadow-none active:scale-95 transition-all text-xs sm:text-sm"
+          className="flex items-center space-x-2 px-4 md:px-5 py-3 rounded-2xl font-black text-white bg-lime-700 hover:bg-lime-800 shadow-clay-btn hover:brightness-110 active:shadow-none active:scale-95 transition-all text-xs sm:text-sm"
         >
           <LogOut className="w-4 h-4" />
           <span className="hidden md:inline">Çıkış Yap</span>

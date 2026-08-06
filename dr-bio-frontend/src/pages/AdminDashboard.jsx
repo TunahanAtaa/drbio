@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { 
@@ -6,81 +7,111 @@ import {
   Shield, Activity, FileText, Sparkles, Filter, ChevronRight, UserPlus, 
   Settings, Server, ArrowUpRight, Save, X, Eye, AlertTriangle, UserCheck, 
   Heart, Pill, Stethoscope, Scale, Ruler, Briefcase, Flame, Star, MessageSquare,
-  Send, CheckCircle2, Bell, Check
+  Send, CheckCircle2, Bell, Check, RotateCcw
 } from 'lucide-react';
 
 const defaultFeedbacks = [
   { 
     id: 1, 
-    userName: 'Zeynep Ersal', 
-    userEmail: 'hasta@drbio.com', 
-    rating: 5, 
-    comment: 'Tahlil sonuçlarındaki hemoglobin ve kolesterol analizleri çok anlaşılır ifade edilmiş. Yapay zeka tavsiyeleri harika!', 
+    userName: 'Burak Öztürk', 
+    userEmail: 'burak.ozturk@yahoo.com', 
+    rating: 2, 
+    comment: 'Mobil cihazdan tahlil yüklerken kamera ile fotoğraf çekme adımı bazen yavaşlıyor. Mobil tarayıcı uyumluluğunun iyileştirilmesini öneririm.', 
     date: '2026-08-05', 
-    status: 'REVIEWED', 
-    category: 'MEMNUNİYET' 
+    status: 'UNREAD', 
+    category: 'ŞİKAYET / ÖNERİ' 
   },
   { 
     id: 2, 
-    userName: 'Ahmet Yılmaz', 
-    userEmail: 'ahmet@ornek.com', 
+    userName: 'Canan Arslan', 
+    userEmail: 'canan.arslan@outlook.com', 
     rating: 4, 
-    comment: 'PDF yükledikten sonra analiz hızlı geldi. Telefon ekranında grafiklerin biraz daha büyük olmasını öneririm.', 
-    date: '2026-08-04', 
+    comment: 'Tahlil sonuçlarımdaki referans dışı değerler kırmızı ile çok güzel vurgulanmış. Geçmiş tahlillerimle karşılaştırma grafiği çok faydalı.', 
+    date: '2026-08-05', 
     status: 'UNREAD', 
     category: 'MEMNUNİYET' 
   },
   { 
     id: 3, 
-    userName: 'Ayşe Kaya', 
-    userEmail: 'ayse@ornek.com', 
-    rating: 2, 
-    comment: 'Tahlil raporundaki bazı kısaltmalar (ALT, AST) açıklanırken tıbbi terimler biraz ağır kalmış. Daha sade dille yazılabilirdi.', 
-    date: '2026-08-03', 
+    userName: 'Deniz Yıldız', 
+    userEmail: 'deniz.yildiz@gmail.com', 
+    rating: 1, 
+    comment: 'Son tahlilimde Ferritin seviyem kritik sınırda görünüyordu fakat bildirim gelmedi. Acil uyarı sisteminin anlık bildirim ile desteklenmesini istiyorum.', 
+    date: '2026-08-05', 
     status: 'UNREAD', 
     category: 'ŞİKAYET / ÖNERİ' 
+  },
+  { 
+    id: 4, 
+    userName: 'Selin Tekin', 
+    userEmail: 'selin.tekin@icloud.com', 
+    rating: 5, 
+    comment: 'Doktorumun bile tam açıklayamadığı glukoz ve HbA1c dalgalanmalarını Dr. Bio sayesinde saniyeler içinde anladım. Arayüz harika!', 
+    date: '2026-08-04', 
+    status: 'UNREAD', 
+    category: 'MEMNUNİYET' 
+  },
+  { 
+    id: 5, 
+    userName: 'Mert Aksoy', 
+    userEmail: 'mert.aksoy@hotmail.com', 
+    rating: 3, 
+    comment: 'Tahlil yükledikten sonra yapay zeka analiz raporu 15 saniyede geldi. Hız güzel fakat PDF indirme butonunun yeri daha belirgin olmalı.', 
+    date: '2026-08-04', 
+    status: 'UNREAD', 
+    category: 'ÖNERİ' 
+  },
+  { 
+    id: 6, 
+    userName: 'Dr. Zeynep Ersal', 
+    userEmail: 'hasta@drbio.com', 
+    rating: 5, 
+    comment: 'Yapay zeka tahlil analizi ve otomatik referans parametre eşleştirmesi kusursuz çalışıyor. Dr. Bio platformuna 5 yıldız!', 
+    date: '2026-08-06', 
+    status: 'UNREAD', 
+    category: 'MEMNUNİYET' 
   }
 ];
 
 const defaultAdminUsers = [
   { 
     id: 101, 
-    name: 'Zeynep Ersal', 
+    name: 'Dr. Zeynep Ersal', 
     email: 'hasta@drbio.com', 
     role: 'PATIENT', 
     status: 'ACTIVE', 
     regDate: '2026-08-01',
     healthProfile: {
-      age: '26',
+      age: '28',
       weight: '62',
       height: '168',
       gender: 'Kadın',
       maritalStatus: 'Bekar',
       childrenCount: '0',
-      occupation: 'Yazılım Mühendisi',
+      occupation: 'Biyomedikal Mühendisi',
       genetics: 'Ailede Tip-2 Diyabet öyküsü var',
       surgeries: 'Apendektomi (2020)',
-      medications: 'B-Kompleks vitamini',
+      medications: 'B-Kompleks vitamini, D3 Takviyesi',
       allergies: 'Toz ve Penisilin alerjisi',
-      chronicPain: 'Migren (Zaman zaman)',
-      habits: 'Sigara kullanmıyor, Sosyal alkol (Nadir)'
+      chronicPain: 'Migren (Hafif düzeyde)',
+      habits: 'Sigara kullanmıyor, Sosyal alkol'
     }
   },
   { 
     id: 102, 
-    name: 'Sistem Yöneticisi', 
+    name: 'Sistem Yöneticisi (Admin)', 
     email: 'admin@drbio.com', 
     role: 'ADMIN', 
     status: 'ACTIVE', 
     regDate: '2026-07-15',
     healthProfile: {
-      age: '32',
-      weight: '78',
-      height: '182',
+      age: '35',
+      weight: '76',
+      height: '180',
       gender: 'Erkek',
       maritalStatus: 'Evli',
       childrenCount: '1',
-      occupation: 'Sistem Mimarı',
+      occupation: 'Başhekim / Sistem Mimarı',
       genetics: 'Yok',
       surgeries: 'Yok',
       medications: 'Yok',
@@ -91,48 +122,117 @@ const defaultAdminUsers = [
   },
   { 
     id: 103, 
-    name: 'Ahmet Yılmaz', 
-    email: 'ahmet@ornek.com', 
+    name: 'Burak Öztürk', 
+    email: 'burak.ozturk@yahoo.com', 
     role: 'PATIENT', 
     status: 'ACTIVE', 
-    regDate: '2026-08-03',
+    regDate: '2026-08-02',
     healthProfile: {
-      age: '45',
-      weight: '84',
-      height: '176',
+      age: '31',
+      weight: '82',
+      height: '180',
       gender: 'Erkek',
       maritalStatus: 'Evli',
-      childrenCount: '2',
-      occupation: 'Öğretmen',
-      genetics: 'Hipertansiyon (Yüksek tansiyon)',
-      surgeries: 'Yok',
-      medications: 'Tansiyon düzenleyici (Günlük 1 doz)',
-      allergies: 'Polen ve çim alerjisi',
-      chronicPain: 'Bel ağrısı',
+      childrenCount: '1',
+      occupation: 'Yazılım Mimarı',
+      genetics: 'Hipertansiyon öyküsü',
+      surgeries: 'Menisküs Operasyonu (2022)',
+      medications: 'Omega-3',
+      allergies: 'Fıstık alerjisi',
+      chronicPain: 'Sol diz ağrısı',
       habits: 'Sigara kullanmıyor'
     }
   },
   { 
     id: 104, 
-    name: 'Ayşe Kaya', 
-    email: 'ayse@ornek.com', 
+    name: 'Canan Arslan', 
+    email: 'canan.arslan@outlook.com', 
+    role: 'PATIENT', 
+    status: 'ACTIVE', 
+    regDate: '2026-08-03',
+    healthProfile: {
+      age: '29',
+      weight: '60',
+      height: '168',
+      gender: 'Kadın',
+      maritalStatus: 'Bekar',
+      childrenCount: '0',
+      occupation: 'Finans Analisti',
+      genetics: 'Yok',
+      surgeries: 'Yok',
+      medications: 'Magnezyum Kompleks',
+      allergies: 'Gluten hassasiyeti',
+      chronicPain: 'Bel ağrısı',
+      habits: 'Kullanmıyor'
+    }
+  },
+  { 
+    id: 105, 
+    name: 'Deniz Yıldız', 
+    email: 'deniz.yildiz@gmail.com', 
     role: 'PATIENT', 
     status: 'ACTIVE', 
     regDate: '2026-08-04',
     healthProfile: {
-      age: '34',
-      weight: '58',
-      height: '165',
+      age: '38',
+      weight: '74',
+      height: '173',
       gender: 'Kadın',
       maritalStatus: 'Evli',
-      childrenCount: '1',
-      occupation: 'Mimar',
-      genetics: 'Tiroid hastalığı öyküsü',
+      childrenCount: '2',
+      occupation: 'Avukat',
+      genetics: 'Demir Eksikliği Anemisi',
+      surgeries: 'Sezaryen Doğum (2019, 2022)',
+      medications: 'Demir Takviyesi (Ferro Sanol)',
+      allergies: 'Yok',
+      chronicPain: 'Boyun düzleşmesi ağrısı',
+      habits: 'Kullanmıyor'
+    }
+  },
+  { 
+    id: 106, 
+    name: 'Selin Tekin', 
+    email: 'selin.tekin@icloud.com', 
+    role: 'PATIENT', 
+    status: 'ACTIVE', 
+    regDate: '2026-08-04',
+    healthProfile: {
+      age: '27',
+      weight: '55',
+      height: '162',
+      gender: 'Kadın',
+      maritalStatus: 'Bekar',
+      childrenCount: '0',
+      occupation: 'Grafik Tasarımcı',
+      genetics: 'İnsülin Direnci',
       surgeries: 'Yok',
-      medications: 'Levotiron (Tiroid ilacı)',
-      allergies: 'Deniz ürünleri alerjisi',
+      medications: 'Glucophage (500mg)',
+      allergies: 'Polen Alerjisi',
       chronicPain: 'Yok',
       habits: 'Kullanmıyor'
+    }
+  },
+  { 
+    id: 107, 
+    name: 'Mert Aksoy', 
+    email: 'mert.aksoy@hotmail.com', 
+    role: 'PATIENT', 
+    status: 'ACTIVE', 
+    regDate: '2026-08-05',
+    healthProfile: {
+      age: '42',
+      weight: '88',
+      height: '185',
+      gender: 'Erkek',
+      maritalStatus: 'Evli',
+      childrenCount: '2',
+      occupation: 'İnşaat Mühendisi',
+      genetics: 'Yüksek Kolesterol Öyküsü',
+      surgeries: 'Yok',
+      medications: 'Atorvastatin',
+      allergies: 'Yok',
+      chronicPain: 'Omuz sıkışması',
+      habits: 'Sigara kullanmıyor'
     }
   }
 ];
@@ -341,26 +441,6 @@ const AdminDashboard = () => {
         type: 'SYSTEM'
       };
       localStorage.setItem(notifKey, JSON.stringify([patientNotif, ...patientNotifs]));
-      // Genel bildirim key'ini de güncelle
-      let generalNotifs = [];
-      const gSaved = localStorage.getItem('userNotifications');
-      if (gSaved) { try { const p = JSON.parse(gSaved); if (Array.isArray(p)) generalNotifs = p; } catch(e) {} }
-      localStorage.setItem('userNotifications', JSON.stringify([patientNotif, ...generalNotifs]));
-
-      // Admin bell'ine de onay bildirimi ekle
-      const adminNotifKey = 'admin_notifications';
-      let adminNotifs = [];
-      const aSaved = localStorage.getItem(adminNotifKey);
-      if (aSaved) { try { const p = JSON.parse(aSaved); if (Array.isArray(p)) adminNotifs = p; } catch(e) {} }
-      const adminConfirmNotif = {
-        id: Date.now() + 2,
-        title: 'Geri Bildirim İncelendi 🗂',
-        text: `${target.userName} adlı hastanın ${target.rating}/5 yıldızlı geri bildirimi incelendi olarak işaretlendi. Hasta bilgilendirmesi gönderildi.`,
-        time: 'Az önce',
-        unread: false,
-        type: 'SYSTEM'
-      };
-      localStorage.setItem(adminNotifKey, JSON.stringify([adminConfirmNotif, ...adminNotifs]));
 
       // acknowledgedIds güncelle
       setAcknowledgedIds(prev => {
@@ -415,7 +495,7 @@ const AdminDashboard = () => {
       label: 'Çözüme Ulaştırıldı',          
       title: 'Talebiniz Çözüme Ulaştırıldı',                 
       text: 'Bildirdiğiniz konu incelenmiş ve gerekli düzenlemeler yapılmıştır. Hizmetimizi iyileştirmemize katkı sağladığınız için teşekkür ederiz.',
-      badgeBg: 'bg-teal-100 dark:bg-teal-950/50 text-teal-800 dark:text-teal-300 border-teal-300 dark:border-teal-800'
+      badgeBg: 'bg-lime-100 dark:bg-lime-950/50 text-lime-900 dark:text-lime-300 border-lime-300 dark:border-lime-800'
     },
     { 
       id: 'will_contact',  
@@ -597,16 +677,42 @@ const AdminDashboard = () => {
     setTimeout(() => setAckToast(''), 4000);
   };
 
+  const handleResetAllData = () => {
+    localStorage.removeItem('drbio_feedbacks');
+    localStorage.removeItem('drbio_acknowledged_ids');
+    localStorage.removeItem('drbio_contact_pending_ids');
+    localStorage.removeItem('drbio_last_action');
+    localStorage.removeItem('userAccounts');
+    localStorage.removeItem('admin_notifications');
+    localStorage.removeItem('userNotifications');
+    setFeedbacks(defaultFeedbacks);
+    setUsersList(defaultAdminUsers);
+    setAcknowledgedIds([]);
+    setContactPendingIds([]);
+    setFeedbackLastAction({});
+    setAckToast('Tüm eski veriler temizlendi ve taze test kullanıcıları yüklendi! 🔄');
+    setTimeout(() => setAckToast(''), 4000);
+  };
+
+  useEffect(() => {
+    const isV3 = localStorage.getItem('drbio_v3_fresh_data_seeded');
+    if (!isV3) {
+      localStorage.setItem('drbio_v3_fresh_data_seeded', 'true');
+      handleResetAllData();
+    }
+  }, []);
+
   // Filtrelenmiş geri bildirimler: önce alt sekme, sonra arama + yıldız filtresi
   const filteredFeedbacks = safeFeedbacks.filter(f => {
     if (!f) return false;
 
     // 1) Alt sekme filtresi
+    if (feedbackSubTab === 'all') {
+      // Tüm Bildirimler: Bütün hastalar ve bildirimler eksiksiz gözükür
+    }
     if (feedbackSubTab === 'complaints') {
-      // Şikayetler: rating <= 3, yanıtlanmamış VE bekleyen listesinde olmayan
+      // Şikayetler: 3 yıldız ve altı (rating <= 3) veren tüm hastalarımız gözüksün
       if ((f.rating || 0) > 3) return false;
-      if (contactPendingIds.includes(f.id)) return false;  // bekleyen dönüşlere taşındı
-      if (acknowledgedIds.includes(f.id)) return false;    // yanıtlandı, şikayetlerden çıkar
     }
     if (feedbackSubTab === 'pending_contact' && !contactPendingIds.includes(f.id)) return false;
     if (feedbackSubTab === 'responded' && !acknowledgedIds.includes(f.id)) return false; // yalnızca yanıtlananlar
@@ -630,7 +736,7 @@ const AdminDashboard = () => {
   const getProcessNote = (feedbackId) => {
     const lastAction = feedbackLastAction[feedbackId];
     const MAP = {
-      'received':      { emoji: '📬', text: 'Şikayet alindı, yanıt bekleniyor',   color: 'text-amber-600 dark:text-amber-400',   bg: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900' },
+      'received':      { emoji: '📬', text: 'Şikayet alındı, yanıt bekleniyor',   color: 'text-amber-600 dark:text-amber-400',   bg: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900' },
       'investigating': { emoji: '🔍', text: 'İnceleme başlatıldı',                  color: 'text-blue-600 dark:text-blue-400',     bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900' },
       'will_contact':  { emoji: '📞', text: 'Temsilci en kısa sürede ulaşacak',  color: 'text-rose-600 dark:text-rose-400',     bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900' },
     };
@@ -646,7 +752,7 @@ const AdminDashboard = () => {
       'will_contact':  { emoji: '📞', text: 'Temsilci iletişim bilgisi gönderildi',   color: 'text-rose-700 dark:text-rose-400',     bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900' },
       'thankyou':      { emoji: '🙏', text: 'Teşekkür mesajı gönderildi',              color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900' },
       'praise':        { emoji: '⭐', text: 'Güzel yorum teşekkür mesajı gönderildi',  color: 'text-purple-700 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900' },
-      'resolved':      { emoji: '✅', text: 'Çözüme ulaştırıldı mesajı gönderildi',    color: 'text-teal-700 dark:text-teal-400',     bg: 'bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-900' },
+      'resolved':      { emoji: '✅', text: 'Çözüme ulaştırıldı mesajı gönderildi',    color: 'text-lime-800 dark:text-lime-400',     bg: 'bg-lime-50 dark:bg-lime-950/30 border-lime-200 dark:border-lime-900' },
       'fixed_bug':     { emoji: '🛠️', text: 'Hata düzeltildi bilgisi verildi',         color: 'text-blue-700 dark:text-blue-400',     bg: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900' },
       'update_done':   { emoji: '🔄', text: 'Güncelleme yapıldı bilgisi verildi',      color: 'text-purple-700 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900' },
       'apology':       { emoji: '🤝', text: 'Telafi ve özür mesajı gönderildi',       color: 'text-rose-700 dark:text-rose-400',     bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900' },
@@ -655,7 +761,11 @@ const AdminDashboard = () => {
   };
 
   const complaintCount = safeFeedbacks.filter(f =>
-    f && (f.rating || 0) <= 3 && !contactPendingIds.includes(f.id) && !acknowledgedIds.includes(f.id)
+    f && (f.rating || 0) <= 3
+  ).length;
+
+  const respondedCount = safeFeedbacks.filter(f =>
+    f && acknowledgedIds.includes(f.id)
   ).length;
 
   // Metrik hesaplamaları
@@ -681,53 +791,64 @@ const AdminDashboard = () => {
     <Layout title="Yönetici Paneli" role="ADMIN">
       
       {/* Üst Sekme Navigasyonu */}
-      <div className="flex flex-wrap gap-2 mb-8 border-b border-stone-200 dark:border-stone-800 pb-4">
-        <button 
-          onClick={() => navigate('/admin')}
-          className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
-            currentTab === 'dashboard' || currentTab === 'admin'
-              ? 'bg-red-600 text-white shadow-clay-btn' 
-              : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
-          }`}
-        >
-          <Activity className="w-4 h-4" />
-          <span>Genel Bakış</span>
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-8 border-b border-stone-200 dark:border-stone-800 pb-4">
+        <div className="flex flex-wrap gap-2">
+          <button 
+            onClick={() => navigate('/admin')}
+            className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
+              currentTab === 'dashboard' || currentTab === 'admin'
+                ? 'bg-lime-700 text-white shadow-clay-btn' 
+                : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            <span>Genel Bakış</span>
+          </button>
 
-        <button 
-          onClick={() => navigate('/admin/references')}
-          className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
-            currentTab === 'references' 
-              ? 'bg-red-600 text-white shadow-clay-btn' 
-              : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
-          }`}
-        >
-          <Database className="w-4 h-4" />
-          <span>Referans Kütüphanesi ({references.length})</span>
-        </button>
+          <button 
+            onClick={() => navigate('/admin/references')}
+            className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
+              currentTab === 'references' 
+                ? 'bg-lime-700 text-white shadow-clay-btn' 
+                : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
+            }`}
+          >
+            <Database className="w-4 h-4" />
+            <span>Referans Kütüphanesi ({references.length})</span>
+          </button>
 
-        <button 
-          onClick={() => navigate('/admin/users')}
-          className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
-            currentTab === 'users' 
-              ? 'bg-red-600 text-white shadow-clay-btn' 
-              : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>Kullanıcı Yönetimi ({usersList.length})</span>
-        </button>
+          <button 
+            onClick={() => navigate('/admin/users')}
+            className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
+              currentTab === 'users' 
+                ? 'bg-lime-700 text-white shadow-clay-btn' 
+                : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Kullanıcı Yönetimi ({usersList.length})</span>
+          </button>
 
-        <button 
-          onClick={() => navigate('/admin/feedbacks')}
-          className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
-            currentTab === 'feedbacks' 
-              ? 'bg-red-600 text-white shadow-clay-btn' 
-              : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
-          }`}
+          <button 
+            onClick={() => navigate('/admin/feedbacks')}
+            className={`px-5 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
+              currentTab === 'feedbacks' 
+                ? 'bg-lime-700 text-white shadow-clay-btn' 
+                : 'bg-theme-card text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 shadow-sm'
+            }`}
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span>Geri Bildirimler ({feedbacks.length})</span>
+          </button>
+        </div>
+
+        <button
+          onClick={handleResetAllData}
+          title="Tüm kullanıcı ve geri bildirim verilerini sıfırla, taze test verileri yükle"
+          className="px-4 py-3 bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 font-extrabold rounded-2xl text-xs transition flex items-center space-x-2 shadow-sm shrink-0"
         >
-          <MessageSquare className="w-4 h-4" />
-          <span>Geri Bildirimler ({feedbacks.length})</span>
+          <RotateCcw className="w-3.5 h-3.5 text-lime-700 dark:text-lime-400" />
+          <span>Verileri Sıfırla & Yenile</span>
         </button>
       </div>
 
@@ -736,18 +857,18 @@ const AdminDashboard = () => {
         <div className="space-y-8 animate-fade-in">
           
           {/* Admin Banner */}
-          <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-red-950 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
-            <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8 translate-y-8">
+          <div className="bg-gradient-to-r from-lime-700 via-lime-800 to-emerald-800 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+            <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none transform translate-x-8 translate-y-8">
               <Shield className="w-80 h-80 text-white" />
             </div>
 
             <div className="relative z-10 space-y-3">
-              <div className="inline-flex items-center space-x-2 bg-red-600/30 border border-red-500/40 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-red-300">
-                <Shield className="w-4 h-4 text-red-500" />
+              <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md border border-white/30 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white shadow-sm">
+                <Shield className="w-4 h-4 text-white" />
                 <span>Dr. Bio Sistem Yönetim Merkezi</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black">Yönetici Kontrol Paneli</h1>
-              <p className="text-stone-300 font-medium max-w-xl text-sm leading-relaxed">
+              <h1 className="text-3xl sm:text-4xl font-black text-white">Yönetici Kontrol Paneli</h1>
+              <p className="text-lime-100 font-medium max-w-xl text-sm leading-relaxed">
                 Tıbbi referans parametrelerini yönetebilir, kayıtlı hasta hesaplarını inceleyebilir ve kullanıcıların detaylı sağlık profillerini görüntüleyebilirsiniz.
               </p>
             </div>
@@ -756,7 +877,7 @@ const AdminDashboard = () => {
           {/* İstatistik Metrik Kartları */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
-              <div className="w-14 h-14 bg-red-50 dark:bg-red-950/40 rounded-2xl flex items-center justify-center text-red-600 shrink-0">
+              <div className="w-14 h-14 bg-lime-50 dark:bg-lime-950/40 rounded-2xl flex items-center justify-center text-lime-700 shrink-0">
                 <Users className="w-7 h-7" />
               </div>
               <div>
@@ -802,7 +923,7 @@ const AdminDashboard = () => {
             {/* Hızlı Eylemler */}
             <div className="space-y-4">
               <h2 className="text-xl font-black text-stone-800 dark:text-stone-200 flex items-center space-x-2">
-                <Settings className="w-5 h-5 text-red-600" />
+                <Settings className="w-5 h-5 text-lime-700" />
                 <span>Hızlı Yönetim İşlemleri</span>
               </h2>
 
@@ -812,7 +933,7 @@ const AdminDashboard = () => {
                   className="w-full p-4 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 rounded-2xl font-bold text-stone-700 dark:text-stone-200 text-xs flex items-center justify-between border border-stone-200 dark:border-stone-800 transition"
                 >
                   <div className="flex items-center space-x-3">
-                    <Plus className="w-4 h-4 text-red-600" />
+                    <Plus className="w-4 h-4 text-lime-700" />
                     <span>Yeni Referans Parametresi Ekle</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-400" />
@@ -845,7 +966,7 @@ const AdminDashboard = () => {
             {/* Sistem Logları & Son Hesaplar */}
             <div className="lg:col-span-2 space-y-4">
               <h2 className="text-xl font-black text-stone-800 dark:text-stone-200 flex items-center space-x-2">
-                <Users className="w-5 h-5 text-red-600" />
+                <Users className="w-5 h-5 text-lime-700" />
                 <span>Son Kaydolan Kullanıcılar</span>
               </h2>
 
@@ -853,7 +974,7 @@ const AdminDashboard = () => {
                 {usersList.slice(0, 4).map((u) => (
                   <div key={u.id} className="p-4 bg-theme-bg rounded-2xl border border-stone-100 dark:border-stone-800 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-red-50 dark:bg-red-950/40 rounded-xl flex items-center justify-center text-red-600 font-black text-sm">
+                      <div className="w-10 h-10 bg-lime-700 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">
                         {u.name.charAt(0)}
                       </div>
                       <div>
@@ -866,7 +987,7 @@ const AdminDashboard = () => {
                       onClick={() => setSelectedUserDetail(u)}
                       className="px-3.5 py-2 bg-theme-card hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold transition flex items-center space-x-1.5"
                     >
-                      <Eye className="w-3.5 h-3.5 text-red-600" />
+                      <Eye className="w-3.5 h-3.5 text-lime-700 dark:text-lime-400" />
                       <span>Detay İncele</span>
                     </button>
                   </div>
@@ -890,7 +1011,7 @@ const AdminDashboard = () => {
 
             <button
               onClick={() => handleOpenRefModal()}
-              className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
+              className="px-5 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>Yeni Parametre Ekle</span>
@@ -906,7 +1027,7 @@ const AdminDashboard = () => {
                 placeholder="Parametre adı veya kategori ara (Örn. Hemoglobin, Biyokimya)..."
                 value={refSearch}
                 onChange={(e) => setRefSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
+                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-lime-700/20"
               />
             </div>
           </div>
@@ -920,7 +1041,7 @@ const AdminDashboard = () => {
               >
                 <div>
                   <div className="flex justify-between items-start mb-2">
-                    <span className="px-3 py-1 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-full text-[10px] font-black uppercase tracking-wider">
+                    <span className="px-3 py-1 bg-lime-50 dark:bg-lime-950/40 text-lime-700 dark:text-lime-400 rounded-full text-[10px] font-black uppercase tracking-wider">
                       {ref.category || 'Tahlil'}
                     </span>
                     
@@ -946,7 +1067,7 @@ const AdminDashboard = () => {
 
                   <div className="inline-flex items-center space-x-2 bg-theme-bg px-3 py-1.5 rounded-xl border border-stone-100 dark:border-stone-800 text-xs font-black text-stone-700 dark:text-stone-300 my-2">
                     <span>Referans:</span>
-                    <span className="text-red-600 dark:text-red-400">{ref.min} - {ref.max} {ref.unit}</span>
+                    <span className="text-lime-700 dark:text-lime-400">{ref.min} - {ref.max} {ref.unit}</span>
                   </div>
 
                   <p className="text-xs font-medium text-stone-500 dark:text-stone-400 leading-relaxed mt-2 bg-theme-bg p-3 rounded-2xl">
@@ -972,7 +1093,7 @@ const AdminDashboard = () => {
 
             <button
               onClick={() => setUserModalOpen(true)}
-              className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
+              className="px-5 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
             >
               <UserPlus className="w-4 h-4" />
               <span>Yeni Kullanıcı Ekle</span>
@@ -988,7 +1109,7 @@ const AdminDashboard = () => {
                 placeholder="İsim veya e-posta adresi ile kullanıcı ara..."
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
+                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-lime-700/20"
               />
             </div>
           </div>
@@ -1001,7 +1122,7 @@ const AdminDashboard = () => {
                 className="p-4 bg-theme-bg rounded-2xl border border-stone-100 dark:border-stone-800/80 flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:border-stone-300 transition"
               >
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-red-600 text-white rounded-2xl flex items-center justify-center font-black text-lg shadow-sm">
+                  <div className="w-12 h-12 bg-lime-700 text-white rounded-2xl flex items-center justify-center font-black text-lg shadow-sm">
                     {u.name.charAt(0)}
                   </div>
                   <div>
@@ -1032,7 +1153,7 @@ const AdminDashboard = () => {
 
                   <button
                     onClick={() => setSelectedUserDetail(u)}
-                    className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full text-xs font-black transition flex items-center space-x-1 shadow-sm"
+                    className="px-3.5 py-1.5 bg-lime-700 hover:bg-lime-800 text-white rounded-full text-xs font-black transition flex items-center space-x-1 shadow-sm"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>Tüm Bilgileri Gör</span>
@@ -1069,32 +1190,37 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
-              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
-                <MessageSquare className="w-7 h-7 text-blue-600" />
+                <span className="text-2xl font-black text-lime-700 dark:text-lime-400">{avgRating} / 5.0</span>
+              </div>
+            </div>
+
+            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-lime-50 dark:bg-lime-950/40 rounded-2xl flex items-center justify-center text-lime-700 shrink-0">
+                <MessageSquare className="w-7 h-7 text-lime-700" />
               </div>
               <div>
                 <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Toplam Bildirim</span>
-                <span className="text-2xl font-black text-stone-800 dark:text-stone-200">{feedbacks.length}</span>
+                <span className="text-2xl font-black text-lime-700 dark:text-lime-400">{feedbacks.length}</span>
               </div>
             </div>
 
             <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
-              <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl flex items-center justify-center text-emerald-600 shrink-0">
-                <CheckCircle className="w-7 h-7 text-emerald-600" />
+              <div className="w-14 h-14 bg-lime-50 dark:bg-lime-950/40 rounded-2xl flex items-center justify-center text-lime-700 shrink-0">
+                <CheckCircle className="w-7 h-7 text-lime-700" />
               </div>
               <div>
                 <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Memnun Hastalar</span>
-                <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{satisfiedCount} Hasta</span>
+                <span className="text-2xl font-black text-lime-700 dark:text-lime-400">{satisfiedCount} Hasta</span>
               </div>
             </div>
 
             <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
-              <div className="w-14 h-14 bg-red-50 dark:bg-red-950/40 rounded-2xl flex items-center justify-center text-red-600 shrink-0">
-                <AlertTriangle className="w-7 h-7 text-red-600" />
+              <div className="w-14 h-14 bg-lime-50 dark:bg-lime-950/40 rounded-2xl flex items-center justify-center text-lime-700 shrink-0">
+                <AlertTriangle className="w-7 h-7 text-lime-700" />
               </div>
               <div>
                 <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Şikayet / Öneri</span>
-                <span className="text-2xl font-black text-red-600 dark:text-red-400">{complaintCount} Kayıt</span>
+                <span className="text-2xl font-black text-lime-700 dark:text-lime-400">{complaintCount} Kayıt</span>
               </div>
             </div>
           </div>
@@ -1108,7 +1234,7 @@ const AdminDashboard = () => {
                 placeholder="Hasta adı, e-posta veya yorum ara..."
                 value={feedbackSearch}
                 onChange={(e) => setFeedbackSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
+                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-lime-700/20"
               />
             </div>
 
@@ -1134,18 +1260,18 @@ const AdminDashboard = () => {
               onClick={() => setFeedbackSubTab('all')}
               className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center space-x-1.5 ${
                 feedbackSubTab === 'all'
-                  ? 'bg-stone-800 dark:bg-stone-200 text-white dark:text-stone-900 shadow-sm'
+                  ? 'bg-lime-700 text-white shadow-clay-btn'
                   : 'bg-theme-bg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Tümü ({safeFeedbacks.length})</span>
+              <span>Tüm Bildirimler ({safeFeedbacks.length})</span>
             </button>
             <button
               onClick={() => setFeedbackSubTab('complaints')}
               className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center space-x-1.5 ${
                 feedbackSubTab === 'complaints'
-                  ? 'bg-red-600 text-white shadow-sm'
+                  ? 'bg-gradient-to-r from-amber-900 to-amber-800 text-white shadow-sm'
                   : 'bg-theme-bg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200'
               }`}
             >
@@ -1177,7 +1303,7 @@ const AdminDashboard = () => {
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Yanıtlananlar ({acknowledgedIds.length})</span>
+              <span>Yanıtlananlar ({respondedCount})</span>
             </button>
           </div>
 
@@ -1198,7 +1324,7 @@ const AdminDashboard = () => {
                   <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-stone-100 dark:border-stone-800 pb-3">
                     <div className="flex items-center space-x-3">
                       <div className="relative">
-                        <div className="w-10 h-10 bg-red-600 text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-sm">
+                        <div className="w-10 h-10 bg-lime-700 text-white rounded-2xl flex items-center justify-center font-black text-sm shadow-sm">
                           {(item.userName || 'H').charAt(0)}
                         </div>
                         {/* Bekleyen dönüş rozeti */}
@@ -1322,7 +1448,7 @@ const AdminDashboard = () => {
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm ${
                           (item.rating || 5) <= 3
                             ? 'bg-amber-500 hover:bg-amber-600 text-stone-950'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            : 'bg-lime-700 hover:bg-lime-800 text-white'
                         }`}
                         title={`${item.userName} adlı hastaya kalıp mesaj veya özel yanıt gönder`}
                       >
@@ -1376,7 +1502,7 @@ const AdminDashboard = () => {
 
       {/* --- ACK TOAST BİLDİRİMİ --- */}
       {ackToast && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-fade-in">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999] animate-fade-in">
           <div className="flex items-center space-x-3 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm max-w-sm">
             <Send className="w-5 h-5 shrink-0" />
             <span>{ackToast}</span>
@@ -1385,14 +1511,14 @@ const AdminDashboard = () => {
       )}
 
       {/* --- KULLANICI TÜM BİLGİLERİ VE SAĞLIK PROFİLİ DETAY MODALI --- */}
-      {selectedUserDetail && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      {selectedUserDetail && createPortal(
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
             
             {/* Modal Başlık */}
             <div className="flex justify-between items-start border-b border-stone-200 dark:border-stone-800 pb-4">
               <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-red-600 text-white rounded-2xl flex items-center justify-center font-black text-2xl shadow-clay-btn">
+                <div className="w-14 h-14 bg-lime-700 text-white rounded-2xl flex items-center justify-center font-black text-2xl shadow-clay-btn">
                   {selectedUserDetail.name.charAt(0)}
                 </div>
                 <div>
@@ -1412,7 +1538,7 @@ const AdminDashboard = () => {
             {/* 1. Temel Hesap ve Kimlik Bilgileri */}
             <div className="space-y-3">
               <h4 className="text-xs font-black text-stone-400 uppercase tracking-widest flex items-center space-x-2">
-                <UserCheck className="w-4 h-4 text-red-600" />
+                <UserCheck className="w-4 h-4 text-lime-700" />
                 <span>Hesap ve İletişim Bilgileri</span>
               </h4>
 
@@ -1441,7 +1567,7 @@ const AdminDashboard = () => {
             {/* 2. Fiziksel Bilgiler ve Vücut Kitle İndeksi */}
             <div className="space-y-3">
               <h4 className="text-xs font-black text-stone-400 uppercase tracking-widest flex items-center space-x-2">
-                <Scale className="w-4 h-4 text-red-600" />
+                <Scale className="w-4 h-4 text-lime-700" />
                 <span>Fiziksel Özellikler & Ölçümler</span>
               </h4>
 
@@ -1475,7 +1601,7 @@ const AdminDashboard = () => {
             {/* 3. Anamnez & Tıbbi Geçmiş Bilgileri */}
             <div className="space-y-3">
               <h4 className="text-xs font-black text-stone-400 uppercase tracking-widest flex items-center space-x-2">
-                <Stethoscope className="w-4 h-4 text-red-600" />
+                <Stethoscope className="w-4 h-4 text-lime-700" />
                 <span>Detaylı Anamnez & Tıbbi Geçmiş Formu</span>
               </h4>
 
@@ -1544,12 +1670,13 @@ const AdminDashboard = () => {
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* --- REFERANS EKLE / DÜZENLE MODAL --- */}
-      {refModalOpen && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      {refModalOpen && createPortal(
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-theme-card w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-5">
             <div className="flex justify-between items-center border-b border-stone-200 dark:border-stone-800 pb-4">
               <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">
@@ -1634,7 +1761,7 @@ const AdminDashboard = () => {
               <div className="pt-2 flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl text-xs shadow-clay-btn transition"
+                  className="flex-1 py-3.5 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-2xl text-xs shadow-clay-btn transition"
                 >
                   Kaydet
                 </button>
@@ -1648,12 +1775,13 @@ const AdminDashboard = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* --- KULLANICI EKLE MODAL --- */}
-      {userModalOpen && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      {userModalOpen && createPortal(
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-theme-card w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-5">
             <div className="flex justify-between items-center border-b border-stone-200 dark:border-stone-800 pb-4">
               <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Yeni Kullanıcı Oluştur</h3>
@@ -1711,7 +1839,7 @@ const AdminDashboard = () => {
               <div className="pt-2 flex gap-3">
                 <button
                   type="submit"
-                  className="flex-1 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl text-xs shadow-clay-btn transition"
+                  className="flex-1 py-3.5 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-2xl text-xs shadow-clay-btn transition"
                 >
                   Kullanıcıyı Kaydet
                 </button>
@@ -1725,24 +1853,25 @@ const AdminDashboard = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* --- HASTAYA GERİ BİLDİRİM & KALIP CÜMLE GÖNDERME MODALI --- */}
-      {ackModalTarget && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      {ackModalTarget && createPortal(
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
             
             {/* Modal Başlık */}
             <div className="flex justify-between items-start border-b border-stone-200 dark:border-stone-800 pb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/60 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <div className="w-12 h-12 bg-lime-100 dark:bg-lime-950/60 rounded-2xl flex items-center justify-center text-lime-700 dark:text-lime-400">
                   <Send className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Hastaya Yanıt & Bildirim Gönder</h3>
                   <p className="text-xs font-bold text-stone-400 mt-0.5">
-                    <span className="text-red-600 font-extrabold">{ackModalTarget.userName}</span> ({ackModalTarget.userEmail}) için kalıp cümle seçin veya özel mesaj yazın.
+                    <span className="text-lime-700 font-extrabold">{ackModalTarget.userName}</span> ({ackModalTarget.userEmail}) için kalıp cümle seçin veya özel mesaj yazın.
                   </p>
                 </div>
               </div>
@@ -1849,11 +1978,13 @@ const AdminDashboard = () => {
             </form>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
+
       {/* --- GERİ DÖNÜŞ YAP / ÇÖZÜM BİLDİRİM MODALI --- */}
-      {resolveModalTarget && (
-        <div className="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      {resolveModalTarget && createPortal(
+        <div className="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-6 sm:p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
 
             {/* Modal Başlık */}
@@ -1974,7 +2105,8 @@ const AdminDashboard = () => {
             </form>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </Layout>

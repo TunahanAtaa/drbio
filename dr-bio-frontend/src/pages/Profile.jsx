@@ -103,7 +103,7 @@ export default function UserProfile({ initialUserData }) {
         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
             
             {/* Üst Header / Profil Kartı */}
-            <div className="bg-gradient-to-r from-red-600 to-rose-700 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+            <div className="bg-gradient-to-r from-lime-700 via-lime-800 to-emerald-800 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
                 <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                     <Heart className="w-64 h-64 text-white" />
                 </div>
@@ -115,7 +115,7 @@ export default function UserProfile({ initialUserData }) {
                         </div>
                         <div>
                             <h1 className="text-2xl sm:text-3xl font-black">{user.name}</h1>
-                            <p className="text-red-100 font-medium text-sm mt-0.5">{user.email}</p>
+                            <p className="text-lime-100 font-medium text-sm mt-0.5">{user.email}</p>
                             <span className="inline-block mt-2 px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold uppercase tracking-wider">
                                 {user.role === 'PATIENT' ? 'Hasta Profili' : user.role}
                             </span>
@@ -151,7 +151,7 @@ export default function UserProfile({ initialUserData }) {
                         {/* Fiziksel Bilgiler Kartları */}
                         <div>
                             <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                                <Sparkles className="w-5 h-5 text-red-600" />
+                                <Sparkles className="w-5 h-5 text-lime-700 dark:text-lime-400" />
                                 <span>Kişisel ve Fiziksel Bilgiler</span>
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-theme-bg p-5 rounded-3xl shadow-inner">
@@ -177,7 +177,7 @@ export default function UserProfile({ initialUserData }) {
                         {/* Sosyal ve Yaşam Tarzı */}
                         <div>
                             <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                                <User className="w-5 h-5 text-red-600" />
+                                <User className="w-5 h-5 text-lime-700 dark:text-lime-400" />
                                 <span>Sosyal ve Yaşam Tarzı</span>
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -203,7 +203,7 @@ export default function UserProfile({ initialUserData }) {
                         {/* Tıbbi Geçmiş ve Sağlık */}
                         <div>
                             <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                                <Activity className="w-5 h-5 text-red-600" />
+                                <Activity className="w-5 h-5 text-lime-700 dark:text-lime-400" />
                                 <span>Tıbbi Geçmiş ve Sağlık Bilgileri</span>
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -235,7 +235,7 @@ export default function UserProfile({ initialUserData }) {
                     <form onSubmit={handleUpdate} className="space-y-6">
                         <div className="flex justify-between items-center pb-4 border-b border-stone-200 dark:border-stone-800">
                             <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">Profil Bilgilerini Güncelle</h3>
-                            <span className="text-xs text-red-500 font-bold">⚠️ Zorunlu alanlar işaretlidir</span>
+                            <span className="text-xs text-lime-700 dark:text-lime-400 font-bold">⚠️ Zorunlu alanlar işaretlidir</span>
                         </div>
 
                         {/* Temel Bilgiler */}
@@ -245,7 +245,7 @@ export default function UserProfile({ initialUserData }) {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-red-600/20"
+                                    className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-800/20"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
@@ -256,7 +256,7 @@ export default function UserProfile({ initialUserData }) {
                                 <input
                                     type="email"
                                     required
-                                    className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-red-600/20"
+                                    className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
@@ -264,7 +264,7 @@ export default function UserProfile({ initialUserData }) {
                         </div>
 
                         {/* Zorunlu Fiziksel Veriler */}
-                        <div className="bg-blue-50/80 dark:bg-blue-950/30 p-5 rounded-3xl border border-blue-200 dark:border-blue-900">
+                        <div className="p-4 bg-blue-50/60 dark:bg-blue-950/40 rounded-2xl border border-blue-100 dark:border-blue-900/60 space-y-3">
                             <p className="text-xs font-black text-blue-800 dark:text-blue-300 uppercase tracking-wider mb-3">Zorunlu Sağlık Verileri ⚠️</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>

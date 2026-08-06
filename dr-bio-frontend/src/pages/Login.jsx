@@ -20,7 +20,7 @@ const Login = () => {
     safeKeys.forEach(key => {
       const val = localStorage.getItem(key);
       if (val) {
-        try { JSON.parse(val); } catch(e) { localStorage.removeItem(key); }
+        try { JSON.parse(val); } catch (e) { localStorage.removeItem(key); }
       }
     });
     // Ayrıca 'user' varsa ama geçerli role içermiyorsa temizle
@@ -29,7 +29,7 @@ const Login = () => {
       try {
         const u = JSON.parse(userRaw);
         if (!u || !u.role || !u.email) localStorage.removeItem('user');
-      } catch(e) { localStorage.removeItem('user'); }
+      } catch (e) { localStorage.removeItem('user'); }
     }
   }, []);
 
@@ -87,17 +87,17 @@ const Login = () => {
     try {
       const response = await api.post('/auth/login', { email, password });
       const { token, role, fullName, email: userEmail, userId } = response.data;
-      
+
       const userRole = role || 'PATIENT';
       const path = userRole === 'ADMIN' ? '/admin' : '/patient';
 
-      localStorage.setItem('user', JSON.stringify({ 
+      localStorage.setItem('user', JSON.stringify({
         id: userId,
-        name: fullName || email.split('@')[0], 
-        email: userEmail || email, 
+        name: fullName || email.split('@')[0],
+        email: userEmail || email,
         role: userRole,
         token: token,
-        healthProfile: {} 
+        healthProfile: {}
       }));
 
       navigate(path);
@@ -193,21 +193,21 @@ const Login = () => {
       await api.post('/auth/register', payload);
 
       setSuccessMessage('Kayıt işleminiz başarıyla oluşturuldu! Yönlendiriliyorsunuz...');
-      
+
       // Kayıt başarılıysa otomatik login yapalım
       const loginResp = await api.post('/auth/login', { email: formData.email, password: formData.password });
       const { token, role, fullName, email: userEmail, userId } = loginResp.data;
-      
+
       const userRole = role || 'PATIENT';
       const path = userRole === 'ADMIN' ? '/admin' : '/patient';
 
-      localStorage.setItem('user', JSON.stringify({ 
+      localStorage.setItem('user', JSON.stringify({
         id: userId,
-        name: fullName || formData.email.split('@')[0], 
-        email: userEmail || formData.email, 
+        name: fullName || formData.email.split('@')[0],
+        email: userEmail || formData.email,
         role: userRole,
         token: token,
-        healthProfile: {} 
+        healthProfile: {}
       }));
 
       setTimeout(() => navigate(path), 900);
@@ -225,7 +225,7 @@ const Login = () => {
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen w-full flex items-center justify-center p-4 py-8 relative overflow-hidden"
     >
       {/* Soft & Balanced Medikal Overlay & Glassmorphism Blur */}
@@ -240,12 +240,12 @@ const Login = () => {
 
       <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-theme-card/95 backdrop-blur-md rounded-[2.5rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-red-600 rounded-2xl shadow-clay-btn flex items-center justify-center text-white font-black text-3xl">
+          <div className="w-16 h-16 bg-lime-700 rounded-2xl shadow-clay-btn flex items-center justify-center text-white font-black text-3xl">
             <Activity className="w-8 h-8" />
           </div>
         </div>
-        
-        <h1 className="text-3xl font-black text-center text-stone-800 dark:text-stone-200 mb-2">Dr. Bio</h1>
+
+        <h1 className="text-3xl font-black text-center text-lime-700 dark:text-lime-400 mb-2">Dr. Bio</h1>
 
         {successMessage && (
           <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
@@ -264,7 +264,7 @@ const Login = () => {
               </div>
               <h2 className="text-xl font-black text-stone-800 dark:text-stone-200">Şifrenizi Güncelleyin</h2>
               <p className="text-xs text-stone-500 font-bold mt-1">
-                <span className="text-red-600">{email}</span> hesabı için yeni şifre belirleyin
+                <span className="text-lime-700 dark:text-lime-400">{email}</span> hesabı için yeni şifre belirleyin
               </p>
             </div>
 
@@ -304,42 +304,39 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-amber-600 hover:bg-amber-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-4 disabled:opacity-50"
+                className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-4 disabled:opacity-50"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Şifreyi Güncelle</span>}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Şifreyi Güncelle ve Giriş Yap</span>}
               </button>
-            </form>
 
-            <div className="mt-6 text-center">
               <button
                 type="button"
                 onClick={() => setIsResetPasswordOpen(false)}
-                className="text-sm font-bold text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-all flex items-center justify-center space-x-1 mx-auto"
+                className="w-full py-2.5 text-xs font-bold text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-all text-center block"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Giriş Ekranına Dön</span>
+                Giriş Ekranına Geri Dön
               </button>
-            </div>
+            </form>
           </div>
         ) : !isRegisterOpen ? (
           /* --- GİRİŞ YAP FORMU VE ALANI --- */
           <div>
-            <p className="text-center text-stone-500 font-bold mb-6">Sisteme Giriş Yapın</p>
+            <p className="text-center text-stone-500 text-sm mb-6">Laboratuvar analizlerinize erişmek için giriş yapın</p>
 
             {/* Giriş Hatası Uyarısı */}
             {loginError && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-2xl space-y-3 text-xs font-bold animate-fade-in">
-                <div className="flex items-start space-x-2">
-                  <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400 mt-0.5" />
-                  <span className="leading-relaxed">{loginError}</span>
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-2xl space-y-2 animate-fade-in">
+                <div className="flex items-center space-x-3 text-xs font-bold">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400" />
+                  <span>{loginError}</span>
                 </div>
-                
+
                 {/* Kayıt Yoksa Kaydol Butonu */}
                 {loginError.includes('kayıt bulunmamaktadır') && (
                   <button
                     type="button"
                     onClick={() => { setLoginError(''); setIsRegisterOpen(true); setStep(1); }}
-                    className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all text-xs flex items-center justify-center space-x-1"
+                    className="w-full py-2.5 bg-lime-700 hover:bg-lime-800 text-white rounded-xl font-bold transition-all text-xs flex items-center justify-center space-x-1"
                   >
                     <UserPlus className="w-4 h-4" />
                     <span>Hemen Kaydolun</span>
@@ -369,7 +366,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="hasta@drbio.com"
                   required
-                  className="w-full px-5 py-4 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-red-600/20 shadow-inner"
+                  className="w-full px-5 py-4 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20 shadow-inner"
                 />
               </div>
 
@@ -382,15 +379,15 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-5 py-4 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-red-600/20 shadow-inner"
+                  className="w-full px-5 py-4 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20 shadow-inner"
                 />
               </div>
-              
+
               {/* Giriş Yap Butonu */}
               <button
                 type="submit"
                 disabled={loading || !email}
-                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full py-4 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Giriş Yap</span>}
               </button>
@@ -402,7 +399,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => { setLoginError(''); setIsRegisterOpen(true); setStep(1); }}
-                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2"
+                className="w-full py-4 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2"
               >
                 <UserPlus className="w-5 h-5" />
                 <span>Kayıt Ol</span>
@@ -412,8 +409,8 @@ const Login = () => {
             <div className="mt-8 pt-6 border-t border-stone-200 dark:border-stone-800">
               <p className="text-xs font-bold text-stone-400 text-center mb-4 uppercase">Test Hesapları (Gerçek Backend)</p>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('admin123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><Shield className="w-4 h-4 mb-1"/>Admin</button>
-                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('hasta123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><User className="w-4 h-4 mb-1"/>Hasta (Kayıtlıysa)</button>
+                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><Shield className="w-4 h-4 mb-1" />Admin</button>
+                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><User className="w-4 h-4 mb-1" />Hasta</button>
               </div>
             </div>
           </div>
@@ -452,7 +449,7 @@ const Login = () => {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="ornek@mail.com"
+                  placeholder="zeynep@ornek.com"
                   className="w-full px-5 py-3.5 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-inner"
                 />
               </div>
@@ -484,7 +481,7 @@ const Login = () => {
               {/* Devam Et Butonu */}
               <button
                 type="submit"
-                className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-6"
+                className="w-full py-4 bg-lime-800 hover:bg-lime-900 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-6"
               >
                 <span>Devam Et (Sağlık Bilgileri)</span>
                 <ArrowRight className="w-5 h-5" />
@@ -496,7 +493,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setIsRegisterOpen(false)}
-                className="text-sm font-bold text-red-600 hover:underline transition-all"
+                className="text-sm font-bold text-lime-800 dark:text-lime-500 hover:underline transition-all"
               >
                 Zaten hesabınız var mı? Giriş Yapın
               </button>
@@ -515,7 +512,7 @@ const Login = () => {
             </div>
 
             <form onSubmit={handleHealthSubmit} className="space-y-4 text-left">
-              
+
               {/* Zorunlu Alanlar (Kırmızı Ünlemli ⚠️) */}
               <div className="bg-blue-50/80 dark:bg-blue-950/30 p-4 rounded-3xl border border-blue-200 dark:border-blue-900">
                 <p className="text-xs font-black text-blue-800 dark:text-blue-300 uppercase tracking-wider mb-3">Zorunlu Sağlık Verileri</p>
@@ -524,13 +521,13 @@ const Login = () => {
                     <label className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1 mb-1">
                       Yaş <span className="text-red-500 font-extrabold text-xs" title="Bu bilgiyi girmek zorunludur">⚠️</span>
                     </label>
-                    <input 
-                      type="number" 
-                      required 
+                    <input
+                      type="number"
+                      required
                       className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                       placeholder="Örn: 22"
                       value={formData.age}
-                      onChange={(e) => setFormData({...formData, age: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                     />
                   </div>
 
@@ -538,11 +535,11 @@ const Login = () => {
                     <label className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1 mb-1">
                       Cinsiyet <span className="text-red-500 font-extrabold text-xs" title="Bu bilgiyi girmek zorunludur">⚠️</span>
                     </label>
-                    <select 
+                    <select
                       required
                       className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                       value={formData.gender}
-                      onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                     >
                       <option value="">Seçiniz</option>
                       <option value="Kadın">Kadın</option>
@@ -555,13 +552,13 @@ const Login = () => {
                     <label className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1 mb-1">
                       Boy (cm) <span className="text-red-500 font-extrabold text-xs" title="Bu bilgiyi girmek zorunludur">⚠️</span>
                     </label>
-                    <input 
-                      type="number" 
-                      required 
+                    <input
+                      type="number"
+                      required
                       className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                       placeholder="Örn: 170"
                       value={formData.height}
-                      onChange={(e) => setFormData({...formData, height: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, height: e.target.value })}
                     />
                   </div>
 
@@ -569,13 +566,13 @@ const Login = () => {
                     <label className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1 mb-1">
                       Kilo (kg) <span className="text-red-500 font-extrabold text-xs" title="Bu bilgiyi girmek zorunludur">⚠️</span>
                     </label>
-                    <input 
-                      type="number" 
-                      required 
+                    <input
+                      type="number"
+                      required
                       className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                       placeholder="Örn: 60"
                       value={formData.weight}
-                      onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
                     />
                   </div>
                 </div>
@@ -585,10 +582,10 @@ const Login = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Medeni Durum</label>
-                  <select 
+                  <select
                     className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                     value={formData.maritalStatus}
-                    onChange={(e) => setFormData({...formData, maritalStatus: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
                   >
                     <option value="Bekar">Bekar</option>
                     <option value="Evli">Evli</option>
@@ -598,10 +595,10 @@ const Login = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Çocuğunuz var mı?</label>
-                  <select 
+                  <select
                     className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                     value={formData.hasChildren}
-                    onChange={(e) => setFormData({...formData, hasChildren: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, hasChildren: e.target.value })}
                   >
                     <option value="Hayır">Hayır</option>
                     <option value="Evet">Evet</option>
@@ -611,69 +608,69 @@ const Login = () => {
 
               <div>
                 <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Yaptığınız İş / Meslek</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                   placeholder="Örn: Yazılım Mühendisi, Öğrenci..."
                   value={formData.occupation}
-                  onChange={(e) => setFormData({...formData, occupation: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
                 />
               </div>
 
               {/* Tıbbi Geçmiş */}
               <div>
                 <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Genetik / Kronik Hastalık Var mı?</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                   placeholder="Örn: Diyabet, Tansiyon (Yoksa boş bırakın)"
                   value={formData.geneticDiseases}
-                  onChange={(e) => setFormData({...formData, geneticDiseases: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, geneticDiseases: e.target.value })}
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Geçirdiğiniz Operasyonlar / Ameliyatlar</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                   placeholder="Örn: Apandisit ameliyatı (Yoksa yok yazabilirsiniz)"
                   value={formData.pastSurgeries}
-                  onChange={(e) => setFormData({...formData, pastSurgeries: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, pastSurgeries: e.target.value })}
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Sürekli Kullandığınız İlaçlar</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                   placeholder="Örn: Kan sulandırıcı, tansiyon ilacı vb."
                   value={formData.regularMedications}
-                  onChange={(e) => setFormData({...formData, regularMedications: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, regularMedications: e.target.value })}
                 />
               </div>
 
               {/* Eklenen Akıllı Alanlar: Alerjiler ve Kronik Ağrı */}
               <div>
                 <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Bilinen Bir Alerjiniz Var mı?</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                   placeholder="Örn: Polen, Penisilin, Arı..."
                   value={formData.allergies}
-                  onChange={(e) => setFormData({...formData, allergies: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Kronik Ağrı / Şikayetiniz Var mı?</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                   placeholder="Örn: Kronik bel ağrısı, migren..."
                   value={formData.chronicComplaints}
-                  onChange={(e) => setFormData({...formData, chronicComplaints: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, chronicComplaints: e.target.value })}
                 />
               </div>
 
@@ -681,10 +678,10 @@ const Login = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Sigara Tüketimi</label>
-                  <select 
+                  <select
                     className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                     value={formData.smoking}
-                    onChange={(e) => setFormData({...formData, smoking: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, smoking: e.target.value })}
                   >
                     <option value="Kullanmıyor">Kullanmıyor</option>
                     <option value="Ara sıra">Ara sıra</option>
@@ -694,10 +691,10 @@ const Login = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-stone-600 dark:text-stone-400 mb-1">Alkol Tüketimi</label>
-                  <select 
+                  <select
                     className="w-full px-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none text-sm"
                     value={formData.alcohol}
-                    onChange={(e) => setFormData({...formData, alcohol: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, alcohol: e.target.value })}
                   >
                     <option value="Kullanmıyor">Kullanmıyor</option>
                     <option value="Sosyal olarak">Sosyal olarak</option>
@@ -708,16 +705,16 @@ const Login = () => {
 
               {/* Kaydı Tamamla ve Panele Git */}
               <div className="pt-2 space-y-2">
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={loading}
                   className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Kaydı Tamamla ve Panele Git</span>}
                 </button>
 
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setStep(1)}
                   className="w-full py-2.5 text-xs font-bold text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-all flex items-center justify-center space-x-1"
                 >

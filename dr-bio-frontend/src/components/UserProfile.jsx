@@ -103,7 +103,7 @@ const UserProfile = () => {
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       
       {/* Üst Header / Profil Kartı */}
-      <div className="bg-gradient-to-r from-red-600 to-rose-700 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+      <div className="bg-gradient-to-r from-lime-700 via-lime-800 to-emerald-800 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
         <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
           <Heart className="w-64 h-64 text-white" />
         </div>
@@ -115,7 +115,7 @@ const UserProfile = () => {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-black">{user.name}</h1>
-              <p className="text-red-100 font-medium text-sm mt-0.5">{user.email}</p>
+              <p className="text-lime-100 font-medium text-sm mt-0.5">{user.email}</p>
               <span className="inline-block mt-2 px-3 py-1 bg-white/20 text-white rounded-full text-xs font-bold uppercase tracking-wider">
                 {user.role === 'PATIENT' ? 'Hasta Profili' : user.role}
               </span>
@@ -151,7 +151,7 @@ const UserProfile = () => {
             {/* Fiziksel Bilgiler Kartları */}
             <div>
               <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-red-600" />
+                <Sparkles className="w-5 h-5 text-lime-700 dark:text-lime-400" />
                 <span>Kişisel ve Fiziksel Bilgiler</span>
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-theme-bg p-5 rounded-3xl shadow-inner">
@@ -177,7 +177,7 @@ const UserProfile = () => {
             {/* Sosyal ve Yaşam Tarzı */}
             <div>
               <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                <User className="w-5 h-5 text-red-600" />
+                <User className="w-5 h-5 text-lime-700 dark:text-lime-400" />
                 <span>Sosyal ve Yaşam Tarzı</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -203,7 +203,7 @@ const UserProfile = () => {
             {/* Tıbbi Geçmiş ve Sağlık */}
             <div>
               <h3 className="text-lg font-black text-stone-800 dark:text-stone-200 mb-4 flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-red-600" />
+                <Activity className="w-5 h-5 text-lime-700 dark:text-lime-400" />
                 <span>Tıbbi Geçmiş ve Sağlık Bilgileri</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -245,7 +245,7 @@ const UserProfile = () => {
                 <input
                   type="text"
                   required
-                  className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-red-600/20"
+                  className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-800/20"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -256,7 +256,7 @@ const UserProfile = () => {
                 <input
                   type="email"
                   required
-                  className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-red-600/20"
+                  className="w-full px-5 py-3.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />

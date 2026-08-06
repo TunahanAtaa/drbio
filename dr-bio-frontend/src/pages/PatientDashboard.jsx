@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { 
@@ -214,7 +215,7 @@ const PatientDashboard = () => {
     return (
       <Layout title="Hasta Paneli" role="PATIENT">
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-stone-400">
-          <Loader2 className="w-16 h-16 animate-spin text-red-600 mb-6" />
+          <Loader2 className="w-16 h-16 animate-spin text-lime-700 mb-6" />
           <h2 className="text-2xl font-black text-stone-700 dark:text-stone-200 mb-2">Tahlil Verileri Yükleniyor...</h2>
           <p className="font-bold">Lütfen bekleyin, bilgileriniz şifreli olarak getiriliyor.</p>
         </div>
@@ -243,7 +244,7 @@ const PatientDashboard = () => {
         <div className="space-y-8 animate-fade-in">
           
           {/* Karşılama Banner */}
-          <div className="bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+          <div className="bg-gradient-to-r from-lime-700 via-lime-800 to-emerald-800 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
             <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8 translate-y-8">
               <Activity className="w-80 h-80 text-white" />
             </div>
@@ -254,7 +255,7 @@ const PatientDashboard = () => {
                 <span>Dr. Bio Akıllı Sağlık Asistanı</span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-black">Hoş geldin, {activeUser.name}! 👋</h1>
-              <p className="text-red-100 font-medium max-w-2xl text-sm sm:text-base leading-relaxed">
+              <p className="text-lime-100 font-medium max-w-2xl text-sm sm:text-base leading-relaxed">
                 Tahlil sonuçlarınızı yükleyerek yapay zeka destekli anlık referans analizlerini görüntüleyebilir ve sağlık geçmişinizi güvenle takip edebilirsiniz.
               </p>
 
@@ -262,7 +263,7 @@ const PatientDashboard = () => {
               <div className="pt-4 flex flex-wrap gap-3">
                 <button
                   onClick={() => navigate('/patient/upload')}
-                  className="px-6 py-3.5 bg-white text-red-600 hover:bg-red-50 font-black rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
+                  className="px-6 py-3.5 bg-white text-lime-700 hover:bg-lime-50 font-black rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
                 >
                   <UploadCloud className="w-5 h-5" />
                   <span>Yeni Tahlil Yükle</span>
@@ -295,7 +296,7 @@ const PatientDashboard = () => {
           {/* İstatistik & Metrik Kartları */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
-              <div className="w-14 h-14 bg-red-50 dark:bg-red-950/40 rounded-2xl flex items-center justify-center text-red-600 shrink-0">
+              <div className="w-14 h-14 bg-lime-50 dark:bg-lime-950/40 rounded-2xl flex items-center justify-center text-lime-700 dark:text-lime-400 shrink-0">
                 <Calendar className="w-7 h-7" />
               </div>
               <div>
@@ -351,13 +352,13 @@ const PatientDashboard = () => {
             <div className="lg:col-span-2 space-y-4">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-black text-stone-800 dark:text-stone-200 flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-red-600" />
+                  <Activity className="w-5 h-5 text-lime-700" />
                   <span>Son Yüklenen Tahlil Özeti</span>
                 </h2>
                 {historyList.length > 0 && (
                   <button 
                     onClick={() => navigate('/patient/history')}
-                    className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center space-x-1"
+                    className="text-xs font-bold text-lime-700 dark:text-lime-500 hover:underline flex items-center space-x-1"
                   >
                     <span>Tümünü Gör</span>
                     <ChevronRight className="w-4 h-4" />
@@ -395,8 +396,8 @@ const PatientDashboard = () => {
                   </div>
 
                   {/* Sistem Önerisi */}
-                  <div className="p-4 bg-red-50/60 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 rounded-2xl flex items-start space-x-3 text-xs font-bold text-red-800 dark:text-red-300">
-                    <Sparkles className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                  <div className="p-4 bg-lime-50/80 dark:bg-lime-950/40 border border-lime-200 dark:border-lime-900/50 rounded-2xl flex items-start space-x-3 text-xs font-bold text-lime-900 dark:text-lime-300">
+                    <Sparkles className="w-5 h-5 text-lime-700 shrink-0 mt-0.5" />
                     <span>{historyList[0].summaryNote}</span>
                   </div>
                 </div>
@@ -414,7 +415,7 @@ const PatientDashboard = () => {
                   </div>
                   <button 
                     onClick={() => navigate('/patient/upload')}
-                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2"
+                    className="px-6 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2"
                   >
                     <UploadCloud className="w-4 h-4" />
                     <span>İlk Tahlilinizi Yükleyin</span>
@@ -479,7 +480,7 @@ const PatientDashboard = () => {
               <div className="bg-theme-card rounded-[2rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center">
 
                 <div className="w-24 h-24 bg-theme-bg rounded-3xl shadow-inner flex items-center justify-center mb-6 border border-stone-200 dark:border-stone-800">
-                  <UploadCloud className="w-10 h-10 text-red-600" />
+                  <UploadCloud className="w-10 h-10 text-lime-700 dark:text-lime-400" />
                 </div>
 
                 <p className="font-bold text-stone-600 dark:text-stone-300 mb-2 text-sm">PDF veya Resim formatında tahlil sonucunuzu seçin</p>
@@ -493,7 +494,7 @@ const PatientDashboard = () => {
                 <button
                   onClick={handleUpload}
                   disabled={!file || loading}
-                  className="w-full py-4 mt-2 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+                  className="w-full py-4 mt-2 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
                   {loading ? (
                     <>
@@ -505,7 +506,7 @@ const PatientDashboard = () => {
                   )}
                 </button>
 
-                {error && <p className="text-sm text-red-600 font-bold mt-4 animate-fade-in">{error}</p>}
+                {error && <p className="text-sm text-lime-700 font-bold mt-4 animate-fade-in">{error}</p>}
               </div>
             </div>
 
@@ -561,12 +562,12 @@ const PatientDashboard = () => {
 
                   {results.doctorNote && (
                     <div className="bg-theme-card p-6 rounded-[2rem] shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-start space-x-4">
-                      <div className="w-12 h-12 shrink-0 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-2xl flex items-center justify-center">
+                      <div className="w-12 h-12 shrink-0 bg-lime-50 dark:bg-lime-900/20 text-lime-600 shrink-0 rounded-2xl flex items-center justify-center">
                         <Stethoscope className="w-6 h-6" />
                       </div>
                       <div>
                         <h3 className="font-black text-stone-800 dark:text-stone-200 mb-2">Uzman Önerisi</h3>
-                        <p className="text-sm font-bold text-red-700 dark:text-red-400 leading-relaxed">{results.doctorNote}</p>
+                        <p className="text-sm font-bold text-lime-900 dark:text-lime-400 leading-relaxed">{results.doctorNote}</p>
                       </div>
                     </div>
                   )}
@@ -614,7 +615,7 @@ const PatientDashboard = () => {
 
             <button
               onClick={() => navigate('/patient/upload')}
-              className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
+              className="px-5 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>Yeni Tahlil Ekle</span>
@@ -632,7 +633,7 @@ const PatientDashboard = () => {
                 placeholder="Tahlil adı veya içerik ara..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
+                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-lime-700/20"
               />
             </div>
 
@@ -658,12 +659,12 @@ const PatientDashboard = () => {
               {filteredHistory.map((item) => (
                 <div 
                   key={item.id}
-                  className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-red-600/30 transition duration-200"
+                  className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-lime-700/30 transition duration-200"
                 >
                   <div className="space-y-2 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="px-3 py-1 bg-theme-bg text-stone-500 rounded-full text-xs font-bold border border-stone-200 dark:border-stone-800 flex items-center space-x-1">
-                        <Calendar className="w-3.5 h-3.5 text-red-600" />
+                        <Calendar className="w-3.5 h-3.5 text-lime-700 dark:text-lime-500" />
                         <span>{item.date}</span>
                       </span>
 
@@ -685,7 +686,7 @@ const PatientDashboard = () => {
                       onClick={() => setSelectedTestModal(item)}
                       className="flex-1 md:flex-none px-4 py-2.5 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-1 border border-stone-200 dark:border-stone-700"
                     >
-                      <Eye className="w-4 h-4 text-red-600" />
+                      <Eye className="w-4 h-4 text-lime-700 dark:text-lime-500" />
                       <span>Detay İncele</span>
                     </button>
 
@@ -716,7 +717,7 @@ const PatientDashboard = () => {
               {!searchQuery && (
                 <button
                   onClick={() => navigate('/patient/upload')}
-                  className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-clay-btn text-xs inline-flex items-center space-x-2 transition"
+                  className="px-6 py-3.5 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-2xl shadow-clay-btn text-xs inline-flex items-center space-x-2 transition"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Hemen Tahlil Yükleyin</span>
@@ -726,8 +727,8 @@ const PatientDashboard = () => {
           )}
 
           {/* DETAY İNCELE MODAL */}
-          {selectedTestModal && (
-            <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          {selectedTestModal && createPortal(
+            <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
               <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-start border-b border-stone-200 dark:border-stone-800 pb-4">
                   <div>
@@ -768,7 +769,7 @@ const PatientDashboard = () => {
                   </div>
 
                   {selectedTestModal.doctorNote && (
-                    <div className="p-4 bg-red-50/70 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-2xl text-xs font-bold text-red-800 dark:text-red-300">
+                    <div className="p-4 bg-lime-50/80 dark:bg-lime-950/40 border border-lime-200 dark:border-lime-900 rounded-2xl text-xs font-bold text-lime-900 dark:text-lime-300">
                       <p className="font-black mb-1">Uzman Notu:</p>
                       <p>{selectedTestModal.doctorNote}</p>
                     </div>
@@ -778,21 +779,22 @@ const PatientDashboard = () => {
                 <div className="pt-4 flex justify-end">
                   <button
                     onClick={() => setSelectedTestModal(null)}
-                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl text-xs"
+                    className="px-6 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-2xl text-xs"
                   >
                     Kapat
                   </button>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
 
         </div>
       )}
 
       {/* GERİ BİLDİRİM & YILDIZ VERME MODAL */}
-      {feedbackModalOpen && (
-        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      {feedbackModalOpen && createPortal(
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-theme-card w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-6">
             <div className="flex justify-between items-center border-b border-stone-200 dark:border-stone-800 pb-4">
               <div className="flex items-center space-x-3">
@@ -806,7 +808,7 @@ const PatientDashboard = () => {
               </div>
               <button
                 onClick={() => setFeedbackModalOpen(false)}
-                className="p-2 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 rounded-full font-black text-stone-500"
+                className="p-2 text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 font-bold"
               >
                 ✕
               </button>
