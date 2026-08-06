@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * @return e-posta adresi sistemde varsa true, yoksa false döner
      */
     boolean existsByEmail(String email);
+
+    long countByRole(com.drbio.domain.user.entity.Role role);
 }

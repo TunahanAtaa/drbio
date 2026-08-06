@@ -25,7 +25,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/users/kvkk-approvals").hasRole("ADMIN")
+                .requestMatchers("/api/users", "/api/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/reference-values/**").hasRole("ADMIN")
                 .requestMatchers("/api/reports/all").hasRole("ADMIN")
                 .anyRequest().authenticated()

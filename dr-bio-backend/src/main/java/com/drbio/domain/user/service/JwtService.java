@@ -17,10 +17,15 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Ideally, this should come from application.yml, but for simplicity we hardcode a secure 256-bit key or generate one.
-    // For production, use @Value("${jwt.secret}")
-    private final Key signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${jwt.secret}")
+    private String secretKey;
+
     private final long jwtExpirationMs = 86400000; // 24 hours
+
+    private Key getSigningKey() {
+        byte[] keyBytes = secretKey.getBytes();
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -36,7 +41,7 @@ public class JwtService {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(signingKey)
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -76,7 +81,7 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

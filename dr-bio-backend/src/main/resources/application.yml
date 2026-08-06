@@ -15,3 +15,9 @@ spring:
 
 file:
   upload-dir: uploads/reports
+
+jwt:
+  # Bu değer geliştirme ortamı içindir. Production ortamında mutlaka
+  # ortam değişkeni (environment variable) olarak dışarıdan verilmelidir.
+  # Örn: export JWT_SECRET="your-super-secret-key-..."
+  secret: ${JWT_SECRET:3f2d5a8b4c9e1f6a7d0b2e4c8a9f1b3d5e7c9a2b4f6d8e0a1c3b5d7f9a1c3e5}

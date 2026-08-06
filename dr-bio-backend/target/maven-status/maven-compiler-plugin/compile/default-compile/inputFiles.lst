@@ -39,13 +39,9 @@
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/dto/LoginResponseDTO.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/dto/RegisterRequestDTO.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/dto/SecurityUser.java
-/home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/dto/UserRegisterRequestDTO.java
-/home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/dto/UserResponseDTO.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/entity/Gender.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/entity/Role.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/entity/User.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/exception/UserAlreadyExistsException.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/repository/UserRepository.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/service/JwtService.java
-/home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/service/UserService.java
-/home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/user/service/UserServiceImpl.java
