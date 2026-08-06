@@ -7,6 +7,9 @@ import com.drbio.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
@@ -32,8 +36,7 @@ public class AuthController {
 
         User user = userOpt.get();
 
-        // Plain-text comparison (passwords are stored as-is in seeder for dev)
-        if (!user.getPasswordHash().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Geçersiz e-posta veya şifre.");
         }
@@ -62,7 +65,7 @@ public class AuthController {
 
         User newUser = User.builder()
                 .email(request.getEmail())
-                .passwordHash(request.getPassword()) // plain text for dev
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
                 .role(com.drbio.domain.user.entity.Role.PATIENT)
                 .gender(com.drbio.domain.user.entity.Gender.OTHER) // default

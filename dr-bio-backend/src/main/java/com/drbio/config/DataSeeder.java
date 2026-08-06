@@ -4,6 +4,7 @@ import com.drbio.domain.user.entity.Gender;
 import com.drbio.domain.user.entity.Role;
 import com.drbio.domain.user.entity.User;
 import com.drbio.domain.user.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 public class DataSeeder {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
@@ -30,15 +32,6 @@ public class DataSeeder {
                 Gender.MALE,
                 LocalDate.of(1985, 1, 15),
                 Role.ADMIN
-        );
-
-        createUserIfNotExists(
-                "doktor@drbio.com",
-                "doktor123",
-                "Dr. Ahmet Yılmaz",
-                Gender.MALE,
-                LocalDate.of(1978, 6, 20),
-                Role.DOCTOR
         );
 
         createUserIfNotExists(
@@ -58,7 +51,7 @@ public class DataSeeder {
         if (!userRepository.existsByEmail(email)) {
             User user = User.builder()
                     .email(email)
-                    .passwordHash(password)
+                    .passwordHash(passwordEncoder.encode(password))
                     .fullName(fullName)
                     .gender(gender)
                     .birthDate(birthDate)

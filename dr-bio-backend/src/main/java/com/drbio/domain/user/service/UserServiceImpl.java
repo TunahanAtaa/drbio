@@ -6,6 +6,7 @@ import com.drbio.domain.user.entity.User;
 import com.drbio.domain.user.exception.UserAlreadyExistsException;
 import com.drbio.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -22,8 +24,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException("Kullanıcı zaten mevcut: " + request.getEmail());
         }
 
-        // TODO: Hash password (e.g. with BCrypt) before saving
-        String temporaryPasswordHash = request.getPassword(); 
+        String temporaryPasswordHash = passwordEncoder.encode(request.getPassword()); 
 
         User user = User.builder()
                 .email(request.getEmail())
