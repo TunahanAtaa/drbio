@@ -4,9 +4,9 @@ com/drbio/domain/report/repository/MedicalReportItemRepository.class
 com/drbio/domain/report/service/ReportRecommendationServiceImpl.class
 com/drbio/domain/report/service/ReportRecommendationService.class
 com/drbio/domain/report/dto/MedicalReportItemDTO.class
-com/drbio/config/DataSeeder.class
-com/drbio/domain/user/dto/SecurityUser.class
 com/drbio/domain/user/dto/LoginRequestDTO.class
+com/drbio/domain/user/dto/SecurityUser.class
+com/drbio/config/DataSeeder.class
 com/drbio/domain/report/entity/ReportStatus.class
 com/drbio/domain/report/service/TextExtractionServiceImpl.class
 com/drbio/domain/report/controller/MedicalReportController.class
@@ -47,12 +47,8 @@ com/drbio/domain/report/dto/MedicalReportResponseDTO$MedicalReportResponseDTOBui
 com/drbio/domain/report/controller/ReferenceValueController.class
 com/drbio/common/exception/FileStorageException.class
 com/drbio/domain/user/dto/SecurityUser$SecurityUserBuilder.class
-com/drbio/domain/report/repository/MedicalReportRepository.class
-<<<<<<< HEAD
-=======
 com/drbio/domain/report/entity/MedicalReportItem$MedicalReportItemBuilder.class
-com/drbio/domain/user/dto/UserResponseDTO.class
->>>>>>> 110254d18730d2a5207ff13bd91c0e0bd92063b8
+com/drbio/domain/report/repository/MedicalReportRepository.class
 com/drbio/domain/report/dto/ReportTrendDTO.class
 com/drbio/config/JwtAuthFilter.class
 com/drbio/domain/user/controller/UserController.class
@@ -60,10 +56,6 @@ com/drbio/domain/report/dto/ReportResultItem.class
 com/drbio/domain/report/entity/ReferenceValue$ReferenceValueBuilder.class
 com/drbio/domain/report/service/MedicalReportService.class
 com/drbio/domain/report/entity/MedicalReport.class
-com/drbio/domain/report/dto/ReportTrendDTO$ReportTrendDTOBuilder.class
-<<<<<<< HEAD
-=======
 com/drbio/domain/report/service/ReportAnalysisService.class
-com/drbio/domain/user/service/UserService.class
->>>>>>> 110254d18730d2a5207ff13bd91c0e0bd92063b8
+com/drbio/domain/report/dto/ReportTrendDTO$ReportTrendDTOBuilder.class
 com/drbio/domain/report/entity/MedicalReportItem.class

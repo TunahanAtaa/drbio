@@ -1201,7 +1201,6 @@ const AdminDashboard = () => {
                   </div>
 
                 <div className="flex items-center space-x-2">
-<<<<<<< HEAD
                   <select
                     value={u.role}
                     onChange={(e) => handleChangeRole(u.id, e.target.value)}
@@ -1212,15 +1211,6 @@ const AdminDashboard = () => {
                     <option value="PATIENT">HASTA</option>
                     <option value="ADMIN">YÖNETİCİ</option>
                   </select>
-=======
-                  <span className={`px-3 py-1 rounded-full text-xs font-black uppercase border ${
-                    u.role === 'ADMIN' 
-                      ? 'bg-purple-950 text-purple-200 border-purple-900/60' 
-                      : 'bg-sky-950 text-sky-200 border-sky-900/60'
-                  }`}>
-                    {u.role === 'ADMIN' ? 'Yönetici' : 'Hasta'}
-                  </span>
->>>>>>> 110254d18730d2a5207ff13bd91c0e0bd92063b8
 
                   <button
                     onClick={() => toggleUserStatus(u.id)}
@@ -1244,11 +1234,7 @@ const AdminDashboard = () => {
 
                   <button
                     onClick={() => setSelectedUserDetail(u)}
-<<<<<<< HEAD
-                    className="px-3.5 py-1.5 bg-lime-700 hover:bg-lime-800 text-white rounded-full text-xs font-black transition flex items-center space-x-1 shadow-sm shrink-0"
-=======
-                    className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full text-xs font-black transition flex items-center space-x-1 shadow-clay-btn"
->>>>>>> 110254d18730d2a5207ff13bd91c0e0bd92063b8
+                    className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full text-xs font-black transition flex items-center space-x-1 shadow-clay-btn shrink-0"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">İncele</span>
