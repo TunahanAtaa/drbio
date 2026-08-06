@@ -7,7 +7,7 @@ import {
   Shield, Activity, FileText, Sparkles, Filter, ChevronRight, UserPlus, 
   Settings, Server, ArrowUpRight, Save, X, Eye, AlertTriangle, UserCheck, 
   Heart, Pill, Stethoscope, Scale, Ruler, Briefcase, Flame, Star, MessageSquare,
-  Send, CheckCircle2, Bell, Check, RotateCcw
+  Send, CheckCircle2, Bell, Check, RotateCcw, TrendingUp
 } from 'lucide-react';
 
 const defaultFeedbacks = [
@@ -1190,6 +1190,11 @@ const AdminDashboard = () => {
             </div>
 
             <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-lime-50 dark:bg-lime-950/40 rounded-2xl flex items-center justify-center text-lime-700 shrink-0">
+                <TrendingUp className="w-7 h-7 text-lime-700" />
+              </div>
+              <div>
+                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Memnuniyet Oranı</span>
                 <span className="text-2xl font-black text-lime-700 dark:text-lime-400">{avgRating} / 5.0</span>
               </div>
             </div>
