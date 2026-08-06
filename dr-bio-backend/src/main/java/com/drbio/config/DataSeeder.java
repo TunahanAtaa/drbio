@@ -27,18 +27,17 @@ public class DataSeeder {
     public void seedData() {
         createUserIfNotExists(
                 "admin@drbio.com",
-                "admin-password",
+                "admin123",
                 "Sistem Yöneticisi",
                 Gender.MALE,
                 LocalDate.of(1985, 1, 15),
-                Role.ADMIN
-        );
+                Role.ADMIN);
 
         log.info("DataSeeder: Sadece admin kullanıcısı kontrol edildi / oluşturuldu.");
     }
 
     private void createUserIfNotExists(String email, String password, String fullName,
-                                       Gender gender, LocalDate birthDate, Role role) {
+            Gender gender, LocalDate birthDate, Role role) {
         if (!userRepository.existsByEmail(email)) {
             User user = User.builder()
                     .email(email)

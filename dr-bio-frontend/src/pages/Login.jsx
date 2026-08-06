@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Activity, Shield, User, Loader2, UserPlus, CheckCircle2, ArrowRight, ArrowLeft, HeartPulse, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
 import AuthBackground from '../components/AuthBackground';
 import ThemeToggle from '../components/ThemeToggle';
+import api from '../services/api';
 
 const defaultUsers = [
   { name: 'Sistem Yöneticisi', email: 'admin@drbio.com', password: '123', role: 'ADMIN' },
@@ -48,18 +49,7 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [resetError, setResetError] = useState('');
 
-  // Tüm kullanıcı hesaplarını localStorage'dan çeken veya varsayılanları getiren yardımcı
-  const getUserAccounts = () => {
-    const saved = localStorage.getItem('userAccounts');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Error parsing userAccounts', e);
-      }
-    }
-    return defaultUsers;
-  };
+  // Yardımcı fonksiyon kaldırıldı, artık backend kullanılıyor.
 
   // Tüm kayıt ve sağlık verileri için state
   const [formData, setFormData] = useState({
@@ -88,46 +78,40 @@ const Login = () => {
     alcohol: 'Kullanmıyor'
   });
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoginError('');
     setShowForgotPassword(false);
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      const normEmail = email.trim().toLowerCase();
-      const accounts = getUserAccounts();
-
-      // 1. Hesap kayıtlı mı kontrolü
-      const foundUser = accounts.find(u => u.email.trim().toLowerCase() === normEmail);
-
-      if (!foundUser) {
-        setLoginError('Böyle bir kayıt bulunmamaktadır! Sisteme giriş yapabilmek için lütfen önce kaydolun.');
-        setShowForgotPassword(false);
-        return;
-      }
-
-      // 2. Şifre doğrulaması
-      if (foundUser.password && password !== foundUser.password) {
-        setLoginError('E-posta veya şifre hatalı!');
-        setShowForgotPassword(true);
-        return;
-      }
-
-      // 3. Doğru giriş -> İsim ve Soyisim bilgisiyle oturum aç
-      const role = foundUser.role || 'PATIENT';
-      const path = role === 'ADMIN' ? '/admin' : '/patient';
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      const { token, role, fullName, email: userEmail, userId } = response.data;
+      
+      const userRole = role || 'PATIENT';
+      const path = userRole === 'ADMIN' ? '/admin' : '/patient';
 
       localStorage.setItem('user', JSON.stringify({ 
-        name: foundUser.name || normEmail.split('@')[0].toUpperCase(), 
-        email: foundUser.email, 
-        role: role,
-        healthProfile: foundUser.healthProfile || {}
+        id: userId,
+        name: fullName || email.split('@')[0], 
+        email: userEmail || email, 
+        role: userRole,
+        token: token,
+        healthProfile: {} 
       }));
 
       navigate(path);
-    }, 600);
+    } catch (error) {
+      console.error(error);
+      if (error.response && (error.response.status === 401 || error.response.status === 403 || error.response.status === 404)) {
+        setLoginError('E-posta veya şifre hatalı! Kaydınız yoksa lütfen kaydolun.');
+        setShowForgotPassword(true);
+      } else {
+        setLoginError('Sunucuya bağlanılamadı. Lütfen daha sonra tekrar deneyin.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOpenResetPassword = () => {
@@ -185,75 +169,59 @@ const Login = () => {
   const handleBasicSubmit = (e) => {
     e.preventDefault();
     setRegisterError('');
-
-    // E-posta benzersizlik (duplicate) kontrolü
-    const accounts = getUserAccounts();
-    const normalizedEmail = formData.email.trim().toLowerCase();
-
-    if (accounts.some(u => u.email.trim().toLowerCase() === normalizedEmail)) {
-      setRegisterError('Bu e-posta adresi ile zaten kayıtlı bir hesap bulunmaktadır! Lütfen farklı bir e-posta adresi deneyin veya giriş yapın.');
-      return;
-    }
-
-    // Sorun yoksa Adım 2 (Sağlık Bilgileri)'ne geç
+    // Frontend-side duplicate check is removed, we'll let the backend handle uniqueness
     setStep(2);
   };
 
-  const handleHealthSubmit = (e) => {
+  const handleHealthSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setRegisterError('');
 
-    setTimeout(() => {
-      setLoading(false);
-      console.log("Kaydedilen Hasta Verileri:", formData);
-      
-      let path = '/patient';
-      if (formData.role === 'ADMIN') path = '/admin';
-
-      const normalizedEmail = formData.email.trim().toLowerCase();
-      const accounts = getUserAccounts();
-
-      const newUserObj = {
-        name: formData.name,
-        email: normalizedEmail,
+    try {
+      // Backend'in beklediği Registration payload'ı:
+      const payload = {
+        email: formData.email,
         password: formData.password,
+        fullName: formData.name,
+        gender: formData.gender === 'Kadın' ? 'FEMALE' : (formData.gender === 'Erkek' ? 'MALE' : 'OTHER'),
+        birthDate: new Date().getFullYear() - parseInt(formData.age || 30) + "-01-01", // Yaş'ı birthdate'e çevirme varsayımı
         role: formData.role,
-        healthProfile: {
-          age: formData.age,
-          weight: formData.weight,
-          height: formData.height,
-          gender: formData.gender,
-          maritalStatus: formData.maritalStatus,
-          hasChildren: formData.hasChildren,
-          occupation: formData.occupation,
-          geneticDiseases: formData.geneticDiseases,
-          pastSurgeries: formData.pastSurgeries,
-          regularMedications: formData.regularMedications,
-          allergies: formData.allergies,
-          chronicComplaints: formData.chronicComplaints,
-          smoking: formData.smoking,
-          alcohol: formData.alcohol
-        }
+        kvkkApproved: true
       };
 
-      if (!accounts.some(u => u.email.trim().toLowerCase() === normalizedEmail)) {
-        accounts.push(newUserObj);
-        localStorage.setItem('userAccounts', JSON.stringify(accounts));
-      }
+      await api.post('/auth/register', payload);
 
-      // Kullanıcı adını Tam Ad Soyad olarak kaydet
-      localStorage.setItem('user', JSON.stringify({ 
-        name: formData.name, 
-        email: formData.email, 
-        role: formData.role,
-        healthProfile: newUserObj.healthProfile
-      }));
+      setSuccessMessage('Kayıt işleminiz başarıyla oluşturuldu! Yönlendiriliyorsunuz...');
       
-      setSuccessMessage('Kayıt ve sağlık profiliniz başarıyla oluşturuldu! Yönlendiriliyorsunuz...');
-      setTimeout(() => {
-        navigate(path);
-      }, 900);
-    }, 600);
+      // Kayıt başarılıysa otomatik login yapalım
+      const loginResp = await api.post('/auth/login', { email: formData.email, password: formData.password });
+      const { token, role, fullName, email: userEmail, userId } = loginResp.data;
+      
+      const userRole = role || 'PATIENT';
+      const path = userRole === 'ADMIN' ? '/admin' : '/patient';
+
+      localStorage.setItem('user', JSON.stringify({ 
+        id: userId,
+        name: fullName || formData.email.split('@')[0], 
+        email: userEmail || formData.email, 
+        role: userRole,
+        token: token,
+        healthProfile: {} 
+      }));
+
+      setTimeout(() => navigate(path), 900);
+    } catch (error) {
+      console.error(error);
+      if (error.response && error.response.status === 409) {
+        setRegisterError('Bu e-posta adresi zaten kullanılıyor.');
+      } else {
+        setRegisterError('Kayıt işlemi sırasında bir hata oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyin.');
+      }
+      setStep(1); // Hata durumunda adım 1'e geri dön
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -441,12 +409,11 @@ const Login = () => {
               </button>
             </div>
 
-            {/* Test Hesapları */}
             <div className="mt-8 pt-6 border-t border-stone-200 dark:border-stone-800">
-              <p className="text-xs font-bold text-stone-400 text-center mb-4 uppercase">Test Hesapları</p>
+              <p className="text-xs font-bold text-stone-400 text-center mb-4 uppercase">Test Hesapları (Gerçek Backend)</p>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><Shield className="w-4 h-4 mb-1"/>Admin</button>
-                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><User className="w-4 h-4 mb-1"/>Hasta</button>
+                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('admin123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><Shield className="w-4 h-4 mb-1"/>Admin</button>
+                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('hasta123'); setLoginError(''); }} className="p-2 bg-theme-bg rounded-xl text-xs font-bold text-stone-500 hover:text-red-600 shadow-sm flex flex-col items-center"><User className="w-4 h-4 mb-1"/>Hasta (Kayıtlıysa)</button>
               </div>
             </div>
           </div>

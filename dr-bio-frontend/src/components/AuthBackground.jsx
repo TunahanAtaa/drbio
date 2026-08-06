@@ -101,10 +101,10 @@ const decorativeCards = [
 const AuthBackground = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0 bg-theme-bg">
-      {/* Ambient Blobs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-blue-300/20 dark:bg-blue-900/10 rounded-full blur-[100px] animate-blob"></div>
-      <div className="absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-emerald-300/20 dark:bg-emerald-900/10 rounded-full blur-[100px] animate-blob" style={{ animationDelay: '2s' }}></div>
-      <div className="absolute bottom-[-10%] left-[20%] w-[45rem] h-[45rem] bg-purple-300/20 dark:bg-purple-900/10 rounded-full blur-[120px] animate-blob" style={{ animationDelay: '4s' }}></div>
+      {/* Ambient Blobs (Animations removed for performance) */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-blue-300/20 dark:bg-blue-900/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-emerald-300/20 dark:bg-emerald-900/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-[-10%] left-[20%] w-[45rem] h-[45rem] bg-purple-300/20 dark:bg-purple-900/10 rounded-full blur-3xl"></div>
 
       {/* SVG Network Lines */}
       <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20">
@@ -137,10 +137,7 @@ const AuthBackground = () => {
         <div
           key={card.id}
           className={`absolute ${card.position} ${card.hideOnMobile ? 'hidden md:block' : 'block'}`}
-          style={{
-            animation: `floatXY ${card.duration} ease-in-out infinite`,
-            animationDelay: card.delay
-          }}
+          // Animation removed for performance
         >
           <div className={`${card.rotation} ${card.scale} flex flex-col bg-theme-card/70 dark:bg-theme-card/40 backdrop-blur-md border border-white/60 dark:border-white/10 shadow-clay-card dark:shadow-clay-card-dark rounded-3xl p-5 opacity-80 dark:opacity-60 min-w-[200px]`}>
             
