@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
                 .passwordHash(temporaryPasswordHash)
                 .gender(request.getGender())
                 .birthDate(request.getBirthDate())
+                .role(com.drbio.domain.user.entity.Role.PATIENT)
                 .build();
 
         User savedUser = userRepository.save(user);

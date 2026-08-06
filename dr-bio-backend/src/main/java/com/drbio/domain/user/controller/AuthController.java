@@ -4,6 +4,7 @@ import com.drbio.domain.user.dto.LoginRequestDTO;
 import com.drbio.domain.user.dto.LoginResponseDTO;
 import com.drbio.domain.user.entity.User;
 import com.drbio.domain.user.repository.UserRepository;
+import com.drbio.domain.user.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
@@ -41,11 +43,14 @@ public class AuthController {
                     .body("Geçersiz e-posta veya şifre.");
         }
 
+        String token = jwtService.generateToken(user);
+
         LoginResponseDTO response = LoginResponseDTO.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .role(user.getRole())
+                .token(token)
                 .build();
 
         return ResponseEntity.ok(response);

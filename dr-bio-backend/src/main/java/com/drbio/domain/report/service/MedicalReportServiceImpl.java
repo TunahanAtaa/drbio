@@ -44,6 +44,7 @@ public class MedicalReportServiceImpl implements MedicalReportService {
     @Override
     @Transactional
     public MedicalReport createReport(UUID userId, MultipartFile file, LocalDate reportDate) {
+        checkOwnership(userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı: " + userId));
 
@@ -136,6 +137,7 @@ public class MedicalReportServiceImpl implements MedicalReportService {
     @Override
     @Transactional(readOnly = true)
     public List<MedicalReportResponseDTO> getReportsByUserId(UUID userId) {
+        checkOwnership(userId);
         List<MedicalReport> reports = medicalReportRepository.findByUserId(userId);
         return reports.stream().map(report -> MedicalReportResponseDTO.builder()
                 .id(report.getId())
@@ -164,6 +166,8 @@ public class MedicalReportServiceImpl implements MedicalReportService {
     public MedicalReportDetailResponseDTO getReportDetails(UUID reportId) {
         MedicalReport report = medicalReportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportNotFoundException("Tahlil raporu bulunamadı: " + reportId));
+                
+        checkOwnership(report.getUser().getId());
 
         List<MedicalReportItemDTO> itemDTOs = report.getItems().stream()
                 .map(item -> MedicalReportItemDTO.builder()
@@ -189,9 +193,10 @@ public class MedicalReportServiceImpl implements MedicalReportService {
     @Override
     @Transactional(readOnly = true)
     public List<MedicalReportItemDTO> getReportAnomalies(UUID reportId) {
-        if (!medicalReportRepository.existsById(reportId)) {
-            throw new ReportNotFoundException("Tahlil raporu bulunamadı: " + reportId);
-        }
+        MedicalReport report = medicalReportRepository.findById(reportId)
+                .orElseThrow(() -> new ReportNotFoundException("Tahlil raporu bulunamadı: " + reportId));
+                
+        checkOwnership(report.getUser().getId());
 
         List<MedicalReportItem> items = medicalReportItemRepository.findAnomaliesByReportId(reportId);
         return items.stream()
@@ -209,6 +214,7 @@ public class MedicalReportServiceImpl implements MedicalReportService {
     @Override
     @Transactional(readOnly = true)
     public List<ReportTrendDTO> getParameterTrend(UUID userId, String parameterName) {
+        checkOwnership(userId);
         userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Kullanıcı bulunamadı: " + userId));
 
@@ -221,4 +227,19 @@ public class MedicalReportServiceImpl implements MedicalReportService {
                 .collect(Collectors.toList());
     }
 
+    private void checkOwnership(UUID targetUserId) {
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            throw new org.springframework.security.access.AccessDeniedException("Giriş yapmanız gerekmektedir.");
+        }
+        com.drbio.domain.user.dto.SecurityUser securityUser = (com.drbio.domain.user.dto.SecurityUser) auth.getPrincipal();
+        
+        if (securityUser.getRole() == com.drbio.domain.user.entity.Role.ADMIN) {
+            return;
+        }
+        
+        if (!securityUser.getId().equals(targetUserId)) {
+            throw new org.springframework.security.access.AccessDeniedException("Bu veriye erişim yetkiniz yok.");
+        }
+    }
 }

@@ -5,6 +5,7 @@ com/drbio/domain/report/service/ReportRecommendationServiceImpl.class
 com/drbio/domain/report/service/ReportRecommendationService.class
 com/drbio/domain/report/dto/MedicalReportItemDTO.class
 com/drbio/domain/user/dto/LoginRequestDTO.class
+com/drbio/domain/user/dto/SecurityUser.class
 com/drbio/config/DataSeeder.class
 com/drbio/domain/report/entity/ReportStatus.class
 com/drbio/domain/report/service/TextExtractionServiceImpl.class
@@ -25,6 +26,7 @@ com/drbio/domain/user/dto/RegisterRequestDTO$RegisterRequestDTOBuilder.class
 com/drbio/domain/report/entity/MedicalReport$MedicalReportBuilder.class
 com/drbio/domain/report/dto/MedicalReportDetailResponseDTO$MedicalReportDetailResponseDTOBuilder.class
 com/drbio/domain/user/dto/UserResponseDTO$UserResponseDTOBuilder.class
+com/drbio/domain/user/service/JwtService.class
 com/drbio/DrBioApplication.class
 com/drbio/domain/report/repository/ReferenceValueRepository.class
 com/drbio/domain/report/dto/ReportRecommendationDTO$ReportRecommendationDTOBuilder.class
@@ -48,10 +50,12 @@ com/drbio/domain/report/service/FileStorageService.class
 com/drbio/domain/report/dto/MedicalReportResponseDTO$MedicalReportResponseDTOBuilder.class
 com/drbio/domain/report/controller/ReferenceValueController.class
 com/drbio/common/exception/FileStorageException.class
+com/drbio/domain/user/dto/SecurityUser$SecurityUserBuilder.class
 com/drbio/domain/report/entity/MedicalReportItem$MedicalReportItemBuilder.class
 com/drbio/domain/report/repository/MedicalReportRepository.class
 com/drbio/domain/user/dto/UserResponseDTO.class
 com/drbio/domain/report/dto/ReportTrendDTO.class
+com/drbio/config/JwtAuthFilter.class
 com/drbio/domain/user/controller/UserController.class
 com/drbio/domain/report/dto/ReportResultItem.class
 com/drbio/domain/report/entity/ReferenceValue$ReferenceValueBuilder.class

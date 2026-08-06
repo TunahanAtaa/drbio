@@ -12,10 +12,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponseDTO {
-    private UUID userId;
+public class SecurityUser {
+    private UUID id;
     private String email;
-    private String fullName;
     private Role role;
-    private String token;
 }
