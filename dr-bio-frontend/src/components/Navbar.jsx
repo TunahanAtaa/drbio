@@ -145,11 +145,11 @@ const Navbar = ({ title, user }) => {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <header className="bg-theme-card rounded-3xl m-4 p-4 md:px-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center justify-between z-30 relative">
+    <header className="bg-theme-card rounded-2xl m-4 p-4 md:px-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center justify-between z-30 relative">
       <div>
-        <h1 className="text-xl md:text-2xl font-black text-stone-800 dark:text-stone-200">{title}</h1>
-        <p className="text-sm font-bold text-stone-400">
-          Hoş geldin, <span className="text-lime-700 dark:text-lime-400">{user?.name || 'Kullanıcı'}</span>
+        <h1 className="text-xl md:text-2xl font-black text-slate-800 dark:text-slate-100">{title}</h1>
+        <p className="text-sm font-bold text-slate-400">
+          Hoş geldin, <span className="text-red-600 dark:text-red-400">{user?.name || 'Kullanıcı'}</span>
         </p>
       </div>
 
@@ -161,23 +161,23 @@ const Navbar = ({ title, user }) => {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="p-3 bg-theme-bg rounded-2xl shadow-clay-card dark:shadow-clay-card-dark hover:scale-105 active:scale-95 transition-transform relative text-stone-600 dark:text-stone-300"
+            className="p-3 bg-theme-bg rounded-2xl border border-slate-200/70 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative text-slate-600 dark:text-slate-300"
             aria-label="Bildirimler"
           >
-            <Bell className="w-5 h-5 text-stone-500 dark:text-stone-300" />
+            <Bell className="w-5 h-5 text-slate-500 dark:text-slate-300" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-lime-700 rounded-full animate-pulse"></span>
+              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-600 rounded-full animate-pulse"></span>
             )}
           </button>
 
           {/* Açılır Bildirim Kutusu */}
           {isNotificationsOpen && (
-            <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-theme-card rounded-[2rem] p-5 shadow-2xl border-theme-border z-50 animate-fade-in">
-              <div className="flex justify-between items-center mb-4 border-b border-stone-200 dark:border-stone-800 pb-3">
+            <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-theme-card rounded-2xl p-5 shadow-clay-card dark:shadow-clay-card-dark border-theme-border z-50 animate-fade-in">
+              <div className="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-slate-800 pb-3">
                 <div className="flex items-center space-x-2">
-                  <h4 className="font-black text-stone-800 dark:text-stone-200 text-sm">Bildirimler</h4>
+                  <h4 className="font-black text-slate-800 dark:text-slate-200 text-sm">Bildirimler</h4>
                   {unreadCount > 0 && (
-                    <span className="px-2 py-0.5 bg-lime-700 text-white text-[10px] font-black rounded-full">
+                    <span className="px-2 py-0.5 bg-red-600 text-white text-[10px] font-black rounded-full">
                       {unreadCount} Yeni
                     </span>
                   )}
@@ -185,7 +185,7 @@ const Navbar = ({ title, user }) => {
                 {notifications.length > 0 && (
                   <button
                     onClick={handleClearAllNotifications}
-                    className="text-xs text-lime-700 dark:text-lime-400 hover:underline font-bold"
+                    className="text-xs text-red-600 dark:text-red-400 hover:underline font-bold"
                   >
                     Tümünü Okundu İşaretle ve Sil
                   </button>
@@ -199,40 +199,40 @@ const Navbar = ({ title, user }) => {
                     <div
                       key={notif.id}
                       className={`p-3.5 rounded-2xl text-xs relative group transition-all border ${notif.unread
-                        ? 'bg-lime-50/80 dark:bg-lime-950/40 border-lime-200 dark:border-lime-900/50'
-                        : 'bg-theme-bg border-stone-100 dark:border-stone-800/60 opacity-80'
+                        ? 'bg-red-50/80 dark:bg-red-950/40 border-red-200 dark:border-red-900/50'
+                        : 'bg-theme-bg border-slate-100 dark:border-slate-800/60 opacity-80'
                         }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-2 mb-1">
-                          {notif.type === 'ANALYSIS' && <Sparkles className="w-4 h-4 text-lime-700 shrink-0" />}
+                          {notif.type === 'ANALYSIS' && <Sparkles className="w-4 h-4 text-red-600 shrink-0" />}
                           {notif.type === 'HEALTH' && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
-                          {notif.type === 'SYSTEM' && <AlertCircle className="w-4 h-4 text-blue-500 shrink-0" />}
-                          {notif.type === 'COMPLAINT' && <MessageSquare className="w-4 h-4 text-lime-700 shrink-0 animate-pulse" />}
+                          {notif.type === 'SYSTEM' && <AlertCircle className="w-4 h-4 text-sky-500 shrink-0" />}
+                          {notif.type === 'COMPLAINT' && <MessageSquare className="w-4 h-4 text-red-600 shrink-0 animate-pulse" />}
                           {notif.type === 'REVIEW' && <Star className="w-4 h-4 text-amber-500 shrink-0" />}
-                          <h5 className="font-black text-stone-800 dark:text-stone-200 text-xs">{notif.title}</h5>
+                          <h5 className="font-black text-slate-800 dark:text-slate-200 text-xs">{notif.title}</h5>
                         </div>
 
                         <button
                           onClick={() => removeNotification(notif.id)}
-                          className="opacity-0 group-hover:opacity-100 text-stone-400 hover:text-lime-700 transition"
+                          className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-600 transition"
                           title="Sil"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
-                      <p className="font-medium text-stone-600 dark:text-stone-300 leading-relaxed pl-6">
+                      <p className="font-medium text-slate-600 dark:text-slate-300 leading-relaxed pl-6">
                         {notif.text}
                       </p>
-                      <span className="text-[10px] text-stone-400 font-bold mt-2 block pl-6">
+                      <span className="text-[10px] text-slate-400 font-bold mt-2 block pl-6">
                         {notif.time}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="py-8 text-center text-stone-400 font-bold text-xs">
+                <div className="py-8 text-center text-slate-400 font-bold text-xs">
                   Henüz bildiriminiz bulunmamaktadır.
                 </div>
               )}
@@ -243,7 +243,7 @@ const Navbar = ({ title, user }) => {
         {/* Çıkış Yap */}
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-2 px-4 md:px-5 py-3 rounded-2xl font-black text-white bg-lime-700 hover:bg-lime-800 shadow-clay-btn hover:brightness-110 active:shadow-none active:scale-95 transition-all text-xs sm:text-sm"
+          className="flex items-center space-x-2 px-4 md:px-5 py-3 rounded-2xl font-black text-white bg-red-600 hover:bg-red-700 shadow-clay-btn transition-all text-xs sm:text-sm"
         >
           <LogOut className="w-4 h-4" />
           <span className="hidden md:inline">Çıkış Yap</span>

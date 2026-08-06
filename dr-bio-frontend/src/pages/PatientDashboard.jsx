@@ -215,7 +215,7 @@ const PatientDashboard = () => {
     return (
       <Layout title="Hasta Paneli" role="PATIENT">
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-stone-400">
-          <Loader2 className="w-16 h-16 animate-spin text-lime-700 mb-6" />
+          <Loader2 className="w-16 h-16 animate-spin text-red-600 mb-6" />
           <h2 className="text-2xl font-black text-stone-700 dark:text-stone-200 mb-2">Tahlil Verileri Yükleniyor...</h2>
           <p className="font-bold">Lütfen bekleyin, bilgileriniz şifreli olarak getiriliyor.</p>
         </div>
@@ -244,7 +244,7 @@ const PatientDashboard = () => {
         <div className="space-y-8 animate-fade-in">
           
           {/* Karşılama Banner */}
-          <div className="bg-gradient-to-r from-lime-700 via-lime-800 to-emerald-800 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
+          <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-900 rounded-2xl p-8 text-white shadow-clay-card dark:shadow-clay-card-dark border-theme-border relative overflow-hidden">
             <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8 translate-y-8">
               <Activity className="w-80 h-80 text-white" />
             </div>
@@ -255,7 +255,7 @@ const PatientDashboard = () => {
                 <span>Dr. Bio Akıllı Sağlık Asistanı</span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-black">Hoş geldin, {activeUser.name}! 👋</h1>
-              <p className="text-lime-100 font-medium max-w-2xl text-sm sm:text-base leading-relaxed">
+              <p className="text-red-100 font-medium max-w-2xl text-sm sm:text-base leading-relaxed">
                 Tahlil sonuçlarınızı yükleyerek yapay zeka destekli anlık referans analizlerini görüntüleyebilir ve sağlık geçmişinizi güvenle takip edebilirsiniz.
               </p>
 
@@ -263,7 +263,7 @@ const PatientDashboard = () => {
               <div className="pt-4 flex flex-wrap gap-3">
                 <button
                   onClick={() => navigate('/patient/upload')}
-                  className="px-6 py-3.5 bg-white text-lime-700 hover:bg-lime-50 font-black rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
+                  className="px-6 py-3.5 bg-white text-red-700 hover:bg-red-50 font-black rounded-2xl shadow-clay-btn hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
                 >
                   <UploadCloud className="w-5 h-5" />
                   <span>Yeni Tahlil Yükle</span>
@@ -277,9 +277,9 @@ const PatientDashboard = () => {
                 </button>
                 <button
                   onClick={() => setFeedbackModalOpen(true)}
-                  className="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-stone-900 font-black rounded-2xl shadow-md hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
+                  className="px-6 py-3.5 bg-white/20 hover:bg-white/30 text-white border border-white/30 font-black rounded-2xl hover:scale-105 active:scale-95 transition-all text-sm flex items-center space-x-2"
                 >
-                  <Star className="w-5 h-5 fill-stone-900" />
+                  <Star className="w-5 h-5 fill-white" />
                   <span>Geri Bildirim & Yıldız Ver</span>
                 </button>
               </div>
@@ -287,7 +287,7 @@ const PatientDashboard = () => {
           </div>
 
           {feedbackSuccess && (
-            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-3xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
               <CheckCircle className="w-5 h-5 flex-shrink-0 text-emerald-600" />
               <span>{feedbackSuccess}</span>
             </div>
@@ -295,24 +295,24 @@ const PatientDashboard = () => {
 
           {/* İstatistik & Metrik Kartları */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
-              <div className="w-14 h-14 bg-lime-50 dark:bg-lime-950/40 rounded-2xl flex items-center justify-center text-lime-700 dark:text-lime-400 shrink-0">
+            <div className="bg-theme-card p-6 rounded-2xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-red-50 dark:bg-red-950/40 rounded-2xl flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
                 <Calendar className="w-7 h-7" />
               </div>
               <div>
-                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Son Tahlil</span>
-                <span className="text-base font-black text-stone-800 dark:text-stone-200">
-                  {historyList.length > 0 ? historyList[0].date : 'Henüz Yüklenmedi'}
+                <span className="block text-xs font-black text-slate-400 uppercase tracking-wider">Son Tahlil Tarihi</span>
+                <span className="text-lg font-black text-slate-800 dark:text-slate-100 truncate">
+                  {historyList.length > 0 ? historyList[0].date : 'Yüklenmedi'}
                 </span>
               </div>
             </div>
 
-            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+            <div className="bg-theme-card p-6 rounded-2xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
               <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/40 rounded-2xl flex items-center justify-center text-amber-600 shrink-0">
                 <AlertTriangle className="w-7 h-7" />
               </div>
               <div>
-                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Anormal Değerler</span>
+                <span className="block text-xs font-black text-slate-400 uppercase tracking-wider">Anormal Değerler</span>
                 <span className="text-base font-black text-amber-600 dark:text-amber-400">
                   {historyList.length > 0 
                     ? `${historyList[0].params.filter(p => p.status !== 'NORMAL').length} Parametre` 
@@ -321,24 +321,24 @@ const PatientDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
-              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center text-blue-600 shrink-0">
+            <div className="bg-theme-card p-6 rounded-2xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+              <div className="w-14 h-14 bg-sky-50 dark:bg-sky-950/40 rounded-2xl flex items-center justify-center text-sky-600 shrink-0">
                 <Pill className="w-7 h-7" />
               </div>
               <div>
-                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Günlük Takviye</span>
-                <span className="text-base font-black text-stone-800 dark:text-stone-200">
+                <span className="block text-xs font-black text-slate-400 uppercase tracking-wider">Günlük Takviye</span>
+                <span className="text-base font-black text-slate-800 dark:text-slate-100">
                   {historyList.length > 0 ? 'Demir & D3' : 'Belirtilmedi'}
                 </span>
               </div>
             </div>
 
-            <div className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
+            <div className="bg-theme-card p-6 rounded-2xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-center space-x-4">
               <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl flex items-center justify-center text-emerald-600 shrink-0">
                 <HeartPulse className="w-7 h-7" />
               </div>
               <div>
-                <span className="block text-xs font-black text-stone-400 uppercase tracking-wider">Genel Takip</span>
+                <span className="block text-xs font-black text-slate-400 uppercase tracking-wider">Genel Takip</span>
                 <span className="text-base font-black text-emerald-600 dark:text-emerald-400">
                   {historyList.length > 0 ? '%85 Stabil' : 'Veri Bekleniyor'}
                 </span>
@@ -351,14 +351,14 @@ const PatientDashboard = () => {
             {/* Sol: Son Tahlil Özet Kartı */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-black text-stone-800 dark:text-stone-200 flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-lime-700" />
+                <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 flex items-center space-x-2">
+                  <Activity className="w-5 h-5 text-red-600 dark:text-red-400" />
                   <span>Son Yüklenen Tahlil Özeti</span>
                 </h2>
                 {historyList.length > 0 && (
                   <button 
                     onClick={() => navigate('/patient/history')}
-                    className="text-xs font-bold text-lime-700 dark:text-lime-500 hover:underline flex items-center space-x-1"
+                    className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline flex items-center space-x-1"
                   >
                     <span>Tümünü Gör</span>
                     <ChevronRight className="w-4 h-4" />
@@ -367,14 +367,14 @@ const PatientDashboard = () => {
               </div>
 
               {historyList.length > 0 ? (
-                <div className="bg-theme-card rounded-[2rem] p-6 shadow-clay-card dark:shadow-clay-card-dark border-theme-border space-y-6">
-                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-stone-200 dark:border-stone-800 pb-4">
+                <div className="bg-theme-card rounded-2xl p-6 shadow-clay-card dark:shadow-clay-card-dark border-theme-border space-y-6">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
                     <div>
-                      <h3 className="font-black text-lg text-stone-800 dark:text-stone-200">{historyList[0].title}</h3>
-                      <p className="text-xs text-stone-400 font-bold mt-0.5">Tarih: {historyList[0].date}</p>
+                      <h3 className="font-black text-lg text-slate-800 dark:text-slate-100">{historyList[0].title}</h3>
+                      <p className="text-xs text-slate-400 font-bold mt-0.5">Tarih: {historyList[0].date}</p>
                     </div>
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase inline-self-start sm:inline-self-auto ${
-                      historyList[0].status === 'NORMAL' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
+                    <span className={`px-4 py-1.5 rounded-full text-xs font-black tracking-wider uppercase inline-self-start sm:inline-self-auto border ${
+                      historyList[0].status === 'NORMAL' ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200'
                     }`}>
                       {historyList[0].status === 'NORMAL' ? 'Tüm Değerler Normal' : 'Takip Gerektiren Değer Var'}
                     </span>
@@ -383,39 +383,39 @@ const PatientDashboard = () => {
                   {/* Parametre Özet Badgeleri */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {historyList[0].params.map((p, i) => (
-                      <div key={i} className="bg-theme-bg p-3.5 rounded-2xl border border-stone-100 dark:border-stone-800/60">
-                        <span className="block text-[10px] font-black text-stone-400 uppercase truncate">{p.name}</span>
+                      <div key={i} className="bg-theme-bg p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800/60">
+                        <span className="block text-[10px] font-black text-slate-400 uppercase truncate">{p.name}</span>
                         <div className="flex items-center justify-between mt-1">
-                          <span className="text-sm font-black text-stone-800 dark:text-stone-200">{p.value}</span>
+                          <span className="text-sm font-black text-slate-800 dark:text-slate-100">{p.value}</span>
                           {p.status === 'NORMAL' && <CheckCircle className="w-4 h-4 text-emerald-500" />}
                           {p.status === 'HIGH' && <ArrowUpCircle className="w-4 h-4 text-red-600" />}
-                          {p.status === 'LOW' && <ArrowDownCircle className="w-4 h-4 text-blue-600" />}
+                          {p.status === 'LOW' && <ArrowDownCircle className="w-4 h-4 text-sky-600" />}
                         </div>
                       </div>
                     ))}
                   </div>
 
                   {/* Sistem Önerisi */}
-                  <div className="p-4 bg-lime-50/80 dark:bg-lime-950/40 border border-lime-200 dark:border-lime-900/50 rounded-2xl flex items-start space-x-3 text-xs font-bold text-lime-900 dark:text-lime-300">
-                    <Sparkles className="w-5 h-5 text-lime-700 shrink-0 mt-0.5" />
+                  <div className="p-4 bg-red-50/80 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-2xl flex items-start space-x-3 text-xs font-bold text-red-700 dark:text-red-200">
+                    <Sparkles className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                     <span>{historyList[0].summaryNote}</span>
                   </div>
                 </div>
               ) : (
                 /* KULLANICI HENÜZ TAHLİL YÜKLEMEDİYSE BOŞ STATE */
-                <div className="bg-theme-card rounded-[2rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center space-y-4 min-h-[220px]">
-                  <div className="w-16 h-16 bg-theme-bg rounded-2xl flex items-center justify-center text-stone-400 dark:text-stone-500 border border-stone-200 dark:border-stone-800">
-                    <FileText className="w-8 h-8 text-stone-400" />
+                <div className="bg-theme-card rounded-2xl p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center space-y-4 min-h-[220px]">
+                  <div className="w-16 h-16 bg-theme-bg rounded-2xl flex items-center justify-center text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-800">
+                    <FileText className="w-8 h-8 text-slate-400" />
                   </div>
                   <div>
-                    <h3 className="font-black text-lg text-stone-800 dark:text-stone-200">Henüz Tahlil Bilgisi Yüklenmedi</h3>
-                    <p className="text-xs font-bold text-stone-400 mt-1 max-w-sm">
+                    <h3 className="font-black text-lg text-slate-800 dark:text-slate-100">Henüz Tahlil Bilgisi Yüklenmedi</h3>
+                    <p className="text-xs font-bold text-slate-400 mt-1 max-w-sm">
                       Sisteme tahlil yüklediğinizde akıllı analiz sonuçlarınız ve doktor değerlendirmeleriniz burada görüntülenecektir.
                     </p>
                   </div>
                   <button 
                     onClick={() => navigate('/patient/upload')}
-                    className="px-6 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2"
+                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2"
                   >
                     <UploadCloud className="w-4 h-4" />
                     <span>İlk Tahlilinizi Yükleyin</span>
@@ -480,7 +480,7 @@ const PatientDashboard = () => {
               <div className="bg-theme-card rounded-[2rem] p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center">
 
                 <div className="w-24 h-24 bg-theme-bg rounded-3xl shadow-inner flex items-center justify-center mb-6 border border-stone-200 dark:border-stone-800">
-                  <UploadCloud className="w-10 h-10 text-lime-700 dark:text-lime-400" />
+                  <UploadCloud className="w-10 h-10 text-red-600 dark:text-red-400" />
                 </div>
 
                 <p className="font-bold text-stone-600 dark:text-stone-300 mb-2 text-sm">PDF veya Resim formatında tahlil sonucunuzu seçin</p>
@@ -494,7 +494,7 @@ const PatientDashboard = () => {
                 <button
                   onClick={handleUpload}
                   disabled={!file || loading}
-                  className="w-full py-4 mt-2 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+                  className="w-full py-4 mt-2 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
                   {loading ? (
                     <>
@@ -506,7 +506,7 @@ const PatientDashboard = () => {
                   )}
                 </button>
 
-                {error && <p className="text-sm text-lime-700 font-bold mt-4 animate-fade-in">{error}</p>}
+                {error && <p className="text-sm text-red-500 font-bold mt-4 animate-fade-in">{error}</p>}
               </div>
             </div>
 
@@ -517,7 +517,7 @@ const PatientDashboard = () => {
                 {results && (
                   <button
                     onClick={handleSaveToHistory}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-sm transition flex items-center space-x-1"
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-1"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Geçmişe Kaydet</span>
@@ -562,12 +562,12 @@ const PatientDashboard = () => {
 
                   {results.doctorNote && (
                     <div className="bg-theme-card p-6 rounded-[2rem] shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex items-start space-x-4">
-                      <div className="w-12 h-12 shrink-0 bg-lime-50 dark:bg-lime-900/20 text-lime-600 shrink-0 rounded-2xl flex items-center justify-center">
+                      <div className="w-12 h-12 shrink-0 bg-red-50 dark:bg-red-900/20 text-red-600 shrink-0 rounded-2xl flex items-center justify-center">
                         <Stethoscope className="w-6 h-6" />
                       </div>
                       <div>
                         <h3 className="font-black text-stone-800 dark:text-stone-200 mb-2">Uzman Önerisi</h3>
-                        <p className="text-sm font-bold text-lime-900 dark:text-lime-400 leading-relaxed">{results.doctorNote}</p>
+                        <p className="text-sm font-bold text-red-900 dark:text-red-400 leading-relaxed">{results.doctorNote}</p>
                       </div>
                     </div>
                   )}
@@ -585,17 +585,17 @@ const PatientDashboard = () => {
                     </div>
                     <button
                       onClick={() => setFeedbackModalOpen(true)}
-                      className="px-5 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-black text-xs rounded-2xl shadow-sm transition shrink-0 flex items-center space-x-1.5"
+                      className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition shrink-0 flex items-center space-x-1.5"
                     >
-                      <Star className="w-4 h-4 fill-stone-950" />
+                      <Star className="w-4 h-4 fill-white" />
                       <span>Yıldız Ver & Yorum Yaz</span>
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="bg-theme-card rounded-[2rem] p-12 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center text-stone-400 h-full min-h-[380px]">
-                  <FileText className="w-16 h-16 text-stone-300 dark:text-stone-700 mb-4" />
-                  <p className="font-bold text-lg text-stone-600 dark:text-stone-400">Sonuçları ve AI analizini görmek için tahlil dosyanızı yükleyin.</p>
+                <div className="bg-theme-card rounded-[2rem] p-12 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col items-center justify-center text-center text-slate-400 h-full min-h-[380px]">
+                  <FileText className="w-16 h-16 text-slate-300 dark:text-slate-700 mb-4" />
+                  <p className="font-bold text-lg text-slate-600 dark:text-slate-400">Sonuçları ve AI analizini görmek için tahlil dosyanızı yükleyin.</p>
                 </div>
               )}
             </div>
@@ -609,13 +609,13 @@ const PatientDashboard = () => {
           
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div>
-              <h2 className="text-2xl font-black text-stone-800 dark:text-stone-200">Geçmiş Tahlillerim</h2>
-              <p className="text-xs font-bold text-stone-400 mt-1">Önceden yüklediğiniz ve analiz edilen tahlil raporlarınız</p>
+              <h2 className="text-2xl font-black text-slate-800 dark:text-slate-200">Geçmiş Tahlillerim</h2>
+              <p className="text-xs font-bold text-slate-400 mt-1">Önceden yüklediğiniz ve analiz edilen tahlil raporlarınız</p>
             </div>
 
             <button
               onClick={() => navigate('/patient/upload')}
-              className="px-5 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
+              className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-clay-btn transition flex items-center space-x-2 self-start md:self-auto"
             >
               <Plus className="w-4 h-4" />
               <span>Yeni Tahlil Ekle</span>
@@ -627,24 +627,24 @@ const PatientDashboard = () => {
             
             {/* Arama İnputu */}
             <div className="relative w-full sm:w-80">
-              <Search className="w-4 h-4 absolute left-4 top-3.5 text-stone-400" />
+              <Search className="w-4 h-4 absolute left-4 top-3.5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Tahlil adı veya içerik ara..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-2xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-lime-700/20"
+                className="w-full pl-11 pr-4 py-2.5 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20"
               />
             </div>
 
             {/* Durum Filtresi */}
             <div className="flex items-center space-x-2 w-full sm:w-auto">
-              <Filter className="w-4 h-4 text-stone-400 shrink-0" />
-              <span className="text-xs font-bold text-stone-400">Filtrele:</span>
+              <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+              <span className="text-xs font-bold text-slate-400">Filtrele:</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 bg-theme-bg border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold text-stone-700 dark:text-stone-200 focus:outline-none"
+                className="px-3 py-2 bg-theme-bg border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none"
               >
                 <option value="ALL">Tümü ({historyList.length})</option>
                 <option value="NORMAL">Normal</option>
@@ -659,40 +659,42 @@ const PatientDashboard = () => {
               {filteredHistory.map((item) => (
                 <div 
                   key={item.id}
-                  className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-lime-700/30 transition duration-200"
+                  className="bg-theme-card p-6 rounded-3xl shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-red-600/30 transition duration-200"
                 >
                   <div className="space-y-2 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="px-3 py-1 bg-theme-bg text-stone-500 rounded-full text-xs font-bold border border-stone-200 dark:border-stone-800 flex items-center space-x-1">
-                        <Calendar className="w-3.5 h-3.5 text-lime-700 dark:text-lime-500" />
+                      <span className="px-3 py-1 bg-theme-bg text-slate-500 rounded-full text-xs font-bold border border-slate-200 dark:border-slate-800 flex items-center space-x-1">
+                        <Calendar className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
                         <span>{item.date}</span>
                       </span>
 
-                      <span className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider ${
-                        item.status === 'NORMAL' ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
+                      <span className={`px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider border ${
+                        item.status === 'NORMAL' 
+                          ? 'bg-emerald-950 text-emerald-200 border-emerald-900/60' 
+                          : 'bg-amber-950 text-amber-200 border-amber-900/60'
                       }`}>
                         {item.status === 'NORMAL' ? 'Normal' : 'Takip Var'}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-black text-stone-800 dark:text-stone-200">{item.title}</h3>
-                    <p className="text-xs font-medium text-stone-500 dark:text-stone-400 leading-relaxed line-clamp-2">
+                    <h3 className="text-lg font-black text-slate-800 dark:text-slate-200">{item.title}</h3>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">
                       {item.summaryNote}
                     </p>
                   </div>
 
-                  <div className="flex items-center space-x-2 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-200 dark:border-stone-800">
+                  <div className="flex items-center space-x-2 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-slate-200 dark:border-slate-800">
                     <button
                       onClick={() => setSelectedTestModal(item)}
-                      className="flex-1 md:flex-none px-4 py-2.5 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-1 border border-stone-200 dark:border-stone-700"
+                      className="flex-1 md:flex-none px-4 py-2.5 bg-theme-bg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-1 border border-slate-200 dark:border-slate-700"
                     >
-                      <Eye className="w-4 h-4 text-lime-700 dark:text-lime-500" />
+                      <Eye className="w-4 h-4 text-red-600 dark:text-red-400" />
                       <span>Detay İncele</span>
                     </button>
 
                     <button
                       onClick={() => alert(`"${item.fileName}" dosyasını indirme simülasyonu başlatıldı.`)}
-                      className="px-3 py-2.5 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 rounded-2xl text-xs font-bold transition flex items-center justify-center border border-stone-200 dark:border-stone-700"
+                      className="px-3 py-2.5 bg-theme-bg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 rounded-2xl text-xs font-bold transition flex items-center justify-center border border-slate-200 dark:border-slate-700"
                       title="Raporu İndir"
                     >
                       <Download className="w-4 h-4" />
@@ -703,21 +705,21 @@ const PatientDashboard = () => {
             </div>
           ) : (
             <div className="bg-theme-card rounded-[2.5rem] p-12 text-center border-theme-border shadow-clay-card dark:shadow-clay-card-dark space-y-4">
-              <div className="w-20 h-20 bg-theme-bg rounded-3xl mx-auto flex items-center justify-center text-stone-400 border border-stone-200 dark:border-stone-800">
+              <div className="w-20 h-20 bg-theme-bg rounded-3xl mx-auto flex items-center justify-center text-slate-400 border border-slate-200 dark:border-slate-800">
                 <FileText className="w-10 h-10" />
               </div>
               <div>
-                <h3 className="text-xl font-black text-stone-800 dark:text-stone-200">
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-200">
                   {searchQuery ? 'Aramanızla Eşleşen Tahlil Bulunamadı' : 'Henüz Tahlil Kaydınız Yok'}
                 </h3>
-                <p className="text-xs font-bold text-stone-400 mt-1 max-w-sm mx-auto">
+                <p className="text-xs font-bold text-slate-400 mt-1 max-w-sm mx-auto">
                   {searchQuery ? 'Farklı bir arama terimi deneyebilir veya filtreyi değiştirebilirsiniz.' : 'Tahlil sonuçlarınızı yükleyip geçmişe kaydettikçe raporlarınız burada listelenecektir.'}
                 </p>
               </div>
               {!searchQuery && (
                 <button
                   onClick={() => navigate('/patient/upload')}
-                  className="px-6 py-3.5 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-2xl shadow-clay-btn text-xs inline-flex items-center space-x-2 transition"
+                  className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-clay-btn text-xs inline-flex items-center space-x-2 transition"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Hemen Tahlil Yükleyin</span>
@@ -728,37 +730,37 @@ const PatientDashboard = () => {
 
           {/* DETAY İNCELE MODAL */}
           {selectedTestModal && createPortal(
-            <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
               <div className="bg-theme-card w-full max-w-2xl rounded-[2.5rem] p-8 shadow-2xl border-theme-border space-y-6 max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-start border-b border-stone-200 dark:border-stone-800 pb-4">
+                <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800 pb-4">
                   <div>
-                    <h3 className="text-2xl font-black text-stone-800 dark:text-stone-200">{selectedTestModal.title}</h3>
-                    <p className="text-xs font-bold text-stone-400 mt-1">Tarih: {selectedTestModal.date} | Dosya: {selectedTestModal.fileName}</p>
+                    <h3 className="text-2xl font-black text-slate-800 dark:text-slate-200">{selectedTestModal.title}</h3>
+                    <p className="text-xs font-bold text-slate-400 mt-1">Tarih: {selectedTestModal.date} | Dosya: {selectedTestModal.fileName}</p>
                   </div>
                   <button
                     onClick={() => setSelectedTestModal(null)}
-                    className="p-2 bg-theme-bg hover:bg-stone-200 dark:hover:bg-stone-800 rounded-full font-black text-stone-500"
+                    className="p-2 bg-theme-bg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full font-black text-slate-500"
                   >
                     ✕
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-sm font-black uppercase text-stone-400 tracking-wider">Parametre Detayları</h4>
+                  <h4 className="text-sm font-black uppercase text-slate-400 tracking-wider">Parametre Detayları</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedTestModal.params.map((p, idx) => (
-                      <div key={idx} className="bg-theme-bg p-4 rounded-2xl border border-stone-200 dark:border-stone-800">
-                        <span className="block text-xs font-black text-stone-400 uppercase">{p.name}</span>
+                      <div key={idx} className="bg-theme-bg p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <span className="block text-xs font-black text-slate-400 uppercase">{p.name}</span>
                         <div className="flex justify-between items-center mt-1">
-                          <span className="text-lg font-black text-stone-800 dark:text-stone-200">{p.value}</span>
-                          <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
-                            p.status === 'NORMAL' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' :
-                            p.status === 'HIGH' ? 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400'
+                          <span className="text-lg font-black text-slate-800 dark:text-slate-200">{p.value}</span>
+                          <span className={`text-xs font-black px-2.5 py-0.5 rounded-full border ${
+                            p.status === 'NORMAL' ? 'bg-emerald-950 text-emerald-200 border-emerald-900/60' :
+                            p.status === 'HIGH' ? 'bg-red-950 text-red-200 border-red-900/60' : 'bg-sky-950 text-sky-200 border-sky-900/60'
                           }`}>
                             {p.status}
                           </span>
                         </div>
-                        <p className="text-[11px] text-stone-400 font-bold mt-1">Referans: {p.range}</p>
+                        <p className="text-[11px] text-slate-400 font-bold mt-1">Referans: {p.range}</p>
                       </div>
                     ))}
                   </div>
@@ -769,7 +771,7 @@ const PatientDashboard = () => {
                   </div>
 
                   {selectedTestModal.doctorNote && (
-                    <div className="p-4 bg-lime-50/80 dark:bg-lime-950/40 border border-lime-200 dark:border-lime-900 rounded-2xl text-xs font-bold text-lime-900 dark:text-lime-300">
+                    <div className="p-4 bg-red-50/80 dark:bg-red-950/40 border border-red-200 dark:border-red-900 rounded-2xl text-xs font-bold text-red-700 dark:text-red-300">
                       <p className="font-black mb-1">Uzman Notu:</p>
                       <p>{selectedTestModal.doctorNote}</p>
                     </div>
@@ -779,7 +781,7 @@ const PatientDashboard = () => {
                 <div className="pt-4 flex justify-end">
                   <button
                     onClick={() => setSelectedTestModal(null)}
-                    className="px-6 py-3 bg-lime-700 hover:bg-lime-800 text-white font-black rounded-2xl text-xs"
+                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl text-xs shadow-clay-btn"
                   >
                     Kapat
                   </button>
@@ -892,7 +894,7 @@ const PatientDashboard = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-black rounded-2xl text-xs shadow-clay-btn transition flex items-center space-x-2"
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl text-xs shadow-clay-btn transition flex items-center space-x-2"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Geri Bildirimi Gönder</span>

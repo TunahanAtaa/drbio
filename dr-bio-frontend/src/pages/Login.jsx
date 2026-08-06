@@ -238,14 +238,14 @@ const Login = () => {
 
       <AuthBackground />
 
-      <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-white/90 dark:bg-stone-900/90 rounded-[2.5rem] p-8 shadow-lg border border-stone-200 dark:border-stone-800 animate-fade-in transition-all duration-300`}>
+      <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-theme-card rounded-2xl p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-emerald-600 rounded-2xl shadow-md flex items-center justify-center text-white font-black text-3xl">
+          <div className="w-16 h-16 bg-red-600 rounded-2xl shadow-clay-btn flex items-center justify-center text-white font-black text-3xl">
             <Activity className="w-8 h-8" />
           </div>
         </div>
 
-        <h1 className="text-3xl font-black text-center text-emerald-700 dark:text-emerald-400 mb-2">Dr. Bio</h1>
+        <h1 className="text-3xl font-black text-center text-red-600 dark:text-red-400 mb-2">Dr. Bio</h1>
 
         {successMessage && (
           <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
@@ -262,14 +262,14 @@ const Login = () => {
                 <KeyRound className="w-4 h-4" />
                 <span>Yeni Şifre Oluşturma</span>
               </div>
-              <h2 className="text-xl font-black text-stone-800 dark:text-stone-200">Şifrenizi Güncelleyin</h2>
+              <h2 className="text-xl font-black text-stone-800 dark:text-stone-100">Şifrenizi Güncelleyin</h2>
               <p className="text-xs text-stone-500 font-bold mt-1">
-                <span className="text-lime-700 dark:text-lime-400">{email}</span> hesabı için yeni şifre belirleyin
+                <span className="text-red-600 dark:text-red-400">{email}</span> hesabı için yeni şifre belirleyin
               </p>
             </div>
 
             {resetError && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-2xl flex items-center space-x-3 text-xs font-bold animate-fade-in">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 rounded-2xl flex items-center space-x-3 text-xs font-bold animate-fade-in">
                 <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400" />
                 <span>{resetError}</span>
               </div>
@@ -277,26 +277,26 @@ const Login = () => {
 
             <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">Yeni Şifre</label>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Yeni Şifre</label>
                 <input
                   type="password"
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-5 py-3.5 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-amber-500/20 shadow-inner"
+                  className="w-full px-5 py-3.5 bg-theme-bg rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20 border border-slate-200 dark:border-slate-800"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">Yeni Şifre (Tekrar)</label>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Yeni Şifre (Tekrar)</label>
                 <input
                   type="password"
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-5 py-3.5 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-amber-500/20 shadow-inner"
+                  className="w-full px-5 py-3.5 bg-theme-bg rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20 border border-slate-200 dark:border-slate-800"
                 />
               </div>
 
@@ -304,7 +304,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-3xl shadow-md active:scale-95 transition-all flex items-center justify-center space-x-2 mt-4 disabled:opacity-50"
+                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-4 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Şifreyi Güncelle ve Giriş Yap</span>}
               </button>
@@ -321,11 +321,11 @@ const Login = () => {
         ) : !isRegisterOpen ? (
           /* --- GİRİŞ YAP FORMU VE ALANI --- */
           <div>
-            <p className="text-center text-stone-500 text-sm mb-6">Laboratuvar analizlerinize erişmek için giriş yapın</p>
+            <p className="text-center text-stone-500 text-sm mb-6 font-medium">Laboratuvar analizlerinize erişmek için giriş yapın</p>
 
             {/* Giriş Hatası Uyarısı */}
             {loginError && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-2xl space-y-2 animate-fade-in">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 rounded-2xl space-y-2 animate-fade-in">
                 <div className="flex items-center space-x-3 text-xs font-bold">
                   <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400" />
                   <span>{loginError}</span>
@@ -336,7 +336,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => { setLoginError(''); setIsRegisterOpen(true); setStep(1); }}
-                    className="w-full py-2.5 bg-lime-700 hover:bg-lime-800 text-white rounded-xl font-bold transition-all text-xs flex items-center justify-center space-x-1"
+                    className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all text-xs flex items-center justify-center space-x-1 shadow-clay-btn"
                   >
                     <UserPlus className="w-4 h-4" />
                     <span>Hemen Kaydolun</span>
@@ -348,7 +348,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={handleOpenResetPassword}
-                    className="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold transition-all text-xs flex items-center justify-center space-x-1 shadow-sm"
+                    className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all text-xs flex items-center justify-center space-x-1 shadow-clay-btn"
                   >
                     <KeyRound className="w-4 h-4" />
                     <span>Şifremi Unuttum? (Yeni Şifre Oluştur)</span>
@@ -359,27 +359,27 @@ const Login = () => {
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label className="block text-sm font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">E-posta Adresi</label>
+                <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">E-posta Adresi</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="hasta@drbio.com"
                   required
-                  className="w-full px-5 py-4 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20 shadow-inner"
+                  className="w-full px-5 py-4 bg-theme-bg rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20 border border-slate-200 dark:border-slate-800"
                 />
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-2 ml-2">
-                  <label className="block text-sm font-black text-stone-400 uppercase tracking-widest">Şifre</label>
+                  <label className="block text-sm font-black text-slate-400 uppercase tracking-widest">Şifre</label>
                 </div>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-5 py-4 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-lime-700/20 shadow-inner"
+                  className="w-full px-5 py-4 bg-theme-bg rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20 border border-slate-200 dark:border-slate-800"
                 />
               </div>
 
@@ -387,30 +387,30 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={loading || !email}
-                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 text-base"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Giriş Yap</span>}
               </button>
             </form>
 
             {/* --- KAYIT OL YÖNLENDİRMESİ VE BUTONU --- */}
-            <div className="mt-8 pt-6 border-t border-stone-200 dark:border-stone-800 text-center">
-              <p className="text-sm font-bold text-stone-500 mb-4">Hesabınız yok mu?</p>
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
+              <p className="text-sm font-bold text-slate-500 mb-4">Hesabınız yok mu?</p>
               <button
                 type="button"
                 onClick={() => { setLoginError(''); setIsRegisterOpen(true); setStep(1); }}
-                className="w-full py-4 bg-transparent border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold rounded-3xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 active:scale-95 transition-all flex items-center justify-center space-x-2"
+                className="w-full py-4 bg-transparent border-2 border-red-600 text-red-600 dark:text-red-400 font-extrabold rounded-2xl hover:bg-red-50 dark:hover:bg-red-950/30 active:scale-95 transition-all flex items-center justify-center space-x-2"
               >
                 <UserPlus className="w-5 h-5" />
                 <span>Kayıt Ol</span>
               </button>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-stone-200 dark:border-stone-800">
-              <p className="text-xs font-bold text-stone-400 text-center mb-4 uppercase">Test Hesapları (Gerçek Backend)</p>
+            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
+              <p className="text-xs font-bold text-slate-400 text-center mb-4 uppercase tracking-wider">Test Hesapları (Gerçek Backend)</p>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('admin123'); setLoginError(''); }} className="p-2 bg-stone-50 dark:bg-stone-800 rounded-xl text-xs font-bold text-stone-500 hover:text-emerald-600 border border-stone-200 dark:border-stone-700 flex flex-col items-center"><Shield className="w-4 h-4 mb-1" />Admin</button>
-                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('hasta123'); setLoginError(''); }} className="p-2 bg-stone-50 dark:bg-stone-800 rounded-xl text-xs font-bold text-stone-500 hover:text-emerald-600 border border-stone-200 dark:border-stone-700 flex flex-col items-center"><User className="w-4 h-4 mb-1" />Hasta</button>
+                <button onClick={() => { setEmail('admin@drbio.com'); setPassword('admin123'); setLoginError(''); }} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-red-600 border border-slate-200 dark:border-slate-700 flex flex-col items-center"><Shield className="w-4 h-4 mb-1 text-red-600" />Admin</button>
+                <button onClick={() => { setEmail('hasta@drbio.com'); setPassword('hasta123'); setLoginError(''); }} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-red-600 border border-slate-200 dark:border-slate-700 flex flex-col items-center"><User className="w-4 h-4 mb-1 text-red-600" />Hasta</button>
               </div>
             </div>
           </div>
@@ -423,7 +423,7 @@ const Login = () => {
             </div>
 
             {registerError && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-2xl flex items-center space-x-3 text-xs font-bold animate-fade-in">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 rounded-2xl flex items-center space-x-3 text-xs font-bold animate-fade-in">
                 <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400" />
                 <span>{registerError}</span>
               </div>
@@ -481,7 +481,7 @@ const Login = () => {
               {/* Devam Et Butonu */}
               <button
                 type="submit"
-                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center space-x-2 mt-6"
+                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 mt-6"
               >
                 <span>Devam Et (Sağlık Bilgileri)</span>
                 <ArrowRight className="w-5 h-5" />
@@ -493,7 +493,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setIsRegisterOpen(false)}
-                className="text-sm font-bold text-lime-800 dark:text-lime-500 hover:underline transition-all"
+                className="text-sm font-bold text-red-600 dark:text-red-400 hover:underline transition-all"
               >
                 Zaten hesabınız var mı? Giriş Yapın
               </button>
@@ -708,7 +708,7 @@ const Login = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-3xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                  className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Kaydı Tamamla ve Panele Git</span>}
                 </button>

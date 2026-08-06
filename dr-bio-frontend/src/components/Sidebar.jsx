@@ -29,15 +29,18 @@ const Sidebar = ({ role = 'PATIENT' }) => {
   const safeRoleLower = (role || 'patient').toLowerCase();
 
   return (
-    <aside className="w-64 min-h-[calc(100vh-2rem)] bg-theme-card rounded-3xl m-4 p-6 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex-col hidden lg:flex">
+    <aside className="w-64 min-h-[calc(100vh-2rem)] bg-theme-card rounded-2xl m-4 p-6 shadow-clay-card dark:shadow-clay-card-dark border-theme-border flex-col hidden lg:flex">
       <div className="flex items-center space-x-3 mb-10 pl-2">
-        <div className="w-10 h-10 bg-lime-700 rounded-xl shadow-clay-btn flex items-center justify-center text-white font-black text-xl">
+        <div className="w-10 h-10 bg-red-600 rounded-xl shadow-clay-btn flex items-center justify-center text-white font-black text-xl">
           D
         </div>
-        <h2 className="text-2xl font-black text-lime-700 dark:text-lime-400 tracking-tight">Dr. Bio</h2>
+        <div>
+          <h2 className="text-2xl font-black text-red-600 dark:text-red-400 tracking-tight">Dr. Bio</h2>
+          <span className="text-[10px] font-black text-slate-400 tracking-wider uppercase block -mt-1">Akıllı Sağlık Paneli</span>
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-3">
+      <nav className="flex-1 space-y-2">
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path || (link.path !== `/${safeRoleLower}` && location.pathname.startsWith(link.path));
@@ -46,13 +49,13 @@ const Sidebar = ({ role = 'PATIENT' }) => {
             <NavLink
               key={link.name}
               to={link.path}
-              className={`flex items-center space-x-3 px-4 py-3.5 rounded-3xl font-bold transition-all duration-300 ${
+              className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-extrabold text-xs sm:text-sm transition-all duration-200 ${
                 isActive
-                  ? 'bg-lime-700 text-white shadow-clay-btn'
-                  : 'text-stone-500 hover:text-lime-700 hover:bg-[#fcfbfa] dark:hover:bg-[#181514] active:shadow-clay-btn dark:active:shadow-clay-btn'
+                  ? 'bg-red-600 text-white shadow-clay-btn'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-lime-700'}`} />
+              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-red-600 dark:text-red-400'}`} />
               <span>{link.name}</span>
             </NavLink>
           );
