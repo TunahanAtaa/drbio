@@ -10,9 +10,9 @@ const decorativeCards = [
     status: 'Normal',
     icon: Droplets,
     color: 'text-red-600',
-    position: 'top-[12%] left-[8%]',
+    position: 'top-[6%] left-[4%]',
     rotation: '-rotate-3',
-    scale: 'scale-100',
+    scale: 'scale-95',
     hideOnMobile: true
   },
   {
@@ -25,8 +25,8 @@ const decorativeCards = [
     trend: 'up',
     icon: Activity,
     color: 'text-blue-500',
-    position: 'top-[20%] right-[10%]',
-    rotation: 'rotate-2',
+    position: 'top-[6%] right-[4%]',
+    rotation: 'rotate-3',
     scale: 'scale-95',
     hideOnMobile: false
   },
@@ -38,9 +38,9 @@ const decorativeCards = [
     status: 'Excellent',
     icon: ShieldAlert,
     color: 'text-emerald-500',
-    position: 'bottom-[25%] left-[6%]',
+    position: 'bottom-[18%] left-[4%]',
     rotation: 'rotate-6',
-    scale: 'scale-105',
+    scale: 'scale-100',
     hideOnMobile: false
   },
   {
@@ -51,8 +51,8 @@ const decorativeCards = [
     date: '12 Eyl 2026',
     icon: ClipboardList,
     color: 'text-purple-500',
-    position: 'top-[50%] left-[2%]',
-    rotation: '-rotate-2',
+    position: 'top-[42%] left-[3%]',
+    rotation: '-rotate-3',
     scale: 'scale-90',
     hideOnMobile: true
   },
@@ -66,9 +66,9 @@ const decorativeCards = [
     trend: 'down',
     icon: HeartPulse,
     color: 'text-amber-500',
-    position: 'bottom-[20%] right-[8%]',
+    position: 'bottom-[8%] right-[4%]',
     rotation: '-rotate-6',
-    scale: 'scale-110',
+    scale: 'scale-105',
     hideOnMobile: true
   },
   {
@@ -79,9 +79,48 @@ const decorativeCards = [
     status: 'Normal',
     icon: Activity,
     color: 'text-red-600',
-    position: 'top-[55%] right-[2%]',
+    position: 'top-[45%] right-[3%]',
     rotation: 'rotate-3',
+    scale: 'scale-90',
+    hideOnMobile: true
+  },
+  {
+    id: 7,
+    type: 'standard',
+    title: 'Lökosit',
+    value: '7.200 /µL',
+    status: 'Normal',
+    icon: Droplets,
+    color: 'text-blue-600',
+    position: 'top-[5%] left-[28%]',
+    rotation: '-rotate-2',
+    scale: 'scale-90',
+    hideOnMobile: true
+  },
+  {
+    id: 8,
+    type: 'standard',
+    title: 'Tansiyon',
+    value: '118/76 mmHg',
+    status: 'Normal',
+    icon: HeartPulse,
+    color: 'text-emerald-600',
+    position: 'bottom-[8%] right-[28%]',
+    rotation: '-rotate-2',
     scale: 'scale-95',
+    hideOnMobile: true
+  },
+  {
+    id: 9,
+    type: 'standard',
+    title: 'Kreatinin',
+    value: '0.9 mg/dL',
+    status: 'Normal',
+    icon: Activity,
+    color: 'text-purple-600',
+    position: 'top-[5%] right-[28%]',
+    rotation: 'rotate-2',
+    scale: 'scale-90',
     hideOnMobile: true
   }
 ];

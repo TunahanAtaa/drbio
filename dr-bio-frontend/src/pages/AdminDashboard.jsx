@@ -13,6 +13,7 @@ import AdminOverviewTab from './admin/AdminOverviewTab';
 import AdminReferencesTab from './admin/AdminReferencesTab';
 import AdminUsersTab from './admin/AdminUsersTab';
 import AdminFeedbacksTab from './admin/AdminFeedbacksTab';
+import AdminAgendaTab from './admin/AdminAgendaTab';
 
 const defaultFeedbacks = [
   { 
@@ -892,6 +893,10 @@ const AdminDashboard = () => {
               handleSelectResolutionTemplate={handleSelectResolutionTemplate}
               handleSendResolution={handleSendResolution}
             />
+          )}
+
+          {currentTab === 'agenda' && (
+            <AdminAgendaTab />
           )}
         </>
       )}
