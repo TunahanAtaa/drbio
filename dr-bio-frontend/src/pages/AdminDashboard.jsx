@@ -74,178 +74,7 @@ const defaultFeedbacks = [
   }
 ];
 
-const defaultAdminUsers = [
-  { 
-    id: 101, 
-    name: 'Dr. Zeynep Ersal', 
-    email: 'hasta@drbio.com', 
-    role: 'PATIENT', 
-    status: 'ACTIVE', 
-    regDate: '2026-08-01',
-    healthProfile: {
-      age: '28',
-      weight: '62',
-      height: '168',
-      gender: 'Kadın',
-      maritalStatus: 'Bekar',
-      childrenCount: '0',
-      occupation: 'Biyomedikal Mühendisi',
-      genetics: 'Ailede Tip-2 Diyabet öyküsü var',
-      surgeries: 'Apendektomi (2020)',
-      medications: 'B-Kompleks vitamini, D3 Takviyesi',
-      allergies: 'Toz ve Penisilin alerjisi',
-      chronicPain: 'Migren (Hafif düzeyde)',
-      habits: 'Sigara kullanmıyor, Sosyal alkol'
-    }
-  },
-  { 
-    id: 102, 
-    name: 'Sistem Yöneticisi (Admin)', 
-    email: 'admin@drbio.com', 
-    role: 'ADMIN', 
-    status: 'ACTIVE', 
-    regDate: '2026-07-15',
-    healthProfile: {
-      age: '35',
-      weight: '76',
-      height: '180',
-      gender: 'Erkek',
-      maritalStatus: 'Evli',
-      childrenCount: '1',
-      occupation: 'Başhekim / Sistem Mimarı',
-      genetics: 'Yok',
-      surgeries: 'Yok',
-      medications: 'Yok',
-      allergies: 'Yok',
-      chronicPain: 'Yok',
-      habits: 'Kullanmıyor'
-    }
-  },
-  { 
-    id: 103, 
-    name: 'Burak Öztürk', 
-    email: 'burak.ozturk@yahoo.com', 
-    role: 'PATIENT', 
-    status: 'ACTIVE', 
-    regDate: '2026-08-02',
-    healthProfile: {
-      age: '31',
-      weight: '82',
-      height: '180',
-      gender: 'Erkek',
-      maritalStatus: 'Evli',
-      childrenCount: '1',
-      occupation: 'Yazılım Mimarı',
-      genetics: 'Hipertansiyon öyküsü',
-      surgeries: 'Menisküs Operasyonu (2022)',
-      medications: 'Omega-3',
-      allergies: 'Fıstık alerjisi',
-      chronicPain: 'Sol diz ağrısı',
-      habits: 'Sigara kullanmıyor'
-    }
-  },
-  { 
-    id: 104, 
-    name: 'Canan Arslan', 
-    email: 'canan.arslan@outlook.com', 
-    role: 'PATIENT', 
-    status: 'ACTIVE', 
-    regDate: '2026-08-03',
-    healthProfile: {
-      age: '29',
-      weight: '60',
-      height: '168',
-      gender: 'Kadın',
-      maritalStatus: 'Bekar',
-      childrenCount: '0',
-      occupation: 'Finans Analisti',
-      genetics: 'Yok',
-      surgeries: 'Yok',
-      medications: 'Magnezyum Kompleks',
-      allergies: 'Gluten hassasiyeti',
-      chronicPain: 'Bel ağrısı',
-      habits: 'Kullanmıyor'
-    }
-  },
-  { 
-    id: 105, 
-    name: 'Deniz Yıldız', 
-    email: 'deniz.yildiz@gmail.com', 
-    role: 'PATIENT', 
-    status: 'ACTIVE', 
-    regDate: '2026-08-04',
-    healthProfile: {
-      age: '38',
-      weight: '74',
-      height: '173',
-      gender: 'Kadın',
-      maritalStatus: 'Evli',
-      childrenCount: '2',
-      occupation: 'Avukat',
-      genetics: 'Demir Eksikliği Anemisi',
-      surgeries: 'Sezaryen Doğum (2019, 2022)',
-      medications: 'Demir Takviyesi (Ferro Sanol)',
-      allergies: 'Yok',
-      chronicPain: 'Boyun düzleşmesi ağrısı',
-      habits: 'Kullanmıyor'
-    }
-  },
-  { 
-    id: 106, 
-    name: 'Selin Tekin', 
-    email: 'selin.tekin@icloud.com', 
-    role: 'PATIENT', 
-    status: 'ACTIVE', 
-    regDate: '2026-08-04',
-    healthProfile: {
-      age: '27',
-      weight: '55',
-      height: '162',
-      gender: 'Kadın',
-      maritalStatus: 'Bekar',
-      childrenCount: '0',
-      occupation: 'Grafik Tasarımcı',
-      genetics: 'İnsülin Direnci',
-      surgeries: 'Yok',
-      medications: 'Glucophage (500mg)',
-      allergies: 'Polen Alerjisi',
-      chronicPain: 'Yok',
-      habits: 'Kullanmıyor'
-    }
-  },
-  { 
-    id: 107, 
-    name: 'Mert Aksoy', 
-    email: 'mert.aksoy@hotmail.com', 
-    role: 'PATIENT', 
-    status: 'ACTIVE', 
-    regDate: '2026-08-05',
-    healthProfile: {
-      age: '42',
-      weight: '88',
-      height: '185',
-      gender: 'Erkek',
-      maritalStatus: 'Evli',
-      childrenCount: '2',
-      occupation: 'İnşaat Mühendisi',
-      genetics: 'Yüksek Kolesterol Öyküsü',
-      surgeries: 'Yok',
-      medications: 'Atorvastatin',
-      allergies: 'Yok',
-      chronicPain: 'Omuz sıkışması',
-      habits: 'Sigara kullanmıyor'
-    }
-  }
-];
 
-const defaultReferences = [
-  { id: 1, name: 'Hemoglobin (HGB)', min: '13.5', max: '17.5', unit: 'g/dL', category: 'Kan Sayımı', text: 'Kansızlık (anemi) veya demir eksikliği belirtisi olabilir. Beslenme düzenine dikkat edilmelidir.' },
-  { id: 2, name: 'WBC (Lökosit)', min: '4.5', max: '11.0', unit: '10^3/uL', category: 'Kan Sayımı', text: 'Enfeksiyon veya bağışıklık sistemi reaksiyonu göstergesi olabilir.' },
-  { id: 3, name: 'Kolesterol (Total)', min: '0', max: '200', unit: 'mg/dL', category: 'Biyokimya', text: 'Yüksek kolesterol damar sağlığı riski oluşturabilir. Diyet ve egzersiz tavsiye edilir.' },
-  { id: 4, name: 'Açlık Kan Şekeri (Glukoz)', min: '70', max: '100', unit: 'mg/dL', category: 'Biyokimya', text: 'Şeker metabolizması takibi için kritik değerdir.' },
-  { id: 5, name: 'Vitamin D (25-OH)', min: '30', max: '100', unit: 'ng/mL', category: 'Vitamin', text: 'Kemik sağlığı ve bağışıklık için önemlidir. D3 takviyesi gerekebilir.' },
-  { id: 6, name: 'ALT (SGPT)', min: '7', max: '56', unit: 'U/L', category: 'Karaciğer', text: 'Karaciğer hücre enzimidir, yüksekliği karaciğer yorgunluğuna işaret edebilir.' }
-];
 
 const getGenderStyles = (genderInput) => {
   const g = (genderInput || '').toString().toLowerCase().trim();
@@ -296,25 +125,18 @@ const AdminDashboard = () => {
           api.get('/reports/all')
         ]);
         
-        if (usersRes.data && Array.isArray(usersRes.data) && usersRes.data.length > 0) {
+        if (usersRes.data && Array.isArray(usersRes.data)) {
           setUsersList(usersRes.data);
-        } else {
-          setUsersList(defaultAdminUsers);
         }
 
-        if (refsRes.data && Array.isArray(refsRes.data) && refsRes.data.length > 0) {
+        if (refsRes.data && Array.isArray(refsRes.data)) {
           setReferences(refsRes.data);
-        } else {
-          setReferences(defaultReferences);
         }
 
-        setTotalReports(reportsRes.data && Array.isArray(reportsRes.data) ? reportsRes.data.length : 142);
+        setTotalReports(reportsRes.data && Array.isArray(reportsRes.data) ? reportsRes.data.length : 0);
       } catch (err) {
-        console.warn('Backend verileri çekilemedi veya yetki yetersiz, demo veriler ile devam ediliyor:', err);
-        // Fallback to local default data so Admin Dashboard always functions seamlessly
-        setUsersList(defaultAdminUsers);
-        setReferences(defaultReferences);
-        setTotalReports(142);
+        console.error('Backend verileri çekilemedi:', err);
+        setErrorData('Veriler yüklenemedi, sunucu ile iletişim kurulamadı. Lütfen tekrar deneyiniz.');
       } finally {
         setLoadingData(false);
       }
@@ -745,7 +567,7 @@ const AdminDashboard = () => {
     localStorage.removeItem('admin_notifications');
     localStorage.removeItem('userNotifications');
     setFeedbacks(defaultFeedbacks);
-    setUsersList(defaultAdminUsers);
+    setUsersList([]);
     setAcknowledgedIds([]);
     setContactPendingIds([]);
     setFeedbackLastAction({});
