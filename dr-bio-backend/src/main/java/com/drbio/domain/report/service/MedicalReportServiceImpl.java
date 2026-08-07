@@ -39,7 +39,6 @@ public class MedicalReportServiceImpl implements MedicalReportService {
     private final MedicalReportRepository medicalReportRepository;
     private final MedicalReportItemRepository medicalReportItemRepository;
     private final TextExtractionService textExtractionService;
-    private final ReportAnalysisService reportAnalysisService;
     private final OpenRouterOcrService openRouterOcrService;
 
     @Override
@@ -67,11 +66,11 @@ public class MedicalReportServiceImpl implements MedicalReportService {
                 String extractedText = textExtractionService.extractText(filePath);
                 
                 if (extractedText == null || extractedText.trim().isEmpty()) {
-                    logger.info("PDF'ten metin çıkarılamadı (taranmış PDF). OCR servisine gönderiliyor.");
+                    logger.info("PDF'ten metin çıkarılamadı (taranmış PDF). Görsel olarak OCR servisine gönderiliyor.");
                     results = openRouterOcrService.extractFromScannedPdf(savedFile);
                 } else {
-                    logger.info("Dijital PDF algılandı, Regex tabanlı analiz yapılıyor.");
-                    results = reportAnalysisService.analyzeText(extractedText);
+                    logger.info("Dijital PDF algılandı, metin üzerinden AI analizi yapılıyor.");
+                    results = openRouterOcrService.extractFromText(extractedText);
                 }
             }
         } catch (Exception e) {

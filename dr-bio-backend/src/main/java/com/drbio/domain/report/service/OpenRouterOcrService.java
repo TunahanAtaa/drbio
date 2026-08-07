@@ -74,6 +74,20 @@ public class OpenRouterOcrService {
         }
     }
 
+    public List<ReportResultItem> extractFromText(String extractedText) {
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            logger.warn("OPENROUTER_API_KEY is not set! AI extraction will be skipped.");
+            return new ArrayList<>();
+        }
+
+        try {
+            return callOpenRouterApiTextOnly(extractedText);
+        } catch (Exception e) {
+            logger.error("Error during AI extraction from text", e);
+            throw new RuntimeException("Metin analiz edilirken hata oluştu.", e);
+        }
+    }
+
     private String encodeImageToBase64(File file) throws IOException {
         byte[] fileContent = Files.readAllBytes(file.toPath());
         return Base64.getEncoder().encodeToString(fileContent);
@@ -132,6 +146,36 @@ public class OpenRouterOcrService {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
+        return executeOpenRouterRequest(request);
+    }
+
+    private List<ReportResultItem> callOpenRouterApiTextOnly(String extractedText) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", modelName);
+
+        String promptText = "Aşağıdaki ham tıbbi rapor metnindeki tahlil değerlerini SADECE oku ve yapılandırılmış JSON dizisi şeklinde çıkar: [{\"parameterName\": \"...\", \"value\": 12.3, \"unit\": \"...\", \"referenceRange\": \"...\"}]. Hiçbir yorum, teşhis, tavsiye üretme, sadece değerleri raporla. Cevabın SADECE JSON dizisi olsun, ```json veya benzer markdown formatı ekleme.\n\nMETİN:\n" + extractedText;
+
+        Map<String, Object> textMessage = new HashMap<>();
+        textMessage.put("type", "text");
+        textMessage.put("text", promptText);
+
+        Map<String, Object> messageContent = new HashMap<>();
+        messageContent.put("role", "user");
+        messageContent.put("content", Arrays.asList(textMessage));
+
+        requestBody.put("messages", Collections.singletonList(messageContent));
+        requestBody.put("temperature", 0.1);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+
+        return executeOpenRouterRequest(request);
+    }
+
+    private List<ReportResultItem> executeOpenRouterRequest(HttpEntity<Map<String, Object>> request) {
         int maxRetries = 2;
         int attempt = 0;
         ResponseEntity<Map> response = null;

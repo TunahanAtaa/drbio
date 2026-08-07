@@ -28,8 +28,6 @@
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/MedicalReportService.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/MedicalReportServiceImpl.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/OpenRouterOcrService.java
-/home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/ReportAnalysisService.java
-/home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/ReportAnalysisServiceImpl.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/ReportRecommendationService.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/ReportRecommendationServiceImpl.java
 /home/tuno/Belgeler/drbio/dr-bio-backend/src/main/java/com/drbio/domain/report/service/TextExtractionService.java

@@ -41,7 +41,6 @@ com/drbio/domain/user/dto/LoginResponseDTO.class
 com/drbio/domain/report/entity/ReferenceValue.class
 com/drbio/domain/user/entity/Role.class
 com/drbio/domain/report/dto/MedicalReportItemDTO$MedicalReportItemDTOBuilder.class
-com/drbio/domain/report/service/ReportAnalysisServiceImpl.class
 com/drbio/domain/user/dto/RegisterRequestDTO.class
 com/drbio/domain/report/service/FileStorageService.class
 com/drbio/domain/report/dto/MedicalReportResponseDTO$MedicalReportResponseDTOBuilder.class
@@ -58,6 +57,5 @@ com/drbio/domain/report/entity/ReferenceValue$ReferenceValueBuilder.class
 com/drbio/domain/report/service/MedicalReportService.class
 com/drbio/domain/report/service/OpenRouterOcrService.class
 com/drbio/domain/report/entity/MedicalReport.class
-com/drbio/domain/report/service/ReportAnalysisService.class
 com/drbio/domain/report/dto/ReportTrendDTO$ReportTrendDTOBuilder.class
 com/drbio/domain/report/entity/MedicalReportItem.class
