@@ -40,6 +40,7 @@ public class MedicalReportServiceImpl implements MedicalReportService {
     private final MedicalReportItemRepository medicalReportItemRepository;
     private final TextExtractionService textExtractionService;
     private final ReportAnalysisService reportAnalysisService;
+    private final OpenRouterOcrService openRouterOcrService;
 
     @Override
     @Transactional
@@ -51,11 +52,32 @@ public class MedicalReportServiceImpl implements MedicalReportService {
         // 1. Dosyayı fiziksel olarak kaydet
         String filePath = fileStorageService.storeFile(file);
 
-        // 2. PDF'den metni çıkar
-        String extractedText = textExtractionService.extractText(filePath);
+        List<ReportResultItem> results = new ArrayList<>();
+        ReportStatus reportStatus = ReportStatus.COMPLETED;
 
-        // 3. Metni analiz et (Regex tabanlı)
-        List<ReportResultItem> results = reportAnalysisService.analyzeText(extractedText);
+        try {
+            String mimeType = file.getContentType();
+            java.io.File savedFile = new java.io.File(filePath);
+            
+            if (mimeType != null && mimeType.startsWith("image/")) {
+                logger.info("Resim dosyası algılandı, OCR servisine gönderiliyor.");
+                results = openRouterOcrService.extractFromImage(savedFile);
+            } else {
+                logger.info("PDF dosyası algılandı, metin çıkarma deneniyor.");
+                String extractedText = textExtractionService.extractText(filePath);
+                
+                if (extractedText == null || extractedText.trim().isEmpty()) {
+                    logger.info("PDF'ten metin çıkarılamadı (taranmış PDF). OCR servisine gönderiliyor.");
+                    results = openRouterOcrService.extractFromScannedPdf(savedFile);
+                } else {
+                    logger.info("Dijital PDF algılandı, Regex tabanlı analiz yapılıyor.");
+                    results = reportAnalysisService.analyzeText(extractedText);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Rapor verileri çıkarılırken hata oluştu: ", e);
+            reportStatus = ReportStatus.FAILED;
+        }
 
         logger.info("Parse edilen item sayısı: {}", results.size());
 
@@ -67,11 +89,11 @@ public class MedicalReportServiceImpl implements MedicalReportService {
         }
         logger.info("---------------------------------------");
 
-        // 5. Rapor durumunu COMPLETED yapıp kaydet
+        // 5. Rapor durumunu belirle ve kaydet
         MedicalReport medicalReport = MedicalReport.builder()
                 .user(user)
                 .filePath(filePath)
-                .status(ReportStatus.COMPLETED)
+                .status(reportStatus)
                 .reportDate(reportDate)
                 .build();
 

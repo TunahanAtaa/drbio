@@ -4,9 +4,9 @@ com/drbio/domain/report/repository/MedicalReportItemRepository.class
 com/drbio/domain/report/service/ReportRecommendationServiceImpl.class
 com/drbio/domain/report/service/ReportRecommendationService.class
 com/drbio/domain/report/dto/MedicalReportItemDTO.class
-com/drbio/config/DataSeeder.class
-com/drbio/domain/user/dto/SecurityUser.class
 com/drbio/domain/user/dto/LoginRequestDTO.class
+com/drbio/domain/user/dto/SecurityUser.class
+com/drbio/config/DataSeeder.class
 com/drbio/domain/report/entity/ReportStatus.class
 com/drbio/domain/report/service/TextExtractionServiceImpl.class
 com/drbio/domain/report/controller/MedicalReportController.class
@@ -19,6 +19,7 @@ com/drbio/domain/report/dto/ReportResultItem$ReportResultItemBuilder.class
 com/drbio/common/exception/UserNotFoundException.class
 com/drbio/domain/report/service/FileStorageServiceImpl.class
 com/drbio/domain/report/dto/MedicalReportResponseDTO.class
+com/drbio/domain/report/service/OpenRouterOcrService$1.class
 com/drbio/domain/user/exception/UserAlreadyExistsException.class
 com/drbio/domain/user/dto/RegisterRequestDTO$RegisterRequestDTOBuilder.class
 com/drbio/domain/report/entity/MedicalReport$MedicalReportBuilder.class
@@ -55,7 +56,8 @@ com/drbio/domain/user/controller/UserController.class
 com/drbio/domain/report/dto/ReportResultItem.class
 com/drbio/domain/report/entity/ReferenceValue$ReferenceValueBuilder.class
 com/drbio/domain/report/service/MedicalReportService.class
+com/drbio/domain/report/service/OpenRouterOcrService.class
 com/drbio/domain/report/entity/MedicalReport.class
-com/drbio/domain/report/dto/ReportTrendDTO$ReportTrendDTOBuilder.class
 com/drbio/domain/report/service/ReportAnalysisService.class
+com/drbio/domain/report/dto/ReportTrendDTO$ReportTrendDTOBuilder.class
 com/drbio/domain/report/entity/MedicalReportItem.class
