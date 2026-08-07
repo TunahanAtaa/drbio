@@ -47,8 +47,8 @@ com/drbio/domain/report/dto/MedicalReportResponseDTO$MedicalReportResponseDTOBui
 com/drbio/domain/report/controller/ReferenceValueController.class
 com/drbio/common/exception/FileStorageException.class
 com/drbio/domain/user/dto/SecurityUser$SecurityUserBuilder.class
-com/drbio/domain/report/entity/MedicalReportItem$MedicalReportItemBuilder.class
 com/drbio/domain/report/repository/MedicalReportRepository.class
+com/drbio/domain/report/entity/MedicalReportItem$MedicalReportItemBuilder.class
 com/drbio/domain/report/dto/ReportTrendDTO.class
 com/drbio/config/JwtAuthFilter.class
 com/drbio/domain/user/controller/UserController.class
