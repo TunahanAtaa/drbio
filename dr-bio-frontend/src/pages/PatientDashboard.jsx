@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import Profile from './Profile';
+import Alert from '../components/ui/Alert';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Select from '../components/ui/Select';
+import Textarea from '../components/ui/Textarea';
+import Card from '../components/ui/Card';
 import { 
   UploadCloud, AlertTriangle, CheckCircle, ArrowDownCircle, ArrowUpCircle, 
   Stethoscope, Sparkles, Loader2, FileText, Activity, Calendar, Clock, 
   Search, Filter, Eye, Download, Plus, HeartPulse, ChevronRight, ShieldCheck, 
   TrendingUp, Pill, Trash2, Star, MessageSquare
 } from 'lucide-react';
-import Profile from './Profile';
 
 const sampleHistory = [
   {
@@ -245,8 +251,8 @@ const PatientDashboard = () => {
           
           {/* Karşılama Banner */}
           <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-900 rounded-2xl p-8 text-white shadow-clay-card dark:shadow-clay-card-dark border-theme-border relative overflow-hidden">
-            <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-8 translate-y-8">
-              <Activity className="w-80 h-80 text-white" />
+            <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none transform translate-x-8 translate-y-8">
+              <HeartPulse className="w-80 h-80 text-white" />
             </div>
 
             <div className="relative z-10 space-y-4">
@@ -902,7 +908,8 @@ const PatientDashboard = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </Layout>
