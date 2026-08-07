@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { User, Edit3, Save, X, CheckCircle2, Heart, Shield, Activity, Sparkles } from 'lucide-react';
+import { User, Edit3, Save, X, CheckCircle2, Heart, HeartPulse, Shield, Activity, Sparkles } from 'lucide-react';
+import Button from './ui/Button';
+import Input from './ui/Input';
+import Select from './ui/Select';
+import Card from './ui/Card';
+import Alert from './ui/Alert';
 
 const UserProfile = () => {
   // LocalStorage'dan mevcut kullanıcı ve sağlık profilini yükle, yoksa varsayılan veriyi kullan
@@ -103,8 +108,8 @@ const UserProfile = () => {
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Üst Header / Profil Kartı */}
       <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-900 rounded-2xl p-8 text-white shadow-clay-card dark:shadow-clay-card-dark border-theme-border relative overflow-hidden">
-        <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
-          <Heart className="w-64 h-64 text-white" />
+        <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none transform translate-x-8 translate-y-8">
+          <HeartPulse className="w-80 h-80 text-white" />
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">

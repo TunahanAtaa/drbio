@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { User, Edit3, Save, X, CheckCircle2, Heart, Sparkles, Activity } from 'lucide-react';
+import { User, Edit3, Save, X, CheckCircle2, Heart, HeartPulse, Sparkles, Activity } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Select from '../components/ui/Select';
+import Card from '../components/ui/Card';
+import Alert from '../components/ui/Alert';
 
 export default function UserProfile({ initialUserData }) {
     // Kullanıcının güncel bilgilerini tutan state (LocalStorage ve veritabanı senkronizasyonu)
@@ -104,8 +109,8 @@ export default function UserProfile({ initialUserData }) {
             
             {/* Üst Header / Profil Kartı */}
             <div className="bg-gradient-to-r from-red-600 via-red-700 to-red-900 rounded-[2.5rem] p-8 text-white shadow-clay-card dark:shadow-clay-card-dark relative overflow-hidden">
-                <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
-                    <Heart className="w-64 h-64 text-white" />
+                <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none transform translate-x-8 translate-y-8">
+                    <HeartPulse className="w-80 h-80 text-white" />
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">

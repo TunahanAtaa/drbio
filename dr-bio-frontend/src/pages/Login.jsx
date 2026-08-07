@@ -4,6 +4,10 @@ import { Activity, Shield, User, Loader2, UserPlus, CheckCircle2, ArrowRight, Ar
 import AuthBackground from '../components/AuthBackground';
 import ThemeToggle from '../components/ThemeToggle';
 import api from '../services/api';
+import Alert from '../components/ui/Alert';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Card from '../components/ui/Card';
 
 const defaultUsers = [
   { name: 'Sistem Yöneticisi', email: 'admin@drbio.com', password: '123', role: 'ADMIN' },
@@ -245,7 +249,10 @@ const Login = () => {
           </div>
         </div>
 
-        <h1 className="text-3xl font-black text-center text-red-600 dark:text-red-400 mb-2">Dr. Bio</h1>
+        <h1 className="text-3xl font-black text-center text-red-600 dark:text-red-400 mb-1">Dr. Bio</h1>
+        <p className="text-center text-[11px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 mb-6">
+          AKILLI SAĞLIK PANELİ
+        </p>
 
         {successMessage && (
           <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
@@ -321,7 +328,6 @@ const Login = () => {
         ) : !isRegisterOpen ? (
           /* --- GİRİŞ YAP FORMU VE ALANI --- */
           <div>
-            <p className="text-center text-stone-500 text-sm mb-6 font-medium">Laboratuvar analizlerinize erişmek için giriş yapın</p>
 
             {/* Giriş Hatası Uyarısı */}
             {loginError && (
