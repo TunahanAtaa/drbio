@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Shield, User, Loader2, UserPlus, CheckCircle2, ArrowRight, ArrowLeft, HeartPulse, AlertCircle, KeyRound, Lock, Check } from 'lucide-react';
+import { Activity, Shield, User, Loader2, UserPlus, CheckCircle2, ArrowRight, ArrowLeft, HeartPulse, AlertCircle, KeyRound, Lock, Check, Zap, LineChart, ShieldCheck, FileText } from 'lucide-react';
 import AuthBackground from '../components/AuthBackground';
 import ThemeToggle from '../components/ThemeToggle';
+import FooterInfoModals from '../components/FooterInfoModals';
 import api from '../services/api';
 import Alert from '../components/ui/Alert';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
+
+import Logo from '../components/Logo';
 
 const defaultUsers = [
   { name: 'Sistem Yöneticisi', email: 'admin@drbio.com', password: '123', role: 'ADMIN' },
@@ -47,6 +50,9 @@ const Login = () => {
   const [registerError, setRegisterError] = useState('');
   const [loginError, setLoginError] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(true);
+  const [activeFooterModal, setActiveFooterModal] = useState(null);
 
   // Şifre sıfırlama formu için state'ler
   const [newPassword, setNewPassword] = useState('');
@@ -177,8 +183,17 @@ const Login = () => {
     setStep(2);
   };
 
-  const handleHealthSubmit = async (e) => {
+  const handleHealthSubmit = (e) => {
     e.preventDefault();
+    setRegisterError('');
+    setStep(3); // Adım 3: Kullanım Şartları & Onay Sözleşmesi
+  };
+
+  const handleFinalRegister = async () => {
+    if (!termsAccepted) {
+      setRegisterError('Kayıt işlemini tamamlamak için lütfen kullanım şartlarını ve tıbbi teşhis bildirimini kabul ediniz.');
+      return;
+    }
     setLoading(true);
     setRegisterError('');
 
@@ -196,7 +211,7 @@ const Login = () => {
 
       await api.post('/auth/register', payload);
 
-      setSuccessMessage('Kayıt işleminiz başarıyla oluşturuldu! Yönlendiriliyorsunuz...');
+      setSuccessMessage('Kayıt işleminiz ve sözleşme onayınız başarıyla oluşturuldu! Yönlendiriliyorsunuz...');
 
       // Kayıt başarılıysa otomatik login yapalım
       const loginResp = await api.post('/auth/login', { email: formData.email, password: formData.password });
@@ -211,6 +226,7 @@ const Login = () => {
         email: userEmail || formData.email,
         role: userRole,
         token: token,
+        memberSince: new Date().toISOString(),
         healthProfile: {}
       }));
 
@@ -219,10 +235,10 @@ const Login = () => {
       console.error(error);
       if (error.response && error.response.status === 409) {
         setRegisterError('Bu e-posta adresi zaten kullanılıyor.');
+        setStep(1);
       } else {
         setRegisterError('Kayıt işlemi sırasında bir hata oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyin.');
       }
-      setStep(1); // Hata durumunda adım 1'e geri dön
     } finally {
       setLoading(false);
     }
@@ -242,17 +258,69 @@ const Login = () => {
 
       <AuthBackground />
 
-      <div className={`relative z-10 w-full ${isRegisterOpen && step === 2 ? 'max-w-xl' : 'max-w-md'} bg-theme-card rounded-2xl p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-red-600 rounded-2xl shadow-clay-btn flex items-center justify-center text-white font-black text-3xl">
-            <Activity className="w-8 h-8" />
+      <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+        {/* Left Marketing Panel (Screens >= 1024px only) */}
+        <div className="hidden lg:flex flex-col flex-1 max-w-lg space-y-8 pr-4">
+          <div className="space-y-3">
+            <h1 className="text-3xl lg:text-4xl font-black text-stone-800 dark:text-stone-100 tracking-tight leading-tight">
+              Tahlillerinizi saniyeler içinde anlayın
+            </h1>
+            <p className="text-base font-medium text-stone-600 dark:text-stone-300 leading-relaxed">
+              Dr. Bio, laboratuvar sonuçlarınızı analiz ederek anlaşılır hale getirir.
+            </p>
+          </div>
+
+          <div className="space-y-6 pt-2">
+            {/* Feature 1 */}
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-red-50 dark:bg-red-950/50 rounded-2xl border border-red-200/60 dark:border-red-900/40 flex items-center justify-center shrink-0">
+                <Zap className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <h3 className="font-black text-base text-stone-800 dark:text-stone-100">
+                  Anında Analiz
+                </h3>
+                <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-0.5">
+                  Sonuçlarınızı hemen görün
+                </p>
+              </div>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-red-50 dark:bg-red-950/50 rounded-2xl border border-red-200/60 dark:border-red-900/40 flex items-center justify-center shrink-0">
+                <LineChart className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <h3 className="font-black text-base text-stone-800 dark:text-stone-100">
+                  Referans Takibi
+                </h3>
+                <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-0.5">
+                  Değerlerinizi geçmişle karşılaştırın
+                </p>
+              </div>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-red-50 dark:bg-red-950/50 rounded-2xl border border-red-200/60 dark:border-red-900/40 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <h3 className="font-black text-base text-stone-800 dark:text-stone-100">
+                  Güvenli Saklama
+                </h3>
+                <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 mt-0.5">
+                  Verileriniz sizde kalır
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <h1 className="text-3xl font-black text-center text-red-600 dark:text-red-400 mb-1">Dr. Bio</h1>
-        <p className="text-center text-[11px] font-black uppercase tracking-[0.25em] text-slate-400 dark:text-slate-500 mb-6">
-          AKILLI SAĞLIK PANELİ
-        </p>
+        {/* Login Card */}
+        <div className={`w-full ${isRegisterOpen && (step === 2 || step === 3) ? 'max-w-xl' : 'max-w-md'} bg-theme-card rounded-2xl p-8 shadow-clay-card dark:shadow-clay-card-dark border-theme-border animate-fade-in transition-all duration-300`}>
+        <Logo size="lg" className="justify-center mb-8" />
 
         {successMessage && (
           <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 rounded-2xl flex items-center space-x-3 text-sm font-bold animate-fade-in">
@@ -285,25 +353,23 @@ const Login = () => {
             <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
               <div>
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Yeni Şifre</label>
-                <input
+                <Input
                   type="password"
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-5 py-3.5 bg-theme-bg rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20 border border-slate-200 dark:border-slate-800"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Yeni Şifre (Tekrar)</label>
-                <input
+                <Input
                   type="password"
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-5 py-3.5 bg-theme-bg rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20 border border-slate-200 dark:border-slate-800"
                 />
               </div>
 
@@ -378,15 +444,35 @@ const Login = () => {
 
               <div>
                 <div className="flex justify-between items-center mb-2 ml-2">
-                  <label className="block text-sm font-black text-slate-400 uppercase tracking-widest">Şifre</label>
+                  <label className="block text-sm font-black text-stone-400 uppercase tracking-widest">Şifre</label>
                 </div>
-                <input
+                <Input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-5 py-4 bg-theme-bg rounded-2xl font-bold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-600/20 border border-slate-200 dark:border-slate-800"
                 />
+              </div>
+
+              {/* Beni Hatırla & Şifremi Unuttum Row */}
+              <div className="flex items-center justify-between pt-1 pb-1 px-1">
+                <label className="flex items-center space-x-2 text-xs font-bold text-stone-600 dark:text-stone-400 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-stone-300 dark:border-stone-700 text-red-600 accent-red-600 cursor-pointer"
+                  />
+                  <span>Beni Hatırla</span>
+                </label>
+
+                <button
+                  type="button"
+                  onClick={handleOpenResetPassword}
+                  className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline transition-colors"
+                >
+                  Şifremi Unuttum?
+                </button>
               </div>
 
               {/* Giriş Yap Butonu */}
@@ -462,13 +548,12 @@ const Login = () => {
 
               <div>
                 <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2 ml-2">Şifre</label>
-                <input
+                <Input
                   type="password"
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full px-5 py-3.5 bg-theme-bg rounded-3xl font-bold text-stone-700 dark:text-stone-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-inner"
                 />
               </div>
 
@@ -505,7 +590,7 @@ const Login = () => {
               </button>
             </div>
           </div>
-        ) : (
+        ) : step === 2 ? (
           /* --- ADIM 2: HASTA SAĞLIK VE ANAMNEZ FORMU --- */
           <div>
             <div className="text-center mb-6">
@@ -709,14 +794,14 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* Kaydı Tamamla ve Panele Git */}
+              {/* Devam Et Butonu */}
               <div className="pt-2 space-y-2">
                 <button
                   type="submit"
                   disabled={loading}
                   className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-3xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Kaydı Tamamla ve Panele Git</span>}
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Devam Et (Kullanım Şartları Onayı) →</span>}
                 </button>
 
                 <button
@@ -730,8 +815,127 @@ const Login = () => {
               </div>
             </form>
           </div>
+        ) : (
+          /* --- ADIM 3: KULLANIM ŞARTLARI VE SÖZLEŞME ONAYI --- */
+          <div className="space-y-5 animate-fade-in">
+            <div className="text-center space-y-1">
+              <p className="text-stone-400 font-bold text-xs uppercase tracking-wider">Adım 3 / 3 — Son Onay</p>
+              <h2 className="text-xl font-black text-stone-800 dark:text-stone-100">Kullanım Şartları & Onay Sözleşmesi</h2>
+              <p className="text-xs text-stone-500 font-medium">Lütfen aşağıdaki hizmet şartlarını ve sağlık bildirimi sözleşmesini inceleyiniz.</p>
+            </div>
+
+            {registerError && (
+              <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 rounded-2xl flex items-center space-x-3 text-xs font-bold animate-fade-in">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-600 dark:text-red-400" />
+                <span>{registerError}</span>
+              </div>
+            )}
+
+            {/* Kaydırılabilir Sözleşme Kutusu */}
+            <div className="max-h-56 overflow-y-auto bg-stone-50 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 rounded-2xl p-4 space-y-3.5 text-xs text-stone-600 dark:text-stone-300 leading-relaxed font-medium">
+              <div className="space-y-1">
+                <h4 className="font-black text-stone-800 dark:text-stone-100 text-xs flex items-center space-x-1.5">
+                  <ShieldCheck className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>1. Tıbbi Teşhis Sorumluluk Reddi</span>
+                </h4>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                  Dr. Bio platformundaki yapay zeka tahlil yorumlamaları ve genel sağlık önerileri yalnızca <b>bilgilendirme amaçlıdır</b>. Kesin tıbbi teşhis, reçete veya tedavi yerine geçmez. Sağlık durumunuz için yetkili hekime danışınız.
+                </p>
+              </div>
+
+              <div className="space-y-1 pt-2 border-t border-stone-200/60 dark:border-stone-800">
+                <h4 className="font-black text-stone-800 dark:text-stone-100 text-xs flex items-center space-x-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>2. KVKK ve Kişisel Veri Gizliliği</span>
+                </h4>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                  Üyeliğiniz kapsamında sistemimize aktardığınız laboratuvar sonuçları ve kişisel sağlık verileriniz 6698 sayılı KVKK ilkelerine uygun olarak şifrelenir ve izinsiz 3. taraflarla asla paylaşılmaz.
+                </p>
+              </div>
+
+              <div className="space-y-1 pt-2 border-t border-stone-200/60 dark:border-stone-800">
+                <h4 className="font-black text-stone-800 dark:text-stone-100 text-xs flex items-center space-x-1.5">
+                  <FileText className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span>3. Kullanıcı Beyanı ve Sorumluluk</span>
+                </h4>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                  Kullanıcı, üyelik formlarında beyan ettiği ad, e-posta ve sağlık geçmişi bilgilerinin doğruluğundan bizzat sorumludur.
+                </p>
+              </div>
+            </div>
+
+            {/* Onay Checkbox'ı */}
+            <label className="flex items-start space-x-3 p-3.5 bg-red-50/60 dark:bg-red-950/30 border border-red-200/60 dark:border-red-900/40 rounded-2xl cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="w-4 h-4 mt-0.5 rounded border-red-300 text-red-600 accent-red-600 cursor-pointer shrink-0"
+              />
+              <span className="text-xs font-bold text-stone-700 dark:text-stone-200 leading-snug">
+                Dr. Bio Kullanım Şartları'nı, KVKK Aydınlatma Metni'ni ve Tıbbi Teşhis Sorumluluk Reddi Beyanı'nı okudum, anladım ve kabul ediyorum.
+              </span>
+            </label>
+
+            {/* Okudum, Anladım ve Kabul Ediyorum Butonu */}
+            <div className="space-y-2 pt-1">
+              <button
+                type="button"
+                onClick={handleFinalRegister}
+                disabled={loading || !termsAccepted}
+                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-clay-btn active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 text-sm"
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Okudum, Anladım ve Kabul Ediyorum</span>}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-full py-2.5 text-xs font-bold text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-all flex items-center justify-center space-x-1"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Sağlık Bilgilerine Geri Dön</span>
+              </button>
+            </div>
+          </div>
         )}
       </div>
+      </div>
+
+      {/* Bottom-Left Anchored Page Footer Area */}
+      <div className="absolute bottom-6 left-6 z-20 pointer-events-auto">
+        <div className="flex items-center space-x-3 text-xs font-bold text-stone-500 dark:text-stone-400">
+          <button
+            type="button"
+            onClick={() => setActiveFooterModal('privacy')}
+            className="hover:text-red-600 dark:hover:text-red-400 transition-colors focus:outline-none cursor-pointer"
+          >
+            Gizlilik Politikası
+          </button>
+          <span className="text-stone-300 dark:text-stone-600">•</span>
+          <button
+            type="button"
+            onClick={() => setActiveFooterModal('terms')}
+            className="hover:text-red-600 dark:hover:text-red-400 transition-colors focus:outline-none cursor-pointer"
+          >
+            Kullanım Şartları
+          </button>
+          <span className="text-stone-300 dark:text-stone-600">•</span>
+          <button
+            type="button"
+            onClick={() => setActiveFooterModal('contact')}
+            className="hover:text-red-600 dark:hover:text-red-400 transition-colors focus:outline-none cursor-pointer"
+          >
+            İletişim
+          </button>
+        </div>
+      </div>
+
+      {/* Interactive Footer Informational Modals */}
+      <FooterInfoModals
+        activeModal={activeFooterModal}
+        onClose={() => setActiveFooterModal(null)}
+      />
     </div>
   );
 };

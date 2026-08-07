@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Profile from './Profile';
+import PatientAgenda from '../components/PatientAgenda';
+import PatientSkinAnalysis from '../components/PatientSkinAnalysis';
 import Alert from '../components/ui/Alert';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -238,12 +240,16 @@ const PatientDashboard = () => {
   });
 
   return (
-    <Layout title="Hasta Paneli" role="PATIENT" onViewChange={setCurrentView}>
+    <Layout title="Hasta Paneli" role="PATIENT" reportCount={historyList.length} onViewChange={setCurrentView}>
       
       {/* 1. SEKMELERE GÖRE İÇERİK YÖNETİMİ */}
 
       {/* --- PROFiL SEKMESİ --- */}
       {currentView === 'profile' && <Profile />}
+
+      {/* --- SAĞLIK AJANDASI SEKMESİ --- */}
+      {currentView === 'agenda' && <PatientAgenda />}
+      {currentView === 'skin-analysis' && <PatientSkinAnalysis />}
 
       {/* --- ANA SAYFA SEKMESİ --- */}
       {(currentView === 'dashboard' || currentView === 'home') && (

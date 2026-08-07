@@ -225,6 +225,35 @@ const Navbar = ({ title, user }) => {
                       <p className="font-medium text-slate-600 dark:text-slate-300 leading-relaxed pl-6">
                         {notif.text}
                       </p>
+
+                      {notif.agendaId && notif.unread && (
+                        <div className="pl-6 mt-2">
+                          <button
+                            onClick={() => {
+                              // Mark notification as read
+                              removeNotification(notif.id);
+                              // Sync with agenda localStorage
+                              try {
+                                const agKey = `drbio_patient_agenda_${userEmail}`;
+                                const savedAg = localStorage.getItem(agKey);
+                                if (savedAg) {
+                                  const list = JSON.parse(savedAg);
+                                  if (Array.isArray(list)) {
+                                    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                    const updated = list.map(item => item.id === notif.agendaId ? { ...item, completed: true, completedAt: nowTime } : item);
+                                    localStorage.setItem(agKey, JSON.stringify(updated));
+                                  }
+                                }
+                              } catch(e) {}
+                            }}
+                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-black shadow-sm transition flex items-center space-x-1"
+                          >
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>İlacı Aldım / İşaretle</span>
+                          </button>
+                        </div>
+                      )}
+
                       <span className="text-[10px] text-slate-400 font-bold mt-2 block pl-6">
                         {notif.time}
                       </span>
