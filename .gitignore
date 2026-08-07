@@ -1,4 +1,40 @@
-.vercel
-.*pdf
+# Environment & Secrets
 .env
-dr-bio-backend/uploads/reports
+.env*.local
+*.env
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Build & Dependencies (Frontend)
+node_modules/
+/dr-bio-frontend/node_modules/
+/dr-bio-frontend/dist/
+/dr-bio-frontend/dist-ssr/
+.vercel/
+
+# Build & Dependencies (Backend)
+/dr-bio-backend/target/
+/dr-bio-backend/uploads/
+
+# Logs & Temporary Files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Uploaded & Generated Media
+*.pdf
+.*pdf

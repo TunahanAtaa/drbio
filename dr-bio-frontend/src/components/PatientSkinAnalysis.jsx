@@ -57,7 +57,7 @@ const PatientSkinAnalysis = () => {
       const saved = localStorage.getItem('user');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return { name: 'Zeynep Ersal', email: 'hasta@drbio.com' };
+    return { name: '', email: '' };
   })();
 
   const userEmail = (activeUser.email || '').trim().toLowerCase();

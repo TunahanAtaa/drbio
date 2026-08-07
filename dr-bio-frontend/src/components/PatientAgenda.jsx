@@ -94,22 +94,31 @@ const PatientAgenda = () => {
       const saved = localStorage.getItem('user');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return { email: 'hasta@drbio.com', name: 'Zeynep Ersal' };
+    return { email: '', name: '' };
   })();
 
   const userEmail = (activeUser.email || '').trim().toLowerCase();
+  const isTestAccount = userEmail === 'hasta@drbio.com' || userEmail === 'admin@drbio.com';
   const storageKey = `drbio_patient_agenda_${userEmail}`;
   const notifKey = `drbio_notif_${userEmail}`;
 
+  const sampleAgendaIds = new Set(['ag-1', 'ag-2', 'ag-3', 'ag-4', 'ag-5', 'ag-6', 'ag-7']);
+
   const [agendaList, setAgendaList] = useState(() => {
+    if (!userEmail) return [];
     try {
       const saved = localStorage.getItem(storageKey);
-      if (saved) {
+      if (saved !== null) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          if (!isTestAccount) {
+            return parsed.filter(item => !sampleAgendaIds.has(item.id));
+          }
+          return parsed;
+        }
       }
     } catch (e) {}
-    return DEFAULT_SAMPLE_AGENDA;
+    return isTestAccount ? DEFAULT_SAMPLE_AGENDA : [];
   });
 
   const [filterCategory, setFilterCategory] = useState('ALL');

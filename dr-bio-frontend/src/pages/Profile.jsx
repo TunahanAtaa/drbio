@@ -15,47 +15,49 @@ export default function UserProfile({ initialUserData }) {
             try {
                 const parsed = JSON.parse(savedUser);
                 const hp = parsed.healthProfile || {};
+                const userEmail = (parsed.email || '').toLowerCase();
+                const isTestUser = userEmail === 'hasta@drbio.com' || userEmail === 'admin@drbio.com';
                 return {
-                    name: parsed.name || 'Zeynep Ersal',
-                    email: parsed.email || 'zeynep@ornek.com',
+                    name: parsed.name || (isTestUser ? 'Zeynep Ersal' : 'Kullanıcı'),
+                    email: parsed.email || '',
                     role: parsed.role || 'PATIENT',
-                    age: hp.age || '22',
-                    weight: hp.weight || '60',
-                    height: hp.height || '170',
-                    gender: hp.gender || 'Kadın',
-                    maritalStatus: hp.maritalStatus || 'Bekar',
-                    hasChildren: hp.hasChildren || 'Hayır',
-                    occupation: hp.occupation || 'Yazılım Mühendisliği Öğrencisi',
-                    geneticDiseases: hp.geneticDiseases || 'Yok',
-                    pastSurgeries: hp.pastSurgeries || 'Yok',
-                    regularMedications: hp.regularMedications || 'Yok',
-                    allergies: hp.allergies || 'Polen',
-                    chronicComplaints: hp.chronicComplaints || 'Yok',
-                    smoking: hp.smoking || 'Kullanmıyor',
-                    alcohol: hp.alcohol || 'Kullanmıyor'
+                    age: hp.age || (isTestUser ? '22' : ''),
+                    weight: hp.weight || (isTestUser ? '60' : ''),
+                    height: hp.height || (isTestUser ? '170' : ''),
+                    gender: hp.gender || (isTestUser ? 'Kadın' : ''),
+                    maritalStatus: hp.maritalStatus || (isTestUser ? 'Bekar' : ''),
+                    hasChildren: hp.hasChildren || (isTestUser ? 'Hayır' : ''),
+                    occupation: hp.occupation || (isTestUser ? 'Yazılım Mühendisliği Öğrencisi' : ''),
+                    geneticDiseases: hp.geneticDiseases || (isTestUser ? 'Yok' : ''),
+                    pastSurgeries: hp.pastSurgeries || (isTestUser ? 'Yok' : ''),
+                    regularMedications: hp.regularMedications || (isTestUser ? 'Yok' : ''),
+                    allergies: hp.allergies || (isTestUser ? 'Polen' : ''),
+                    chronicComplaints: hp.chronicComplaints || (isTestUser ? 'Yok' : ''),
+                    smoking: hp.smoking || (isTestUser ? 'Kullanmıyor' : ''),
+                    alcohol: hp.alcohol || (isTestUser ? 'Kullanmıyor' : '')
                 };
             } catch (e) {
                 console.error('Error parsing user storage', e);
             }
         }
         return {
-            name: 'Zeynep Ersal',
-            email: 'zeynep@ornek.com',
+            name: '',
+            email: '',
             role: 'PATIENT',
-            age: '22',
-            weight: '60',
-            height: '170',
-            gender: 'Kadın',
-            maritalStatus: 'Bekar',
-            hasChildren: 'Hayır',
-            occupation: 'Yazılım Mühendisliği Öğrencisi',
-            geneticDiseases: 'Yok',
-            pastSurgeries: 'Yok',
-            regularMedications: 'Yok',
-            allergies: 'Polen',
-            chronicComplaints: 'Yok',
-            smoking: 'Kullanmıyor',
-            alcohol: 'Kullanmıyor'
+            age: '',
+            weight: '',
+            height: '',
+            gender: '',
+            maritalStatus: '',
+            hasChildren: '',
+            occupation: '',
+            geneticDiseases: '',
+            pastSurgeries: '',
+            regularMedications: '',
+            allergies: '',
+            chronicComplaints: '',
+            smoking: '',
+            alcohol: ''
         };
     };
 

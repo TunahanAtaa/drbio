@@ -72,18 +72,29 @@ const PatientDashboard = () => {
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
-    return { name: 'Zeynep Ersal', email: 'hasta@drbio.com' };
+    return { name: '', email: '' };
   })();
 
   const userEmail = (activeUser.email || '').trim().toLowerCase();
   const isTestAccount = userEmail === 'hasta@drbio.com' || userEmail === 'admin@drbio.com';
   const historyStorageKey = `userTestHistory_${userEmail}`;
 
+  const sampleHistoryIds = new Set([1, 2]);
+
   // Geçmiş Tahliller Verisi State'i (Kullanıcı bazlı saklama)
   const [historyList, setHistoryList] = useState(() => {
+    if (!userEmail) return [];
     const saved = localStorage.getItem(historyStorageKey);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    if (saved !== null) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          if (!isTestAccount) {
+            return parsed.filter(item => !sampleHistoryIds.has(item.id));
+          }
+          return parsed;
+        }
+      } catch (e) { console.error(e); }
     }
     // SADECE varsayılan test hesaplarında örnek tahlilleri göster. Diğer kullanıcılarda BOŞ DİZİ [] ver!
     return isTestAccount ? sampleHistory : [];
