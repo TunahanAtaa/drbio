@@ -130,7 +130,16 @@ const AdminDashboard = () => {
         }
 
         if (refsRes.data && Array.isArray(refsRes.data)) {
-          setReferences(refsRes.data);
+          const mappedRefs = refsRes.data.map(r => ({
+            id: r.id,
+            name: r.parameterName || '',
+            min: r.minValue || '',
+            max: r.maxValue || '',
+            unit: r.unit || '',
+            category: 'Biyokimya',
+            text: r.lowRecommendation || r.normalRecommendation || ''
+          }));
+          setReferences(mappedRefs);
         }
 
         setTotalReports(reportsRes.data && Array.isArray(reportsRes.data) ? reportsRes.data.length : 0);
@@ -167,12 +176,40 @@ const AdminDashboard = () => {
 
   const saveReferences = async (refData, isEdit) => {
     try {
+      const backendPayload = {
+        parameterName: refData.name,
+        minValue: parseFloat(refData.min) || null,
+        maxValue: parseFloat(refData.max) || null,
+        unit: refData.unit,
+        lowRecommendation: refData.text,
+        highRecommendation: refData.text,
+        normalRecommendation: 'Normal'
+      };
+
       if (isEdit) {
-        const res = await api.put(`/reference-values/${refData.id}`, refData);
-        setReferences(references.map(r => r.id === res.data.id ? res.data : r));
+        const res = await api.put(`/reference-values/${refData.id}`, backendPayload);
+        const updatedRef = {
+          id: res.data.id,
+          name: res.data.parameterName || '',
+          min: res.data.minValue || '',
+          max: res.data.maxValue || '',
+          unit: res.data.unit || '',
+          category: 'Biyokimya',
+          text: res.data.lowRecommendation || res.data.normalRecommendation || ''
+        };
+        setReferences(references.map(r => r.id === updatedRef.id ? updatedRef : r));
       } else {
-        const res = await api.post('/reference-values', refData);
-        setReferences([res.data, ...references]);
+        const res = await api.post('/reference-values', backendPayload);
+        const newRef = {
+          id: res.data.id,
+          name: res.data.parameterName || '',
+          min: res.data.minValue || '',
+          max: res.data.maxValue || '',
+          unit: res.data.unit || '',
+          category: 'Biyokimya',
+          text: res.data.lowRecommendation || res.data.normalRecommendation || ''
+        };
+        setReferences([newRef, ...references]);
       }
     } catch (error) {
       console.error("Referans kaydedilemedi", error);
