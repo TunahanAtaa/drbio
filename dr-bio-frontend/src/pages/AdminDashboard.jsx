@@ -253,24 +253,27 @@ const AdminDashboard = () => {
           api.get('/reports/all')
         ]);
         
-        if (usersRes.data && Array.isArray(usersRes.data) && usersRes.data.length > 0) {
+        if (usersRes.data && Array.isArray(usersRes.data)) {
           setUsersList(usersRes.data);
-        } else {
-          setUsersList(defaultAdminUsers);
         }
 
-        if (refsRes.data && Array.isArray(refsRes.data) && refsRes.data.length > 0) {
-          setReferences(refsRes.data);
-        } else {
-          setReferences(defaultReferences);
+        if (refsRes.data && Array.isArray(refsRes.data)) {
+          const mappedRefs = refsRes.data.map(r => ({
+            id: r.id,
+            name: r.parameterName || '',
+            min: r.minValue || '',
+            max: r.maxValue || '',
+            unit: r.unit || '',
+            category: 'Biyokimya',
+            text: r.lowRecommendation || r.normalRecommendation || ''
+          }));
+          setReferences(mappedRefs);
         }
 
-        setTotalReports(reportsRes.data && Array.isArray(reportsRes.data) ? reportsRes.data.length : 142);
+        setTotalReports(reportsRes.data && Array.isArray(reportsRes.data) ? reportsRes.data.length : 0);
       } catch (err) {
-        console.warn('Backend verileri çekilemedi veya yetki yetersiz, demo veriler ile devam ediliyor:', err);
-        setUsersList(defaultAdminUsers);
-        setReferences(defaultReferences);
-        setTotalReports(142);
+        console.error('Backend verileri çekilemedi:', err);
+        setErrorData('Veriler yüklenemedi, sunucu ile iletişim kurulamadı. Lütfen tekrar deneyiniz.');
       } finally {
         setLoadingData(false);
       }
@@ -697,13 +700,13 @@ const AdminDashboard = () => {
   const satisfiedCount = safeFeedbacks.filter(f => f && (f.rating || 0) >= 4).length;
 
   const filteredReferences = references.filter(r => 
-    r.name.toLowerCase().includes(refSearch.toLowerCase()) || 
-    r.category.toLowerCase().includes(refSearch.toLowerCase())
+    (r.name || r.parameterName || '').toLowerCase().includes(refSearch.toLowerCase()) || 
+    (r.category || '').toLowerCase().includes(refSearch.toLowerCase())
   );
 
   const filteredUsers = usersList.filter(u => 
-    u.name.toLowerCase().includes(userSearch.toLowerCase()) || 
-    u.email.toLowerCase().includes(userSearch.toLowerCase())
+    (u.name || u.fullName || '').toLowerCase().includes(userSearch.toLowerCase()) || 
+    (u.email || '').toLowerCase().includes(userSearch.toLowerCase())
   );
 
   return (
