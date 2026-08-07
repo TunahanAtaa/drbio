@@ -1,2 +1,3 @@
 .vercel
-.*pdf.env
+.*pdf
+.env
