@@ -77,9 +77,6 @@ const defaultFeedbacks = [
   }
 ];
 
-<<<<<<< HEAD
-
-=======
 const defaultAdminUsers = [
   {
     id: 'u1',
@@ -144,7 +141,6 @@ const defaultReferences = [
   { id: '4', name: 'ALT (Alanin Aminotransferaz)', min: 7, max: 56, unit: 'U/L', category: 'Karaciğer', text: 'Karaciğer enzimleri ve yağlanma durumu incelenmeli.' },
   { id: '5', name: 'TSH', min: 0.4, max: 4.0, unit: 'mUI/L', category: 'Hormon', text: 'Tiroit bezi fonksiyonları değerlendirilmeli.' }
 ];
->>>>>>> a7df16f502c61d9e65c3676834cc17b166c204c3
 
 const getGenderStyles = (gender) => {
   switch (gender) {
@@ -276,15 +272,10 @@ const AdminDashboard = () => {
 
         setTotalReports(reportsRes.data && Array.isArray(reportsRes.data) ? reportsRes.data.length : 0);
       } catch (err) {
-<<<<<<< HEAD
-        console.error('Backend verileri çekilemedi:', err);
-        setErrorData('Veriler yüklenemedi, sunucu ile iletişim kurulamadı. Lütfen tekrar deneyiniz.');
-=======
         console.warn('Backend verileri çekilemedi veya yetki yetersiz, demo veriler ile devam ediliyor:', err);
         setUsersList(defaultAdminUsers);
         setReferences(defaultReferences);
         setTotalReports(142);
->>>>>>> a7df16f502c61d9e65c3676834cc17b166c204c3
       } finally {
         setLoadingData(false);
       }
@@ -309,72 +300,6 @@ const AdminDashboard = () => {
     text: ''
   });
 
-<<<<<<< HEAD
-  // Kullanıcı Ekleme Modal State
-  const [userModalOpen, setUserModalOpen] = useState(false);
-  const [newUserFormData, setNewUserFormData] = useState({
-    name: '', email: '', password: '123', role: 'PATIENT'
-  });
-
-  // Kullanıcı Tüm Detay Modalı State
-  const [selectedUserDetail, setSelectedUserDetail] = useState(null);
-
-  const saveReferences = async (refData, isEdit) => {
-    try {
-      const backendPayload = {
-        parameterName: refData.name,
-        minValue: parseFloat(refData.min) || null,
-        maxValue: parseFloat(refData.max) || null,
-        unit: refData.unit,
-        lowRecommendation: refData.text,
-        highRecommendation: refData.text,
-        normalRecommendation: 'Normal'
-      };
-
-      if (isEdit) {
-        const res = await api.put(`/reference-values/${refData.id}`, backendPayload);
-        const updatedRef = {
-          id: res.data.id,
-          name: res.data.parameterName || '',
-          min: res.data.minValue || '',
-          max: res.data.maxValue || '',
-          unit: res.data.unit || '',
-          category: 'Biyokimya',
-          text: res.data.lowRecommendation || res.data.normalRecommendation || ''
-        };
-        setReferences(references.map(r => r.id === updatedRef.id ? updatedRef : r));
-      } else {
-        const res = await api.post('/reference-values', backendPayload);
-        const newRef = {
-          id: res.data.id,
-          name: res.data.parameterName || '',
-          min: res.data.minValue || '',
-          max: res.data.maxValue || '',
-          unit: res.data.unit || '',
-          category: 'Biyokimya',
-          text: res.data.lowRecommendation || res.data.normalRecommendation || ''
-        };
-        setReferences([newRef, ...references]);
-      }
-    } catch (error) {
-      console.error("Referans kaydedilemedi", error);
-    }
-  };
-
-  const handleDeleteRef = async (id) => {
-    try {
-      await api.delete(`/reference-values/${id}`);
-      setReferences(references.filter(r => r.id !== id));
-    } catch (error) {
-      console.error("Referans silinemedi", error);
-    }
-  };
-
-  const handleOpenRefModal = (refObj = null) => {
-    if (refObj) {
-      setEditingRef(refObj);
-      setRefFormData({ ...refObj });
-=======
   const handleOpenRefModal = (ref = null) => {
     if (ref) {
       setEditingRef(ref);
@@ -386,7 +311,6 @@ const AdminDashboard = () => {
         category: ref.category || 'Kan Sayımı',
         text: ref.text || ''
       });
->>>>>>> a7df16f502c61d9e65c3676834cc17b166c204c3
     } else {
       setEditingRef(null);
       setRefFormData({
